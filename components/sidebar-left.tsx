@@ -2,22 +2,17 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings2,
   SquareTerminal,
+  BotMessageSquare
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { Logo } from "@/components/logo"
+import { NavChats } from "@/components/nav-chats"
+import { NavPrompts } from "@/components/nav-prompts"
 import {
   Sidebar,
   SidebarContent,
@@ -33,23 +28,6 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Playground",
@@ -137,34 +115,56 @@ const data = {
       ],
     },
   ],
-  projects: [
+  logoInfo: {
+    name: "Prompts App",
+    logo: BotMessageSquare,
+  },
+  chats: [
     {
-      name: "Design Engineering",
+      name: "Japan travelling tips blog",
       url: "#",
-      icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "Build a React app",
       url: "#",
-      icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Sidebar creation with shadcn/ui",
       url: "#",
-      icon: Map,
+    },
+    {
+      name: "Chemistry equation problems",
+      url: "#",
     },
   ],
+  prompts: [
+    {
+      name: "Write For Me",
+      url: "#",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    {
+      name: "Translator",
+      url: "#",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    {
+      name: "Summarizer",
+      url: "#",
+      avatar: "/avatars/shadcn.jpg",
+    },
+  ]
 }
 
 export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <Logo logoInfo={data.logoInfo} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavPrompts prompts={data.prompts} />
+        <NavChats chats={data.chats} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
