@@ -121,7 +121,7 @@ const data = {
   },
   chats: [
     {
-      name: "Japan travelling tips blog",
+      name: "Japan traveling tips blog",
       url: "#",
     },
     {
