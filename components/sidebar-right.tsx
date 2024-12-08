@@ -1,19 +1,20 @@
 import * as React from "react"
-import { Plus } from "lucide-react"
+// import { Plus } from "lucide-react"
 
-import { Calendars } from "@/components/calendars"
-import { DatePicker } from "@/components/date-picker"
+// import { Calendars } from "@/components/calendars"
+// import { DatePicker } from "@/components/date-picker"
 import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
+  // SidebarMenu,
+  // SidebarMenuButton,
+  // SidebarMenuItem,
+  // SidebarSeparator,
 } from "@/components/ui/sidebar"
+import { PromptGeneratorSidebar } from "@/components/prompt-generator"
 
 // This is sample data.
 const data = {
@@ -43,7 +44,8 @@ export function SidebarRight({
 }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
-      collapsible="none"
+      collapsible="icon"
+      side="right"
       className="sticky hidden lg:flex top-0 h-svh border-l"
       {...props}
     >
@@ -51,11 +53,12 @@ export function SidebarRight({
         <NavUser user={data.user} />
       </SidebarHeader>
       <SidebarContent>
-        <DatePicker />
+        {/* <DatePicker />
         <SidebarSeparator className="mx-0" />
-        <Calendars calendars={data.calendars} />
+        <Calendars calendars={data.calendars} /> */}
+        <PromptGeneratorSidebar />
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>
@@ -64,7 +67,7 @@ export function SidebarRight({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   )
 }
