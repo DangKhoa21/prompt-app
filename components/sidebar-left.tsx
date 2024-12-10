@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   BookOpen,
   Bot,
   Settings2,
   SquareTerminal,
-  BotMessageSquare
-} from "lucide-react"
+  BotMessageSquare,
+} from "lucide-react";
 
-import { NavUser } from "@/components/nav-user"
-import { Logo } from "@/components/logo"
-import { NavChats } from "@/components/nav-chats"
-import { NavPrompts } from "@/components/nav-prompts"
+import { NavUser } from "@/components/nav-user";
+import { Logo } from "@/components/logo";
+import { NavChats } from "@/components/nav-chats";
+import { NavPrompts } from "@/components/nav-prompts";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 // This is sample data.
 const data = {
@@ -153,10 +153,12 @@ const data = {
       url: "#",
       avatar: "/avatars/shadcn.jpg",
     },
-  ]
-}
+  ],
+};
 
-export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function SidebarLeft({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -171,5 +173,5 @@ export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) 
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
