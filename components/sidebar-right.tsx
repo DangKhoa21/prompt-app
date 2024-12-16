@@ -10,7 +10,7 @@ export function SidebarRight({
     <Sidebar2
       collapsible="offcanvas"
       side="right"
-      className="hidden lg:flex top-0 h-svh border-l"
+      className="w-[24rem] sticky hidden lg:flex top-0 h-svh border-l"
       {...props}
     >
       <PromptGeneratorSidebar />
