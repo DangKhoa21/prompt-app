@@ -1,21 +1,20 @@
 import * as React from "react";
 
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import { Sidebar2, SidebarRail2 } from "@/components/ui/sidebar2";
 import { PromptGeneratorSidebar } from "@/components/prompt-generator";
 
 export function SidebarRight({
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: React.ComponentProps<typeof Sidebar2>) {
   return (
-    <Sidebar
-      collapsible="none"
+    <Sidebar2
+      collapsible="offcanvas"
       side="right"
-      className="w-[24rem] sticky hidden lg:flex top-0 h-svh border-l"
+      className="hidden lg:flex top-0 h-svh border-l"
       {...props}
     >
-      <SidebarContent>
-        <PromptGeneratorSidebar />
-      </SidebarContent>
-    </Sidebar>
+      <PromptGeneratorSidebar />
+      <SidebarRail2 />
+    </Sidebar2>
   );
 }
