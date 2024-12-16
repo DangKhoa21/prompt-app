@@ -3,6 +3,7 @@ import { Compass, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 
 export function ChatHeader() {
   return (
@@ -20,6 +21,8 @@ export function ChatHeader() {
             New chat
           </Button>
         </div>
+        <Separator orientation="vertical" className="ml-2 h-4" />
+        <SidebarTrigger2 />
       </div>
     </header>
   );
