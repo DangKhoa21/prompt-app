@@ -25,8 +25,6 @@ import {
 function capitalize(str: string): string {
   if (!str) return ""; // Handle empty or undefined strings
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  if (!str) return ""; // Handle empty or undefined strings
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 export function PromptGeneratorSidebar() {

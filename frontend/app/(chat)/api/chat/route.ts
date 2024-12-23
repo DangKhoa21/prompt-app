@@ -17,11 +17,14 @@ import {
 
 export async function POST(request: Request) {
   const {
-    // id,
+    id,
     messages,
     modelId,
   }: { id: string; messages: Array<Message>; modelId: string } =
     await request.json();
+  // console.log("Check 1");
+  console.log(id, messages, modelId);
+  // console.log("Check 2");
 
   const model = models.find((model) => model.id === modelId);
 
