@@ -48,11 +48,9 @@ export function PromptGeneratorSidebar() {
       labelName: "Desired Length (words)",
       labelPlaceholder: "e.g., 100",
       type: "input",
+      inputType: "number",
       state: CreateState(),
-      values: {
-        id: "length",
-        type: "number",
-      },
+      values: {},
       className: "",
     },
     {
@@ -61,9 +59,7 @@ export function PromptGeneratorSidebar() {
       labelPlaceholder: "Provide context for your prompt",
       type: "textarea",
       state: CreateState(),
-      values: {
-        id: "context",
-      },
+      values: {},
       className: "min-h-[100px]",
     },
     {
@@ -72,9 +68,7 @@ export function PromptGeneratorSidebar() {
       labelPlaceholder: "Enter keywords (comma-separated)",
       type: "textarea",
       state: CreateState(),
-      values: {
-        id: "keywords",
-      },
+      values: {},
       className: "min-h-[80px]",
     },
   ];
@@ -143,7 +137,7 @@ Include the following keywords: ${findState("keywords")}`;
               ) : item.type === "input" ? (
                 <Input
                   id={item.label}
-                  type={item.values.type}
+                  type={item.inputType}
                   placeholder={item.labelPlaceholder}
                   value={item.state.state}
                   onChange={(e) => item.state.setState(e.target.value)}
