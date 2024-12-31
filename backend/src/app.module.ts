@@ -1,19 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-// import { GoogleaiModule } from './googleai/googleai.module';
+import { GeminiModule } from './modules/gemini/gemini.module';
+import { UserModule } from './modules/user/user.module';
+import { PrismaModule } from './processors/database/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { GeminiModule } from './gemini/gemini.module';
-import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule,
     GeminiModule,
-    ChatModule,
-    // GoogleaiModule,
+    UserModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
