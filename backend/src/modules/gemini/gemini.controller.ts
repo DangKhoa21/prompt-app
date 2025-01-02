@@ -24,13 +24,13 @@ export class GeminiController {
 
   @Post('stream')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async streamResponse(@Body() data: GetAIMessageDTO, @Res() res: Response) {
+  async streamResponse(@Body() data, @Res() res: Response) {
     pipeDataStreamToResponse(res, {
       execute: async (dataStreamWriter) => {
         dataStreamWriter.writeData('initialized call');
         const result = streamText({
           model: google('gemini-1.5-flash-002'),
-          prompt: data.prompt,
+          messages: data.messages,
         });
 
         result.mergeIntoDataStream(dataStreamWriter);
