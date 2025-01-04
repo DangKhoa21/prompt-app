@@ -33,7 +33,7 @@ export function Chat({
     stop,
     // data: streamingData,
   } = useChat({
-    api: `${SERVER_URL}/gemini/stream`,
+    api: `${SERVER_URL}/api/chat`,
     body: { id, modelId: selectedModelId },
     initialMessages,
     // onFinish: () => {
