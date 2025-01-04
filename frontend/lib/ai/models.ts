@@ -22,11 +22,10 @@ export const models: Array<Model> = [
   },
   {
     id: "gemini-1.5-flash-002",
-    label: "Gemini 1.5 flash 002",
+    label: "Gemini 1.5 Flash",
     apiIdentifier: "gemini-1.5-flash-002",
     description: "Gemini small model for fast, lightweight tasks",
   },
 ] as const;
 
-// export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
 export const DEFAULT_MODEL_NAME: string = "gemini-1.5-flash-002";
