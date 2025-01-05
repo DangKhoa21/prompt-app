@@ -10,6 +10,8 @@ import { ChatHeader } from "@/components/chat-header";
 import { MultimodalInput } from "./multimodal-input";
 
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
+import { Overview } from "@/components/overview";
+import { SERVER_URL } from "@/lib/constant";
 
 export function Chat({
   id,
@@ -31,6 +33,7 @@ export function Chat({
     stop,
     // data: streamingData,
   } = useChat({
+    api: `${SERVER_URL}/api/chat`,
     body: { id, modelId: selectedModelId },
     initialMessages,
     // onFinish: () => {
@@ -46,32 +49,18 @@ export function Chat({
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader />
+        <ChatHeader selectedModelId={selectedModelId} />
 
         <div
           ref={messagesContainerRef}
           className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
         >
-          {messages.length === 0 && `<p>Welcome<p/>`}
+          {messages.length === 0 && <Overview />}
 
-          {messages.map((message, index) => (
-            <PreviewMessage
-              key={message.id}
-              chatId={id}
-              message={message}
-              // block={block}
-              // setBlock={setBlock}
-              isLoading={isLoading && messages.length - 1 === index}
-              // vote={
-              //   votes
-              //     ? votes.find((vote) => vote.messageId === message.id)
-              //     : undefined
-              // }
-            />
+          {messages.map((message) => (
+            <PreviewMessage key={message.id} message={message} />
           ))}
-          {/* <PreviewMessage />
 
-          <ThinkingMessage /> */}
           {isLoading &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "user" && (
