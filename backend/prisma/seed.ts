@@ -84,6 +84,7 @@ async function main() {
     create: {
       promptId: prompt.id,
       label: 'Tone',
+      type: 'dropdown',
     },
   });
 
@@ -93,6 +94,7 @@ async function main() {
     create: {
       promptId: prompt.id,
       label: 'Length',
+      type: 'dropdown',
     },
   });
 
@@ -102,6 +104,7 @@ async function main() {
     create: {
       promptId: prompt.id,
       label: 'Style',
+      type: 'dropdown',
     },
   });
 
@@ -111,6 +114,7 @@ async function main() {
     create: {
       promptId: prompt.id,
       label: 'Audience',
+      type: 'dropdown',
     },
   });
 
