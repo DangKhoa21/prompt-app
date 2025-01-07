@@ -33,7 +33,7 @@ export function Chat({
     stop,
     // data: streamingData,
   } = useChat({
-    api: `${SERVER_URL}/api/chat`,
+    api: `${SERVER_URL}/api/v1/chat`,
     body: { id, modelId: selectedModelId },
     initialMessages,
     // onFinish: () => {
