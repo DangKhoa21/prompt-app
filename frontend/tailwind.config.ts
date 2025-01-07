@@ -10,15 +10,34 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
+  			background: {
+          DEFAULT: 'hsl(var(--background))',
+
+          primary: 'var(--background-primary)',
+          secondary: 'var(--background-secondary)',
+          tertiary: 'var(--background-tertiary)',
+        },
+
+  			foreground: {
+          DEFAULT: 'hsl(var(--foreground))',
+
+          primary: 'var(--foreground-primary)',
+          secondary: 'var(--foreground-secondary)',
+          accent: 'var(--foreground-accent)',
+          muted: 'var(--foreground-muted)',
+        },
+
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				foreground: 'hsl(var(--card-foreground))',
+
+          hover: 'var(--gradient-primary)',
+          hoverSecondary: 'var(--gradient-secondary)',
   			},
+
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
+  				foreground: 'hsl(var(--popover-foreground))',
   			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
@@ -32,15 +51,26 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'
   			},
+
   			accent: {
   				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
+  				foreground: 'hsl(var(--accent-foreground))',
+
+          primary: 'var(--accent-primary)',
+          secondary: 'var(--accent-secondary)',
+          muted: 'var(--accent-muted)',
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
-  			border: 'hsl(var(--border))',
+
+  			border: {
+          DEFAULT: 'hsl(var(--border))',
+
+          primary: 'var(--border-primary)',
+          secondary: 'var(--border-secondary)',
+        },
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
   			chart: {

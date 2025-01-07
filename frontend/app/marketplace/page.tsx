@@ -1,7 +1,12 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PromptTemplateCard } from "@/components/prompt-template-card";
 import { Search, ChevronDown } from "lucide-react";
+
+import { useQuery } from "@tanstack/react-query";
+import { getPrompts } from "@/services/prompt";
 
 const templates = Array(9).fill({
   title: "Translate",
@@ -13,8 +18,22 @@ const templates = Array(9).fill({
 const filters = Array(6).fill("Summarize").concat(["More"]);
 
 export default function Page() {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["prompts"],
+    queryFn: () => getPrompts(),
+  });
+
+  if (isPending) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error.message}</span>;
+  }
+  console.log("Check data: ", data);
+
   return (
-    <main className="flex-1 overflow-auto">
+    <main className="flex-1 overflow-auto bg-background-primary">
       <div className="max-w-6xl mx-auto mt-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-semibold mb-2">Marketplace</h1>
@@ -23,7 +42,7 @@ export default function Page() {
             instructions, extra knowledge, and any combination of skills.
           </p>
 
-          <div className="inline-flex relative mb-6 min-w-[600px] justify-center">
+          <div className="inline-flex relative mb-6 w-3/5 max-w-screen-lg justify-center">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search" className="pl-9" />
           </div>
@@ -44,11 +63,14 @@ export default function Page() {
           ))}
         </div>
 
-        <div className="p-4 pt-8 bg-sky-100 grid gap-6 justify-evenly justify-items-center md:grid-cols-2 lg:grid-cols-3">
+        <div className="px-0 py-8 md:px-4 bg-background-tertiary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
           {templates.map((template, i) => (
-            <PromptTemplateCard key={i} {...template} className="bg-sky-200" />
+            <PromptTemplateCard key={i} {...template} />
           ))}
         </div>
+        {data.map((item, i) => (
+          <p key={item.id}>{item.id}, {item.title}, {item.description}, {item.stringTemplate}</p>
+        ))}
       </div>
     </main>
   );
