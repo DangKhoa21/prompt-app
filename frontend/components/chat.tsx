@@ -11,7 +11,7 @@ import { MultimodalInput } from "./multimodal-input";
 
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
-import { SERVER_URL } from "@/lib/constant";
+import { SERVER_URL } from "@/config";
 
 export function Chat({
   id,

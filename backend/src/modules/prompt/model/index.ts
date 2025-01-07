@@ -34,3 +34,28 @@ export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 export const promptCondDTOSchema = promptSchema.pick({ title: true });
 
 export type PromptCondDTO = z.infer<typeof promptCondDTOSchema>;
+
+export const promptConfigSchema = z.object({
+  id: z.string().uuid(),
+  label: z.string(),
+  type: z.string(),
+  promptId: z.string().uuid(),
+  createdAt: z.date().default(new Date()),
+  updatedAt: z.date().default(new Date()),
+});
+
+export const configValueSchema = z.object({
+  id: z.string().uuid(),
+  value: z.string(),
+  promptConfigId: z.string().uuid(),
+  createdAt: z.date().default(new Date()),
+  updatedAt: z.date().default(new Date()),
+});
+
+export type ConfigValue = z.infer<typeof configValueSchema>;
+
+export type PromptConfig = z.infer<typeof promptConfigSchema> & {
+  values: ConfigValue[];
+};
+
+export type PromptWithConfigs = Prompt & { configs: PromptConfig[] };

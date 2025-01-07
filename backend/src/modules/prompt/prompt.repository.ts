@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/processors/database/prisma.service';
-import { Prompt, PromptCondDTO, PromptUpdateDTO } from './model';
+import {
+  Prompt,
+  PromptCondDTO,
+  PromptUpdateDTO,
+  PromptWithConfigs,
+} from './model';
 
 @Injectable()
 export class PromptRepository {
@@ -21,6 +26,19 @@ export class PromptRepository {
   async findById(id: string): Promise<Prompt | null> {
     return this.prisma.prompt.findUnique({
       where: { id },
+    });
+  }
+
+  async findByIdWithConfigs(id: string): Promise<PromptWithConfigs | null> {
+    return this.prisma.prompt.findUnique({
+      where: { id },
+      include: {
+        configs: {
+          include: {
+            values: true,
+          },
+        },
+      },
     });
   }
 

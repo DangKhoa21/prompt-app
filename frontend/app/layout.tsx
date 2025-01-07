@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
+
+import AppProviders from "@/providers/app-provider";
+
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -28,7 +32,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AppProviders>
+          <Toaster position="top-center" />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

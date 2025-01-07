@@ -6,6 +6,7 @@ import {
   promptCreationDTOSchema,
   PromptUpdateDTO,
   promptUpdateDTOSchema,
+  PromptWithConfigs,
 } from './model';
 import { v7 } from 'uuid';
 
@@ -46,8 +47,8 @@ export class PromptService {
     return this.promptRepo.findAll();
   }
 
-  async findOne(id: string): Promise<Prompt> {
-    const prompt = await this.promptRepo.findById(id);
+  async findOne(id: string): Promise<PromptWithConfigs> {
+    const prompt = await this.promptRepo.findByIdWithConfigs(id);
     if (!prompt) {
       throw new Error('Prompt not found');
     }
