@@ -1,8 +1,9 @@
 "use client";
 
-// import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getPrompt } from "@/services/prompt";
 
 export function PromptGeneratorSidebar() {
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
+    {}
+  );
+
   const promptId = "0194382b-5606-7923-9f3f-1c9deaafc93b";
 
   const { isPending, isError, data, error } = useQuery({
@@ -37,6 +43,38 @@ export function PromptGeneratorSidebar() {
   if (isError) {
     return <span>Error: {error.message}</span>;
   }
+
+  const handleSelectChange = (configLabel: string, value: string) => {
+    setSelectedValues((prevState) => ({
+      ...prevState,
+      [configLabel]: value,
+    }));
+  };
+
+  const generatePrompt = () => {
+    const template = data.stringTemplate;
+    let prompt = template;
+
+    data.configs.forEach((config) => {
+      prompt = prompt.replace("$", "");
+      if (config.type === "dropdown") {
+        if (
+          selectedValues[config.label] &&
+          selectedValues[config.label] !== "None"
+        ) {
+          prompt = prompt.replace(
+            `{${config.label}}`,
+            selectedValues[config.label]
+          );
+        } else {
+          prompt = prompt.replace(`{${config.label}}`, "");
+        }
+      }
+    });
+
+    prompt = prompt.replace(/\s{2,}/g, " ");
+    setGeneratedPrompt(prompt);
+  };
 
   return (
     <>
@@ -66,13 +104,18 @@ export function PromptGeneratorSidebar() {
 
             <SidebarGroupContent className="px-2">
               {config.type === "dropdown" ? (
-                <Select>
+                <Select
+                  onValueChange={(value) =>
+                    handleSelectChange(config.label, value)
+                  }
+                >
                   <SelectTrigger id={config.label}>
                     <SelectValue
                       placeholder={`Select a ${config.label.toLowerCase()}`}
                     />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="None">None</SelectItem>
                     {config.values.map((value) => (
                       <SelectItem key={value.id} value={value.value}>
                         {value.value}
@@ -85,7 +128,7 @@ export function PromptGeneratorSidebar() {
           </SidebarGroup>
         ))}
 
-        {/* {generatedPrompt && (
+        {generatedPrompt && (
           <SidebarGroup>
             <SidebarGroupLabel>
               <Label htmlFor="generated-prompt">Generated Prompt</Label>
@@ -99,12 +142,14 @@ export function PromptGeneratorSidebar() {
               />
             </SidebarGroupContent>
           </SidebarGroup>
-        )} */}
+        )}
       </SidebarContent>
 
       <SidebarFooter>
         <div className="flex justify-around gap-4 p-2">
-          <Button className="w-1/2">Generate</Button>
+          <Button className="w-1/2" onClick={() => generatePrompt()}>
+            Generate
+          </Button>
           <Button className="w-1/2">Send</Button>
         </div>
       </SidebarFooter>
