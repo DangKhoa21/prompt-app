@@ -2,7 +2,7 @@
 
 import { startTransition, useMemo, useOptimistic, useState } from "react";
 
-import { saveModelId } from "@/app/(chat)/action";
+import { saveModelId } from "@/app/(home)/(chat)/action";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

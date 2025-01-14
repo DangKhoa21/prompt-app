@@ -11,6 +11,7 @@ import { MultimodalInput } from "./multimodal-input";
 
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
+import { useChatContext } from "@/app/context/ChatContext";
 import { SERVER_URL } from "@/config";
 
 export function Chat({
@@ -40,6 +41,10 @@ export function Chat({
     //   mutate("/api/history");
     // },
   });
+
+  console.log(id, initialMessages);
+  // const { messages, input, setInput, handleSubmit, append, isLoading, stop } =
+  // useChatContext();
 
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();

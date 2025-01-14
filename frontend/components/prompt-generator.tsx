@@ -22,14 +22,22 @@ import {
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { getPrompt } from "@/services/prompt";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export function PromptGeneratorSidebar() {
   const [generatedPrompt, setGeneratedPrompt] = useState("");
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
+  );
+  const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
+    {},
   );
 
-  const promptId = "0194382b-5606-7923-9f3f-1c9deaafc93b";
+  const searchParams = useSearchParams();
+  const promptId =
+    searchParams.get("promptId") ?? "0194382b-5606-7923-9f3f-1c9deaafc93b";
+  console.log(promptId);
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["prompts", promptId],
@@ -44,8 +52,30 @@ export function PromptGeneratorSidebar() {
     return <span>Error: {error.message}</span>;
   }
 
+  if (!data?.configs.some((config) => config?.label === "Content")) {
+    data.configs.push({
+      id: "0194382b-6626-7fb0-b3fe-42eb1d217855",
+      label: "Content",
+      promptId: data.id,
+      type: "textarea",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      values: [],
+    });
+    data.stringTemplate += "The main content: ${Content}";
+  }
+
+  console.log(data.configs);
+
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
+      ...prevState,
+      [configLabel]: value,
+    }));
+  };
+
+  const handleTextareChange = (configLabel: string, value: string) => {
+    setTextareaValues((prevState) => ({
       ...prevState,
       [configLabel]: value,
     }));
@@ -64,7 +94,16 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label]
+            selectedValues[config.label],
+          );
+        } else {
+          prompt = prompt.replace(`{${config.label}}`, "");
+        }
+      } else if (config.type === "textarea") {
+        if (textareaValues[config.label]) {
+          prompt = prompt.replace(
+            `{${config.label}}`,
+            textareaValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -81,7 +120,9 @@ export function PromptGeneratorSidebar() {
       <SidebarHeader className="pb-0">
         <div className="flex items-center p-2">
           <Button variant="ghost" className="h-8 w-8">
-            <ChevronLeft />
+            <Link href="/marketplace">
+              <ChevronLeft />
+            </Link>
           </Button>
           <div className="text-base leading-tight ml-2">
             <span className="truncate font-semibold">{data.title}</span>
@@ -123,6 +164,16 @@ export function PromptGeneratorSidebar() {
                     ))}
                   </SelectContent>
                 </Select>
+              ) : config.type === "textarea" ? (
+                <Textarea
+                  id={config.label}
+                  placeholder={`Input your content`}
+                  value={textareaValues[config.label]}
+                  onChange={(e) =>
+                    handleTextareChange(config.label, e.target.value)
+                  }
+                  // className={config.className}
+                />
               ) : null}
             </SidebarGroupContent>
           </SidebarGroup>

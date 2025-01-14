@@ -59,6 +59,48 @@ async function main() {
   });
   console.log('Prompt created or found:', prompt);
 
+  // Create a prompt called "Few-shot prompting"
+  const prompt1 = await prisma.prompt.upsert({
+    where: { title: 'Few-shot prompting' },
+    update: {},
+    create: {
+      title: 'Few-shot prompting',
+      description:
+        'Few-shot prompting technique template, designed for complex task that require EXAMPLES to clarify.',
+      stringTemplate: 'Example: ${Example}\n${Task}',
+      creatorId: user.id,
+    },
+  });
+
+  // Create a prompt called "Chain of Though prompting"
+  const prompt2 = await prisma.prompt.upsert({
+    where: { title: 'Chain of Thought prompting' },
+    update: {},
+    create: {
+      title: 'Chain of Thought prompting',
+      description:
+        'Chain of Though prompting technique template, design for solving complex problems step-by-step, showing the thought of the AI and evaluate the correctness of each step.',
+      stringTemplate:
+        'Think of the following problem step-by-step: ${Problem}\nIf provided, the following steps are compulsary: ${Step}',
+      creatorId: user.id,
+    },
+  });
+  console.log('Prompt created or found:', prompt);
+
+  // Create a prompt called "Translate"
+  const prompt3 = await prisma.prompt.upsert({
+    where: { title: 'Translate' },
+    update: {},
+    create: {
+      title: 'Translate',
+      description: 'Translate your content to another language',
+      stringTemplate:
+        'Translate the following content to another language: ${content}\nTarget langauge: ${language}',
+      creatorId: user.id,
+    },
+  });
+  console.log('Prompt created or found:', prompt);
+
   // Create tag
   const tag = await prisma.tag.upsert({
     where: { name: 'writing' },
@@ -71,6 +113,20 @@ async function main() {
   await prisma.promptTag.create({
     data: {
       promptId: prompt.id,
+      tagId: tag.id,
+    },
+  });
+
+  await prisma.promptTag.create({
+    data: {
+      promptId: prompt1.id,
+      tagId: tag.id,
+    },
+  });
+
+  await prisma.promptTag.create({
+    data: {
+      promptId: prompt2.id,
       tagId: tag.id,
     },
   });
@@ -118,11 +174,33 @@ async function main() {
     },
   });
 
+  const contentConfig = await prisma.promptConfig.upsert({
+    where: { promptId: prompt3.id, label: 'Content' },
+    update: {},
+    create: {
+      promptId: prompt.id,
+      label: 'Content',
+      type: 'textarea',
+    },
+  });
+
+  const targetLanguageConfig = await prisma.promptConfig.upsert({
+    where: { promptId: prompt3.id, label: 'Language' },
+    update: {},
+    create: {
+      promptId: prompt.id,
+      label: 'Language',
+      type: 'dropdown',
+    },
+  });
+
   console.log('Prompt configurations created or found:', [
     toneConfig,
     lengthConfig,
     styleConfig,
     audienceConfig,
+    contentConfig,
+    targetLanguageConfig,
   ]);
 
   // Create config values for each prompt configuration
@@ -202,6 +280,34 @@ async function main() {
     },
   });
 
+  const targetLanguageValue = await prisma.configValue.create({
+    data: {
+      promptConfigId: targetLanguageConfig.id,
+      value: 'English',
+    },
+  });
+
+  const targetLanguageValue1 = await prisma.configValue.create({
+    data: {
+      promptConfigId: targetLanguageConfig.id,
+      value: 'Japanese',
+    },
+  });
+
+  const targetLanguageValue2 = await prisma.configValue.create({
+    data: {
+      promptConfigId: targetLanguageConfig.id,
+      value: 'Korean',
+    },
+  });
+
+  const targetLanguageValue3 = await prisma.configValue.create({
+    data: {
+      promptConfigId: targetLanguageConfig.id,
+      value: 'France',
+    },
+  });
+
   console.log('Config values created:', [
     toneValue,
     toneValue1,
@@ -215,6 +321,10 @@ async function main() {
     audienceValue,
     audienceValue1,
     audienceValue2,
+    targetLanguageValue,
+    targetLanguageValue1,
+    targetLanguageValue2,
+    targetLanguageValue3,
   ]);
 
   // User stars the "Write For Me" prompt
