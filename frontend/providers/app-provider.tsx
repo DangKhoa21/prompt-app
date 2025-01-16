@@ -1,3 +1,4 @@
+import { PromptProvider } from "@/context/prompt-context";
 import QueryProvider from "@/providers/query-provider/query-provider";
 import React from "react";
 
@@ -6,5 +7,9 @@ interface AppProvidersProps {
 }
 
 export default function AppProviders({ children }: AppProvidersProps) {
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <PromptProvider>{children}</PromptProvider>
+    </QueryProvider>
+  );
 }

@@ -18,6 +18,7 @@ import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
 import useWindowSize from "@/components/use-window-size";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { usePrompt } from "@/context/prompt-context";
 
 const suggestedActions = [
   {
@@ -78,6 +79,14 @@ export function MultimodalInput({
       }px`;
     }
   };
+
+  const { prompt } = usePrompt();
+
+  useEffect(() => {
+    if (prompt) {
+      setInput(prompt);
+    }
+  }, [prompt, setInput]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
