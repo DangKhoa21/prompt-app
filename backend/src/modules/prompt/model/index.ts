@@ -31,7 +31,7 @@ export const promptUpdateDTOSchema = promptSchema
 
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 
-export const promptCondDTOSchema = promptSchema.pick({ title: true });
+export const promptCondDTOSchema = promptSchema.pick({ title: true }).partial();
 
 export type PromptCondDTO = z.infer<typeof promptCondDTOSchema>;
 

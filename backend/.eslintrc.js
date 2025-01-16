@@ -25,6 +25,7 @@ module.exports = {
       [ 'error',
         {
           'endOfLine': 'auto'}
-      ]
+      ],
+    '@typescript-eslint/no-unused-vars': ['error', { 'ignoreRestSiblings': true }],
   },
 };
