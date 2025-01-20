@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/processors/database/prisma.service';
 import {
   Prompt,
+  PromptCard,
   PromptCondDTO,
   PromptUpdateDTO,
   PromptWithConfigs,
@@ -42,8 +43,27 @@ export class PromptRepository {
     });
   }
 
-  async findAll(): Promise<Prompt[]> {
-    return this.prisma.prompt.findMany();
+  async findAll(): Promise<PromptCard[]> {
+    return this.prisma.prompt.findMany({
+      include: {
+        creator: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        stars: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async update(id: string, prompt: PromptUpdateDTO): Promise<void> {
