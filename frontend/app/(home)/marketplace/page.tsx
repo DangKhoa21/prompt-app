@@ -2,141 +2,156 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PromptTemplateCard } from "@/components/prompt-template-card";
+import { PromptTemplateCard } from "@/components/prompt/prompt-template-card";
 import { Search, ChevronDown } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
-import { getPrompts } from "@/services/prompt";
+import { getPrompts, getTags } from "@/services/prompt";
 
-const options = [
-  "01946512-30e3-7fa3-b09b-a8b990bc8858",
-  "01946512-39e2-7102-8d72-1be453f18b25",
-  "01946512-3f8a-7d41-a13a-36a95733a709",
-  "01946512-4531-7bc2-80e6-9e96c6dfba4b",
-];
-
-const getRandomOption = () =>
-  options[Math.floor(Math.random() * options.length)];
-
-const templates = [
-  {
-    id: getRandomOption(),
-    title: "Translate",
-    description: "Translate the provided text into your desired language",
-    rating: "4.5k",
-    author: "AI Team",
-    category: "Language",
-  },
-  {
-    id: getRandomOption(),
-    title: "Summarize",
-    description: "Generate concise summaries of long articles",
-    rating: "5.2k",
-    author: "Content Team",
-    category: "Content",
-  },
-  {
-    id: getRandomOption(),
-    title: "Code Review",
-    description: "Get detailed code reviews with suggestions for improvements",
-    rating: "3.8k",
-    author: "Dev Team",
-    category: "Development",
-  },
-  {
-    id: getRandomOption(),
-    title: "Brainstorm",
-    description: "Give creative suggestions that fit your criterias",
-    rating: "1.2k",
-    author: "Content Team",
-    category: "Content",
-  },
-  {
-    id: getRandomOption(),
-    title: "Teacher",
-    description:
-      "Role-playing option that help AI Agent act as your tutor, explaining concepts that you need",
-    rating: "2.7k",
-    author: "AI Team",
-    category: "Learning",
-  },
-  {
-    id: getRandomOption(),
-    title: "Analyzing Data",
-    description:
-      "Give the data and criterias that fit your demands and AI will give you the expected output",
-    rating: "4.4k",
-    author: "Analyst Team",
-    category: "Analyzing",
-  },
-  {
-    id: getRandomOption(),
-    title: "Write a Blog",
-    description:
-      "Generate a fully detailed blog post on the topic of your choice",
-    rating: "3.9k",
-    author: "Content Team",
-    category: "Writing",
-  },
-  {
-    id: getRandomOption(),
-    title: "Grammar Check",
-    description: "Identify and correct grammatical errors in your writing",
-    rating: "4.7k",
-    author: "Linguist Team",
-    category: "Language",
-  },
-  {
-    id: getRandomOption(),
-    title: "Data Visualization",
-    description: "Create insightful charts and graphs based on your data",
-    rating: "5.0k",
-    author: "Data Team",
-    category: "Analyzing",
-  },
-  {
-    id: getRandomOption(),
-    title: "Generate Ideas",
-    description: "Provide prompts to help brainstorm new and creative ideas",
-    rating: "3.6k",
-    author: "Creative Team",
-    category: "Creativity",
-  },
-  {
-    id: getRandomOption(),
-    title: "Optimize SEO",
-    description:
-      "Analyze and improve the SEO ranking of your website or content",
-    rating: "4.1k",
-    author: "SEO Team",
-    category: "Marketing",
-  },
-  {
-    id: getRandomOption(),
-    title: "Debug Code",
-    description: "Find and fix bugs in your code quickly and effectively",
-    rating: "3.5k",
-    author: "Dev Team",
-    category: "Development",
-  },
-];
-
-const filters = Array(6).fill("Summarize").concat(["More"]);
+// TODO: Fetching data for templates
+// const templates = [
+//   {
+//     id: getRandomOption(),
+//     title: "Translate",
+//     description: "Translate the provided text into your desired language",
+//     rating: "4.5k",
+//     author: "AI Team",
+//     category: "Language",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Summarize",
+//     description: "Generate concise summaries of long articles",
+//     rating: "5.2k",
+//     author: "Content Team",
+//     category: "Content",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Code Review",
+//     description: "Get detailed code reviews with suggestions for improvements",
+//     rating: "3.8k",
+//     author: "Dev Team",
+//     category: "Development",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Brainstorm",
+//     description: "Give creative suggestions that fit your criterias",
+//     rating: "1.2k",
+//     author: "Content Team",
+//     category: "Content",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Teacher",
+//     description:
+//       "Role-playing option that help AI Agent act as your tutor, explaining concepts that you need",
+//     rating: "2.7k",
+//     author: "AI Team",
+//     category: "Learning",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Analyzing Data",
+//     description:
+//       "Give the data and criterias that fit your demands and AI will give you the expected output",
+//     rating: "4.4k",
+//     author: "Analyst Team",
+//     category: "Analyzing",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Write a Blog",
+//     description:
+//       "Generate a fully detailed blog post on the topic of your choice",
+//     rating: "3.9k",
+//     author: "Content Team",
+//     category: "Writing",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Grammar Check",
+//     description: "Identify and correct grammatical errors in your writing",
+//     rating: "4.7k",
+//     author: "Linguist Team",
+//     category: "Language",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Data Visualization",
+//     description: "Create insightful charts and graphs based on your data",
+//     rating: "5.0k",
+//     author: "Data Team",
+//     category: "Analyzing",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Generate Ideas",
+//     description: "Provide prompts to help brainstorm new and creative ideas",
+//     rating: "3.6k",
+//     author: "Creative Team",
+//     category: "Creativity",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Optimize SEO",
+//     description:
+//       "Analyze and improve the SEO ranking of your website or content",
+//     rating: "4.1k",
+//     author: "SEO Team",
+//     category: "Marketing",
+//   },
+//   {
+//     id: getRandomOption(),
+//     title: "Debug Code",
+//     description: "Find and fix bugs in your code quickly and effectively",
+//     rating: "3.5k",
+//     author: "Dev Team",
+//     category: "Development",
+//   },
+// ];
 
 export default function Page() {
-  const { isPending, isError, data, error } = useQuery({
+  const {
+    isPending: isPromptsLoading,
+    isError: isPromptsError,
+    data: promptsData,
+    error: promptsError,
+  } = useQuery({
     queryKey: ["prompts"],
     queryFn: () => getPrompts(),
   });
 
-  if (isPending) {
+  const {
+    isPending: isTagsLoading,
+    isError: isTagsError,
+    data: tagsData,
+    error: tagsError,
+  } = useQuery({
+    queryKey: ["tags"],
+    queryFn: () => getTags(),
+  });
+
+  if (isPromptsLoading) {
     return <span>Loading...</span>;
   }
 
-  if (isError) {
-    return <span>Error: {error.message}</span>;
+  if (isPromptsError) {
+    return <span>Error: {promptsError.message}</span>;
   }
-  console.log("Check data: ", data);
+  console.log("Check data: ", promptsData);
+  const templates = promptsData;
+
+  if (isTagsLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isTagsError) {
+    return <span>Error: {tagsError.message}</span>;
+  }
+  console.log("Check tags: ", tagsData);
+  const tags = tagsData;
 
   return (
     <main className="flex-1 overflow-auto bg-background">
@@ -154,15 +169,15 @@ export default function Page() {
           </div>
         </div>
         <div className="flex flex-wrap gap-3 mb-8 justify-center">
-          {filters.map((filter, i) => (
+          {tags.map((filter, i) => (
             <Button
               key={i}
-              variant={i === filters.length - 1 ? "default" : "secondary"}
+              variant={i === tags.length - 1 ? "default" : "secondary"}
               size="sm"
               className="rounded-2xl gap-1 px-4"
             >
-              {filter}
-              {i === filters.length - 1 && (
+              {filter.name}
+              {i === tags.length - 1 && (
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
@@ -171,14 +186,9 @@ export default function Page() {
 
         <div className="px-0 py-8 md:px-4 bg-gradient-to-r from-theme-400 via-background to-theme-600 grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
           {templates.map((template, i) => (
-            <PromptTemplateCard key={i} {...template} />
+            <PromptTemplateCard category={""} key={i} {...template} />
           ))}
         </div>
-        {/* {data.map((item) => ( */}
-        {/*   <p key={item.id}> */}
-        {/*     {item.id}, {item.title}, {item.description}, {item.stringTemplate} */}
-        {/*   </p> */}
-        {/* ))} */}
       </div>
     </main>
   );

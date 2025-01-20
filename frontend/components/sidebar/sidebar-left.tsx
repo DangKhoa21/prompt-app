@@ -9,10 +9,10 @@ import {
   BotMessageSquare,
 } from "lucide-react";
 
-import { NavUser } from "@/components/nav-user";
+import { NavUser } from "@/components/nav/nav-user";
 import { Logo } from "@/components/logo";
-import { NavChats } from "@/components/nav-chats";
-import { NavPrompts } from "@/components/nav-prompts";
+import { NavChats } from "@/components/nav/nav-chats";
+import { NavPrompts } from "@/components/nav/nav-prompts";
 import {
   Sidebar,
   SidebarContent,

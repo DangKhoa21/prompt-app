@@ -12,6 +12,36 @@ export const promptSchema = z.object({
 
 export type Prompt = z.infer<typeof promptSchema>;
 
+export const promptCardSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  description: z.string(),
+  stringTemplate: z.string(),
+  creatorId: z.string().uuid(),
+  createdAt: z.date().default(new Date()),
+  updatedAt: z.date().default(new Date()),
+  creator: z
+    .object({
+      id: z.string().uuid(),
+      username: z.string().min(1, 'User name is required'),
+    })
+    .optional(),
+  stars: z
+    .array(
+      z.object({
+        promptId: z.string(),
+        userId: z.string().uuid(),
+        user: z.object({
+          id: z.string().uuid(),
+          username: z.string(),
+        }),
+      }),
+    )
+    .optional(),
+});
+
+export type PromptCard = z.infer<typeof promptCardSchema>;
+
 export const promptCreationDTOSchema = promptSchema.pick({
   title: true,
   description: true,

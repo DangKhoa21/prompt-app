@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 // initialize Prisma Client
 const prisma = new PrismaClient();
 
+// TODO: Seed more data for techniques and configs
 async function main() {
   // Create an admin user
   const user = await prisma.user.upsert({
@@ -53,7 +54,7 @@ async function main() {
       description:
         'A prompt designed to assist in writing various forms of content.',
       stringTemplate:
-        'Write a ${Tone} ${Length} ${Style} piece of content for a ${Audience}.',
+        'Write a ${Tone} ${Length} ${Style} piece of content for a ${Audience}. The main content will be related to the following topics: ${Content}',
       creatorId: user.id,
     },
   });
