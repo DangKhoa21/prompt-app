@@ -60,7 +60,7 @@ model Chat {
 model Message {
   id        String   @id @default(uuid(7))
   role      String
-  content   String
+  content   Json
   chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    String
   createdAt DateTime @default(now())
