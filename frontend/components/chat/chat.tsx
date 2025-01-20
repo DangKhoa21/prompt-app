@@ -6,8 +6,8 @@ import { useState } from "react";
 import { PreviewMessage, ThinkingMessage } from "@/components/message";
 
 import { useChat } from "ai/react";
-import { ChatHeader } from "@/components/chat-header";
-import { MultimodalInput } from "./multimodal-input";
+import { ChatHeader } from "@/components/chat/chat-header";
+import { MultimodalInput } from "../multimodal-input";
 
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";

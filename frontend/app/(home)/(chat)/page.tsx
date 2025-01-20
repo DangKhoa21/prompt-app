@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { Chat } from "@/components/chat";
+import { Chat } from "@/components/chat/chat";
 import { DEFAULT_MODEL_NAME, models } from "@/lib/ai/models";
 import { generateUUID } from "@/lib/utils";
 

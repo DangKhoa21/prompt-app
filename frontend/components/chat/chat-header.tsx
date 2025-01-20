@@ -5,7 +5,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
-import { ModelSelector } from "./model-selector";
+import { ModelSelector } from "@/components/model-selector";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { SidebarRight } from "@/components/sidebar-right";
+import { SidebarRight } from "@/components/sidebar/sidebar-right";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { SidebarProvider2 } from "@/components/ui/sidebar2";
 

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PromptTemplateCard } from "@/components/prompt-template-card";
+import { PromptTemplateCard } from "@/components/prompt/prompt-template-card";
 import { Search, ChevronDown } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";

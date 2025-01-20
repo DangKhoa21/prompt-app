@@ -30,16 +30,14 @@ export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [generatedPrompt, setGeneratedPrompt] = useState("");
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
 
   const searchParams = useSearchParams();
-  const promptId =
-    searchParams.get("promptId") ?? "0194382b-5606-7923-9f3f-1c9deaafc93b";
-  console.log(promptId);
+  const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["prompts", promptId],
@@ -53,21 +51,6 @@ export function PromptGeneratorSidebar() {
   if (isError) {
     return <span>Error: {error.message}</span>;
   }
-
-  if (!data?.configs.some((config) => config?.label === "Content")) {
-    data.configs.push({
-      id: "0194382b-6626-7fb0-b3fe-42eb1d217855",
-      label: "Content",
-      promptId: data.id,
-      type: "textarea",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      values: [],
-    });
-    data.stringTemplate += "The main content: ${Content}";
-  }
-
-  console.log(data.configs);
 
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
@@ -96,7 +79,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label]
+            selectedValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -105,7 +88,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label]
+            textareaValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -199,14 +182,16 @@ export function PromptGeneratorSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="flex justify-around gap-4 p-2">
-          <Button className="w-1/2" onClick={() => generatePrompt()}>
-            Generate
-          </Button>
-          <Button className="w-1/2">Send</Button>
-        </div>
-      </SidebarFooter>
+      {data.id !== "1" && (
+        <SidebarFooter>
+          <div className="flex justify-around gap-4 p-2">
+            <Button className="w-1/2" onClick={() => generatePrompt()}>
+              Generate
+            </Button>
+            <Button className="w-1/2">Send</Button>
+          </div>
+        </SidebarFooter>
+      )}
     </>
   );
 }
