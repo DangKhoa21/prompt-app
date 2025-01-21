@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
-interface TemplateCardProps {
+interface MarketplaceCardProps {
   id: string;
   title: string;
   description: string;
@@ -40,14 +40,14 @@ const formatRating = (num: number): string => {
   return num.toString();
 };
 
-export function PromptTemplateCard({
+export function PromptMarketplaceCard({
   id,
   title,
   description,
   creator,
   category,
   stars,
-}: TemplateCardProps) {
+}: MarketplaceCardProps) {
   const rating = formatRating(stars.length);
   return (
     <Link href={`/?promptId=${id}`}>

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PromptTemplateCard } from "@/components/prompt/prompt-template-card";
+import { PromptMarketplaceCard } from "@/components/prompt/prompt-marketplace-card";
 import { Search, ChevronDown } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
@@ -186,7 +186,7 @@ export default function Page() {
 
         <div className="px-0 py-8 md:px-4 bg-gradient-to-r from-theme-400 via-background to-theme-600 grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
           {templates.map((template, i) => (
-            <PromptTemplateCard category={""} key={i} {...template} />
+            <PromptMarketplaceCard category={""} key={i} {...template} />
           ))}
         </div>
       </div>
