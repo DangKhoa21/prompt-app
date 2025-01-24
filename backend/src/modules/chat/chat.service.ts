@@ -9,8 +9,9 @@ import { ChatRepository } from './chat.repository';
 import { MessageRepository } from './message.repository';
 import {
   Chat,
+  ErrChatNotFound,
   ErrModelNotFound,
-  ErrNoUserMessageFound,
+  ErrUserMessageNotFound,
   Message,
   SendMessageDTO,
 } from './model';
@@ -32,6 +33,22 @@ export class ChatService {
     private readonly messageRepo: MessageRepository,
   ) {}
 
+  async findMessagesByChatId(id: string): Promise<Message[]> {
+    return this.messageRepo.findByChatId(id);
+  }
+
+  async findById(id: string): Promise<Chat> {
+    const chat = await this.chatRepo.findById(id);
+    if (!chat) {
+      throw AppError.from(ErrChatNotFound, 404);
+    }
+    return chat;
+  }
+
+  async findByUserId(userId: string): Promise<Chat[]> {
+    return this.chatRepo.findByUserId(userId);
+  }
+
   async streamResponse(dto: SendMessageDTO, res: Response) {
     const { id, messages, modelId } = dto;
 
@@ -45,7 +62,7 @@ export class ChatService {
     const userMessage = getMostRecentUserMessage(coreMessages);
 
     if (!userMessage) {
-      throw AppError.from(ErrNoUserMessageFound, 400);
+      throw AppError.from(ErrUserMessageNotFound, 400);
     }
 
     const chat = await this.chatRepo.findById(id);

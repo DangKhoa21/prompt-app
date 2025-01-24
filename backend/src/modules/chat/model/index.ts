@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { Message as AiMessage } from 'ai';
 
 export const ErrModelNotFound = new Error('Model not found');
-export const ErrNoUserMessageFound = new Error('No user message found');
+export const ErrUserMessageNotFound = new Error('User message not found');
+export const ErrChatNotFound = new Error('Chat not found');
 
 export type SendMessageDTO = {
   id: string;

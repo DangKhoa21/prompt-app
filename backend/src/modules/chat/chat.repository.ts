@@ -12,6 +12,13 @@ export class ChatRepository {
     });
   }
 
+  async findByUserId(userId: string): Promise<Chat[]> {
+    return this.prisma.chat.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findById(id: string): Promise<Chat | null> {
     return this.prisma.chat.findUnique({
       where: { id },

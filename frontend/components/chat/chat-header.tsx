@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { ModelSelector } from "@/components/model-selector";
+import { useRouter } from "next/navigation";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
+  const router = useRouter();
+
   return (
     <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
       <div className="flex flex-1 items-center gap-2 px-3">
@@ -16,7 +19,14 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <Separator orientation="vertical" className="h-4" />
 
         <BetterTooltip content="New chat">
-          <Button variant="ghost" className="h-7 p-2">
+          <Button
+            variant="ghost"
+            className="h-7 p-2"
+            onClick={() => {
+              router.push("/");
+              router.refresh();
+            }}
+          >
             <Plus />
           </Button>
         </BetterTooltip>
@@ -26,8 +36,15 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <ModelSelector selectedModelId={selectedModelId} />
 
         <div className="flex items-center gap-2 ml-auto">
-          <BetterTooltip content="Explore">
-            <Button variant="ghost" className="h-7 p-2">
+          <BetterTooltip content="Marketplace">
+            <Button
+              variant="ghost"
+              className="h-7 p-2"
+              onClick={() => {
+                router.push("/marketplace");
+                router.refresh();
+              }}
+            >
               <Compass />
             </Button>
           </BetterTooltip>
