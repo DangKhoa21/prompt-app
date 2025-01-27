@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Param,
   Delete,
@@ -9,18 +8,12 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCreationDTO, UserUpdateDTO } from './model';
+import { UserUpdateDTO } from './model';
 import { JwtAuthGuard } from 'src/common/guard';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Post('register')
-  async create(@Body() dto: UserCreationDTO) {
-    const data = await this.userService.create(dto);
-    return { data };
-  }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

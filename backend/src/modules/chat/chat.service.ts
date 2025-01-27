@@ -108,7 +108,7 @@ export class ChatService {
             const responseMessagesWithoutIncompleteToolCalls =
               sanitizeResponseMessages(response.messages);
 
-            this.messageRepo.insertMany(
+            await this.messageRepo.insertMany(
               responseMessagesWithoutIncompleteToolCalls.map((message) => {
                 const messageId = v7();
 
@@ -136,6 +136,10 @@ export class ChatService {
         });
 
         result.mergeIntoDataStream(dataStreamWriter);
+      },
+      onError: (error) => {
+        console.error(error);
+        return `An error occurred`;
       },
     });
   }

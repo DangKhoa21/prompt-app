@@ -6,6 +6,7 @@ import {
   ErrInvalidEmailAndPassword,
   UserLoginDTO,
   userLoginDTOSchema,
+  UserRegisterDTO,
 } from './model';
 import { AppError, ErrNotFound, Requester, TokenPayload } from 'src/shared';
 
@@ -40,6 +41,10 @@ export class AuthService {
     const payload: TokenPayload = { sub: user.id, username: user.username };
 
     return this.jwtService.sign(payload);
+  }
+
+  async register(dto: UserRegisterDTO): Promise<string> {
+    return this.userService.create(dto);
   }
 
   async validateToken(payload: TokenPayload): Promise<Requester> {

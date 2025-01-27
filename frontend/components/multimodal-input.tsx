@@ -110,8 +110,6 @@ export function MultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, "", `/chat/${chatId}`);
-
     handleSubmit(undefined, {
       experimental_attachments: attachments,
     });
@@ -122,7 +120,18 @@ export function MultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [attachments, handleSubmit, setAttachments, width, chatId]);
+
+    if (messages.length === 0) {
+      window.history.pushState({}, "", `/chat/${chatId}`);
+    }
+  }, [
+    handleSubmit,
+    attachments,
+    setAttachments,
+    width,
+    messages.length,
+    chatId,
+  ]);
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -197,7 +206,7 @@ export function MultimodalInput({
                 <Button
                   variant="ghost"
                   onClick={async () => {
-                    window.history.replaceState({}, "", `/chat/${chatId}`);
+                    window.history.pushState({}, "", `/chat/${chatId}`);
 
                     append({
                       role: "user",

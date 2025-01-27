@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserLoginDTO } from './model';
+import { UserLoginDTO, UserRegisterDTO } from './model';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +10,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: UserLoginDTO) {
     const data = await this.authService.login(dto); // return JWT token
+    return { data };
+  }
+
+  @Post('register')
+  async create(@Body() dto: UserRegisterDTO) {
+    const data = await this.authService.register(dto);
     return { data };
   }
 }
