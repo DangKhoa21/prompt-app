@@ -143,4 +143,15 @@ export class ChatService {
       },
     });
   }
+
+  async remove(id: string): Promise<void> {
+    const existedChat = await this.chatRepo.findById(id);
+
+    if (!existedChat) {
+      throw AppError.from(ErrChatNotFound, 404);
+    }
+
+    await this.messageRepo.deleteManyByChatId(id);
+    await this.chatRepo.delete(id);
+  }
 }

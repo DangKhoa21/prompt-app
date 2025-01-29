@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 type Props = {
@@ -7,13 +8,16 @@ type Props = {
 };
 
 export default function QueryProvider({ children }: Props) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false, // default: true
-      },
-    },
-  });
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false, // default: true
+          },
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

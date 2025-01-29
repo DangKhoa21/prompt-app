@@ -23,4 +23,8 @@ export class MessageRepository {
       where: { chatId: id },
     });
   }
+
+  async deleteManyByChatId(id: string): Promise<void> {
+    await this.prisma.message.deleteMany({ where: { chatId: id } });
+  }
 }

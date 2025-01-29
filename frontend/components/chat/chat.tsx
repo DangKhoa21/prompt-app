@@ -12,6 +12,7 @@ import { MultimodalInput } from "../multimodal-input";
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
 import { SERVER_URL } from "@/config";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Chat({
   id,
@@ -22,9 +23,11 @@ export function Chat({
   initialMessages: Array<Message>;
   selectedModelId: string;
 }) {
+  const queryClient = useQueryClient();
+
   const {
     messages,
-    // setMessages,
+    setMessages,
     handleSubmit,
     input,
     setInput,
@@ -34,11 +37,14 @@ export function Chat({
     // data: streamingData,
   } = useChat({
     api: `${SERVER_URL}/api/v1/chat`,
+    id,
     body: { id, modelId: selectedModelId },
     initialMessages,
-    // onFinish: () => {
-    //   mutate("/api/history");
-    // },
+    onFinish: () => {
+      if (messages.length === 0) {
+        queryClient.invalidateQueries({ queryKey: ["history"] });
+      }
+    },
   });
 
   const [messagesContainerRef, messagesEndRef] =
@@ -84,6 +90,7 @@ export function Chat({
             attachments={attachments}
             setAttachments={setAttachments}
             messages={messages}
+            setMessages={setMessages}
             append={append}
           />
         </form>

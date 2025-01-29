@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { SendMessageDTO } from './model';
 import { ChatService } from './chat.service';
@@ -32,5 +40,12 @@ export class ChatController {
   // add guard
   async streamResponse(@Body() dto: SendMessageDTO, @Res() res: Response) {
     await this.chatService.streamResponse(dto, res);
+  }
+
+  @Delete(':id')
+  // add guard
+  async remove(@Param('id') id: string) {
+    await this.chatService.remove(id);
+    return { data: true };
   }
 }

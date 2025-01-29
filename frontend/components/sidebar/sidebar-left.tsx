@@ -20,6 +20,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/auth-context";
 
 // This is sample data.
 const data = {
@@ -159,6 +160,8 @@ const data = {
 export function SidebarLeft({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -166,7 +169,7 @@ export function SidebarLeft({
       </SidebarHeader>
       <SidebarContent>
         <NavPrompts prompts={data.prompts} />
-        <NavChats chats={data.chats} />
+        <NavChats isAuthenticated={isAuthenticated} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

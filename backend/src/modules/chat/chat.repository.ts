@@ -24,4 +24,10 @@ export class ChatRepository {
       where: { id },
     });
   }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.chat.delete({
+      where: { id },
+    });
+  }
 }
