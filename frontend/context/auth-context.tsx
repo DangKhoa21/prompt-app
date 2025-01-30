@@ -11,9 +11,12 @@ interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setTokenState] = React.useState<string | null>(
-    typeof window !== "undefined" ? sessionStorage.getItem("token") : null
-  );
+  const [token, setTokenState] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    setTokenState(token);
+  }, []);
 
   const setToken = (newToken: string | null) => {
     setTokenState(newToken);

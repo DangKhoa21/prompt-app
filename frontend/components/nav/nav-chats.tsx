@@ -2,8 +2,8 @@
 
 import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -94,26 +94,15 @@ const ChatItem = ({
 
 export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
   const { isMobile, setOpenMobile } = useSidebar();
-  const { id } = useParams();
   const pathname = usePathname();
-  const [isAuth, setIsAuth] = useState(false);
+  const match = pathname.match(/\/chat\/([^/]+)/);
+  const id = match ? match[1] : null;
 
-  const {
-    data: history,
-    isLoading,
-    refetch,
-  } = useQuery<Array<Chat>>({
+  const { data: history, isLoading } = useQuery<Array<Chat>>({
     queryKey: ["history"],
-    queryFn: isAuthenticated ? () => getHistory() : () => Promise.resolve([]),
+    queryFn: getHistory,
+    enabled: isAuthenticated,
   });
-
-  useEffect(() => {
-    refetch(); // re-fetch when pathname changes
-  }, [pathname, refetch]);
-
-  useEffect(() => {
-    setIsAuth(isAuthenticated);
-  }, [isAuthenticated]);
 
   const [deleteId, setDeleteId] = useState<string>("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -148,11 +137,11 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
     }
   };
 
-  if (!isAuth) {
+  if (!isAuthenticated) {
     return (
       <SidebarGroup>
         <SidebarGroupContent>
-          <div className="text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
+          <div className="text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2 p-2">
             <div>Login to save and revisit previous chats!</div>
           </div>
         </SidebarGroupContent>

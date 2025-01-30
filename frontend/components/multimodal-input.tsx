@@ -23,6 +23,7 @@ import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
+import { useRouter } from "next/navigation";
 
 const suggestedActions = [
   {
@@ -74,6 +75,7 @@ export function MultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const router = useRouter();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -126,7 +128,8 @@ export function MultimodalInput({
     }
 
     if (messages.length === 0) {
-      window.history.pushState({}, "", `/chat/${chatId}`);
+      router.push(`/chat/${chatId}`);
+      router.refresh();
     }
   }, [
     handleSubmit,
@@ -134,6 +137,7 @@ export function MultimodalInput({
     setAttachments,
     width,
     messages.length,
+    router,
     chatId,
   ]);
 
@@ -210,7 +214,8 @@ export function MultimodalInput({
                 <Button
                   variant="ghost"
                   onClick={async () => {
-                    window.history.pushState({}, "", `/chat/${chatId}`);
+                    router.push(`/chat/${chatId}`);
+                    router.refresh();
 
                     append({
                       role: "user",

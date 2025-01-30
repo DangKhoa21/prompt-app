@@ -45,13 +45,7 @@ export function ChatWrapper({
     }
   }, [chatError, messagesError, chatLoading, messagesLoading, id, router]);
 
-  if (chatLoading) {
-    toast.loading("Loading chat...");
-    return null;
-  }
-
-  if (messagesLoading) {
-    toast.loading("Loading messages...");
+  if (chatLoading || messagesLoading) {
     return null;
   }
 

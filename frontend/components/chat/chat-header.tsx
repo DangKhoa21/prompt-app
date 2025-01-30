@@ -7,9 +7,11 @@ import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { ModelSelector } from "@/components/model-selector";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
@@ -49,6 +51,21 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
             </Button>
           </BetterTooltip>
           <Separator orientation="vertical" className="h-4" />
+          {!isAuthenticated && (
+            <>
+              <Button
+                variant="ghost"
+                className="h-7 p-2 border-slate-500 border"
+                onClick={() => {
+                  router.push("/login");
+                  router.refresh();
+                }}
+              >
+                Log in
+              </Button>
+              <Separator orientation="vertical" className="h-4" />
+            </>
+          )}
           <SidebarTrigger2 className="h-7" />
         </div>
       </div>

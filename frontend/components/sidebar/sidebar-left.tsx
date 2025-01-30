@@ -171,9 +171,11 @@ export function SidebarLeft({
         <NavPrompts prompts={data.prompts} />
         <NavChats isAuthenticated={isAuthenticated} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      {isAuthenticated && (
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+      )}
       <SidebarRail />
     </Sidebar>
   );
