@@ -5,28 +5,36 @@ import {
   Get,
   Param,
   Post,
+  Request,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { SendMessageDTO } from './model';
 import { ChatService } from './chat.service';
+import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
+import { ReqWithRequester, ReqWithRequesterOpt } from 'src/shared';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('history')
-  // add guard
-  async getHistory() {
-    // extract user id from jwt
-    const id = '01946afc-c8fd-743f-a5dd-5874796acd67';
+  @UseGuards(JwtAuthGuard)
+  async getHistory(@Request() req: ReqWithRequester) {
+    const { sub: id } = req.user;
     const data = await this.chatService.findByUserId(id);
     return { data };
   }
 
   @Get(':id/messages')
-  async getMessages(@Param('id') id: string) {
-    const data = await this.chatService.findMessagesByChatId(id);
+  @UseGuards(JwtAuthGuard)
+  async getMessages(
+    @Request() req: ReqWithRequester,
+    @Param('id') chatId: string,
+  ) {
+    const { sub: userId } = req.user;
+    const data = await this.chatService.findMessagesByChatId(chatId, userId);
     return { data };
   }
 
@@ -37,15 +45,21 @@ export class ChatController {
   }
 
   @Post()
-  // add guard
-  async streamResponse(@Body() dto: SendMessageDTO, @Res() res: Response) {
-    await this.chatService.streamResponse(dto, res);
+  @UseGuards(JwtAuthGuardOptional)
+  async streamResponse(
+    @Request() req: ReqWithRequesterOpt,
+    @Body() dto: SendMessageDTO,
+    @Res() res: Response,
+  ) {
+    const userId = req.user ? req.user.sub : null;
+    await this.chatService.streamResponse(dto, res, userId);
   }
 
   @Delete(':id')
-  // add guard
-  async remove(@Param('id') id: string) {
-    await this.chatService.remove(id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Request() req: ReqWithRequester, @Param('id') chatId: string) {
+    const { sub: userId } = req.user;
+    await this.chatService.remove(chatId, userId);
     return { data: true };
   }
 }

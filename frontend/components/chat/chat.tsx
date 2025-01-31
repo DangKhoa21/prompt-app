@@ -13,6 +13,9 @@ import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
 import { SERVER_URL } from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 export function Chat({
   id,
@@ -24,6 +27,8 @@ export function Chat({
   selectedModelId: string;
 }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const {
     messages,
@@ -40,10 +45,19 @@ export function Chat({
     id,
     body: { id, modelId: selectedModelId },
     initialMessages,
+    headers: { Authorization: "Bearer " + sessionStorage.getItem("token") },
     onFinish: () => {
       if (messages.length === 0) {
         queryClient.invalidateQueries({ queryKey: ["history"] });
+        if (isAuthenticated) {
+          router.push(`/chat/${id}`);
+          router.refresh();
+        }
       }
+    },
+    onError: (e) => {
+      const err = JSON.parse(e.message);
+      toast.error(err.message);
     },
   });
 

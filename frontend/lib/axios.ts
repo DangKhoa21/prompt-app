@@ -1,8 +1,6 @@
 "use client";
 
 import axios from "axios";
-import { useRouter } from "next/navigation";
-
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 
 const axiosInstance = axios.create({
@@ -23,14 +21,8 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      if (typeof window !== "undefined") {
-        const router = useRouter();
-        router.push("/login");
-      }
-    }
     return Promise.reject(
-      (error.response && error.response.data) || "Something went wrong"
+      error.response ? error.response.data : "Something went wrong"
     );
   }
 );

@@ -36,8 +36,8 @@ export interface TokenPayload {
 export type Requester = TokenPayload;
 
 export interface ReqWithRequester {
-  requester: Requester;
+  user: Requester;
 }
 export interface ReqWithRequesterOpt {
-  requester?: Requester;
+  user?: Requester;
 }

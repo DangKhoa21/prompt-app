@@ -15,7 +15,7 @@ import {
   Message,
   SendMessageDTO,
 } from './model';
-import { AppError } from 'src/shared';
+import { AppError, ErrForbidden } from 'src/shared';
 import {
   customModel,
   generateTitleFromUserMessage,
@@ -33,8 +33,20 @@ export class ChatService {
     private readonly messageRepo: MessageRepository,
   ) {}
 
-  async findMessagesByChatId(id: string): Promise<Message[]> {
-    return this.messageRepo.findByChatId(id);
+  async findMessagesByChatId(
+    chatId: string,
+    userId: string,
+  ): Promise<Message[]> {
+    const chat = await this.chatRepo.findById(chatId);
+    if (!chat) {
+      throw AppError.from(ErrChatNotFound, 404);
+    }
+
+    if (chat.userId !== userId) {
+      throw AppError.from(ErrForbidden, 403);
+    }
+
+    return this.messageRepo.findByChatId(chatId);
   }
 
   async findById(id: string): Promise<Chat> {
@@ -49,7 +61,11 @@ export class ChatService {
     return this.chatRepo.findByUserId(userId);
   }
 
-  async streamResponse(dto: SendMessageDTO, res: Response) {
+  async streamResponse(
+    dto: SendMessageDTO,
+    res: Response,
+    userId: string | null,
+  ) {
     const { id, messages, modelId } = dto;
 
     const model = models.find((model) => model.id === modelId);
@@ -65,35 +81,37 @@ export class ChatService {
       throw AppError.from(ErrUserMessageNotFound, 400);
     }
 
-    const chat = await this.chatRepo.findById(id);
+    if (userId) {
+      const chat = await this.chatRepo.findById(id);
 
-    if (!chat) {
-      const title = await generateTitleFromUserMessage({
-        message: userMessage,
-      });
+      if (!chat) {
+        const title = await generateTitleFromUserMessage({
+          message: userMessage,
+        });
 
-      const newChat: Chat = {
-        id,
-        userId: '01946afc-c8fd-743f-a5dd-5874796acd67', // TODO: extract id from jwt
-        title,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+        const newChat: Chat = {
+          id,
+          userId,
+          title,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
 
-      await this.chatRepo.insert(newChat);
+        await this.chatRepo.insert(newChat);
+      }
+
+      const newMessages: Message[] = [
+        {
+          ...userMessage,
+          id: v7(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          chatId: id,
+        },
+      ];
+
+      await this.messageRepo.insertMany(newMessages);
     }
-
-    const newMessages: Message[] = [
-      {
-        ...userMessage,
-        id: v7(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        chatId: id,
-      },
-    ];
-
-    await this.messageRepo.insertMany(newMessages);
 
     pipeDataStreamToResponse(res, {
       execute: async (dataStreamWriter) => {
@@ -104,30 +122,31 @@ export class ChatService {
           system: systemPrompt,
           messages: coreMessages,
           onFinish: async ({ response }) => {
-            // TODO: checking if jwt is included, then
-            const responseMessagesWithoutIncompleteToolCalls =
-              sanitizeResponseMessages(response.messages);
+            if (userId) {
+              const responseMessagesWithoutIncompleteToolCalls =
+                sanitizeResponseMessages(response.messages);
 
-            await this.messageRepo.insertMany(
-              responseMessagesWithoutIncompleteToolCalls.map((message) => {
-                const messageId = v7();
+              await this.messageRepo.insertMany(
+                responseMessagesWithoutIncompleteToolCalls.map((message) => {
+                  const messageId = v7();
 
-                if (message.role === 'assistant') {
-                  dataStreamWriter.writeMessageAnnotation({
-                    messageIdFromServer: messageId,
-                  });
-                }
+                  if (message.role === 'assistant') {
+                    dataStreamWriter.writeMessageAnnotation({
+                      messageIdFromServer: messageId,
+                    });
+                  }
 
-                return {
-                  id: messageId,
-                  chatId: id,
-                  role: message.role,
-                  content: message.content,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                };
-              }),
-            );
+                  return {
+                    id: messageId,
+                    chatId: id,
+                    role: message.role,
+                    content: message.content,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  };
+                }),
+              );
+            }
           },
           experimental_telemetry: {
             isEnabled: true,
@@ -144,14 +163,18 @@ export class ChatService {
     });
   }
 
-  async remove(id: string): Promise<void> {
-    const existedChat = await this.chatRepo.findById(id);
+  async remove(chatId: string, userId: string): Promise<void> {
+    const existedChat = await this.chatRepo.findById(chatId);
 
     if (!existedChat) {
       throw AppError.from(ErrChatNotFound, 404);
     }
 
-    await this.messageRepo.deleteManyByChatId(id);
-    await this.chatRepo.delete(id);
+    if (existedChat.userId !== userId) {
+      throw AppError.from(ErrForbidden, 403);
+    }
+
+    await this.messageRepo.deleteManyByChatId(chatId);
+    await this.chatRepo.delete(chatId);
   }
 }

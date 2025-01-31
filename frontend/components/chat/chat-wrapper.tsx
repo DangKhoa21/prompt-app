@@ -1,7 +1,7 @@
 "use client";
 
 import { convertToUIMessages } from "@/lib/utils";
-import { getChatById, getMessagesByChatId } from "@/services/chat";
+import { getMessagesByChatId } from "@/services/chat";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -17,11 +17,6 @@ export function ChatWrapper({
 }) {
   const router = useRouter();
 
-  const { isLoading: chatLoading, error: chatError } = useQuery({
-    queryKey: ["chat", id],
-    queryFn: () => getChatById(id),
-  });
-
   const {
     isLoading: messagesLoading,
     error: messagesError,
@@ -32,20 +27,18 @@ export function ChatWrapper({
   });
 
   useEffect(() => {
-    if (chatError || messagesError) {
+    if (messagesError) {
       toast.error(
-        chatError
-          ? `Failed to load chat ${id} (${chatError.message})`
-          : `Failed to load messages for chat ${id} (${messagesError?.message})`
+        `Failed to load messages for chat ${id} (${messagesError?.message})`
       );
       router.replace("/");
       toast.dismiss();
-    } else if (!chatLoading && !messagesLoading) {
+    } else if (!messagesLoading) {
       toast.dismiss();
     }
-  }, [chatError, messagesError, chatLoading, messagesLoading, id, router]);
+  }, [messagesError, messagesLoading, id, router]);
 
-  if (chatLoading || messagesLoading) {
+  if (messagesLoading) {
     return null;
   }
 
