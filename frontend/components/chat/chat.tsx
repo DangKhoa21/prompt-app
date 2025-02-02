@@ -28,7 +28,7 @@ export function Chat({
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { token, isAuthenticated } = useAuth();
 
   const {
     messages,
@@ -45,7 +45,7 @@ export function Chat({
     id,
     body: { id, modelId: selectedModelId },
     initialMessages,
-    headers: { Authorization: "Bearer " + sessionStorage.getItem("token") },
+    headers: { Authorization: "Bearer " + token },
     onFinish: () => {
       if (messages.length === 0) {
         queryClient.invalidateQueries({ queryKey: ["history"] });

@@ -10,7 +10,7 @@ import {
   UserUpdateDTO,
   userUpdateDTOSchema,
 } from './model';
-import { AppError } from 'src/shared';
+import { AppError, ErrForbidden } from 'src/shared';
 import * as bcrypt from 'bcrypt';
 import { v7 } from 'uuid';
 
@@ -55,7 +55,7 @@ export class UserService {
     return rest;
   }
 
-  async update(id: string, dto: UserUpdateDTO): Promise<void> {
+  async update(id: string, dto: UserUpdateDTO, userId: string): Promise<void> {
     const data = userUpdateDTOSchema.parse(dto);
 
     const existedUser = await this.userRepo.findById(id);
@@ -64,14 +64,22 @@ export class UserService {
       throw AppError.from(ErrUserNotFound, 404);
     }
 
+    if (id !== userId) {
+      throw AppError.from(ErrForbidden, 403);
+    }
+
     await this.userRepo.update(id, data);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
     const existedUser = await this.userRepo.findById(id);
 
     if (!existedUser) {
       throw AppError.from(ErrUserNotFound, 404);
+    }
+
+    if (id !== userId) {
+      throw AppError.from(ErrForbidden, 403);
     }
 
     return this.userRepo.delete(id);

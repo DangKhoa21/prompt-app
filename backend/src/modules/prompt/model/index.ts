@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+export const ErrPromptExisted = new Error('Prompt is already existed');
+export const ErrPromptNotFound = new Error('Prompt not found');
+
 export const promptSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
@@ -46,7 +49,6 @@ export const promptCreationDTOSchema = promptSchema.pick({
   title: true,
   description: true,
   stringTemplate: true,
-  creatorId: true,
 });
 
 export type PromptCreationDTO = z.infer<typeof promptCreationDTOSchema>;

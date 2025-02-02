@@ -6,17 +6,26 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PromptService } from './prompt.service';
 import { PromptCreationDTO, PromptUpdateDTO } from './model';
+import { JwtAuthGuard } from 'src/common/guard';
+import { ReqWithRequester } from 'src/shared';
 
 @Controller('prompts')
 export class PromptController {
   constructor(private readonly promptService: PromptService) {}
 
   @Post()
-  async create(@Body() dto: PromptCreationDTO) {
-    const data = await this.promptService.create(dto);
+  @UseGuards(JwtAuthGuard)
+  async create(
+    @Request() req: ReqWithRequester,
+    @Body() dto: PromptCreationDTO,
+  ) {
+    const { sub: userId } = req.user;
+    const data = await this.promptService.create(dto, userId);
     return { data };
   }
 
@@ -33,14 +42,22 @@ export class PromptController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: PromptUpdateDTO) {
-    await this.promptService.update(id, dto);
+  @UseGuards(JwtAuthGuard)
+  async update(
+    @Request() req: ReqWithRequester,
+    @Param('id') id: string,
+    @Body() dto: PromptUpdateDTO,
+  ) {
+    const { sub: userId } = req.user;
+    await this.promptService.update(id, dto, userId);
     return { data: true };
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.promptService.remove(id);
+  @UseGuards(JwtAuthGuard)
+  async remove(@Request() req: ReqWithRequester, @Param('id') id: string) {
+    const { sub: userId } = req.user;
+    await this.promptService.remove(id, userId);
     return { data: true };
   }
 }

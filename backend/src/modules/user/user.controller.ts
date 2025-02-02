@@ -6,10 +6,12 @@ import {
   Delete,
   UseGuards,
   Patch,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserUpdateDTO } from './model';
 import { JwtAuthGuard } from 'src/common/guard';
+import { ReqWithRequester } from 'src/shared';
 
 @Controller('users')
 export class UserController {
@@ -23,15 +25,21 @@ export class UserController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id') id: string, @Body() dto: UserUpdateDTO) {
-    await this.userService.update(id, dto);
+  async update(
+    @Request() req: ReqWithRequester,
+    @Param('id') id: string,
+    @Body() dto: UserUpdateDTO,
+  ) {
+    const { sub: userId } = req.user;
+    await this.userService.update(id, dto, userId);
     return { data: true };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async remove(@Param('id') id: string) {
-    await this.userService.remove(id);
+  async remove(@Request() req: ReqWithRequester, @Param('id') id: string) {
+    const { sub: userId } = req.user;
+    await this.userService.remove(id, userId);
     return { data: true };
   }
 }
