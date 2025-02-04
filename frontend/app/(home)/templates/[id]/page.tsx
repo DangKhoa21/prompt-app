@@ -39,35 +39,89 @@ export default function Page() {
     description:
       "This template is used for writing, brainstorming new idea for your project, ... etc",
     tags: ["Writing", "Project", "Creative"],
-    systemInstruction: "",
-    promptTemplate: "",
+    systemInstruction:
+      "You are asked to perform the following action with specified role, follow them strictly.",
+    promptTemplate:
+      "You are my ${Role}, and your task is to help me in ${Field} at the level of ${Level}. More detail: ${Detail}",
     configs: [
       {
         id: "1",
-        label: "Testing",
+        label: "Role",
         type: ConfigType.Dropdown,
         configValues: [
-          { id: "1", value: "haha" },
-          { id: "2", value: "hihi" },
+          { id: "1", value: "Teacher" },
+          { id: "2", value: "Assistant" },
         ],
       },
       {
         id: "2",
-        label: "Checking",
+        label: "Field",
         type: ConfigType.Dropdown,
         configValues: [
-          { id: "1", value: "huhu" },
-          { id: "2", value: "hehe" },
+          { id: "1", value: "Computer Science" },
+          { id: "2", value: "Information Technology" },
         ],
       },
       {
         id: "3",
-        label: "Testing",
+        label: "Level",
+        type: ConfigType.Dropdown,
+        configValues: [
+          { id: "1", value: "Beginner" },
+          { id: "2", value: "Intermediate" },
+          { id: "3", value: "Expert" },
+        ],
+      },
+      {
+        id: "4",
+        label: "Detail",
         type: ConfigType.Textarea,
         configValues: null,
       },
     ],
   });
+
+  const handleParseTemplate = () => {
+    const promptTemplate = promptData.promptTemplate;
+    const matches = Array.from(
+      new Set(
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
+      )
+    );
+
+    const createConfig = (
+      id: string,
+      label: string,
+      type: ConfigType,
+      configValues: ConfigValue[] | null
+    ): Config => ({
+      id: id.toString(),
+      label,
+      type,
+      configValues,
+    });
+
+    const result =
+      matches.length !== 0
+        ? matches.map((name, index) => {
+            const res = promptData.configs.find((c) => c.label === name);
+            return (
+              res ??
+              createConfig(
+                (index + 1).toString(),
+                name,
+                ConfigType.Textarea,
+                null
+              )
+            );
+          })
+        : [];
+
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: result,
+    }));
+  };
 
   return (
     <>
@@ -149,6 +203,7 @@ export default function Page() {
                 <Button
                   variant="ghost"
                   className="h-8 mr-3 border border-slate-500"
+                  onClick={handleParseTemplate}
                 >
                   Parse
                 </Button>

@@ -13,7 +13,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -36,6 +35,7 @@ import { ConfigType } from "@/services/templates/enum";
 import { Settings, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { v7 } from "uuid";
+import { Separator } from "@/components/ui/separator";
 
 interface ConfigValue {
   id: string;
@@ -63,7 +63,7 @@ export default function TemplatesConfigData({
     setPromptData((prevState) => ({
       ...prevState,
       configs: prevState.configs.map((config) =>
-        config.id === configId ? { ...config, type: ConfigType[type] } : config,
+        config.id === configId ? { ...config, type: ConfigType[type] } : config
       ),
     }));
   };
@@ -83,7 +83,7 @@ export default function TemplatesConfigData({
                 { id: v7(), value: value },
               ],
             }
-          : config,
+          : config
       ),
     }));
 
@@ -105,16 +105,16 @@ export default function TemplatesConfigData({
           ? {
               ...config,
               configValues: (config.configValues ?? []).filter(
-                (value) => value.id !== configValueId,
+                (value) => value.id !== configValueId
               ),
             }
-          : config,
+          : config
       ),
     }));
   };
 
   return (
-    <Card key={id} className="bg-background-primary">
+    <Card key={id} className="bg-background-primary border border-slate-500">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold">Config {id}</CardTitle>
@@ -133,9 +133,13 @@ export default function TemplatesConfigData({
           </div>
         </div>
       </CardHeader>
+      <Separator
+        orientation="horizontal"
+        className="w-auto mx-6 bg-slate-500"
+      ></Separator>
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-3 gap-4">
-          <SidebarGroup key={label}>
+          <SidebarGroup key={`Name-${id}`}>
             <SidebarGroupLabel>
               <Label htmlFor={label.toLowerCase()}>Label</Label>
             </SidebarGroupLabel>
@@ -145,7 +149,7 @@ export default function TemplatesConfigData({
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarGroup key={label}>
+          <SidebarGroup key={`Type-${id}`}>
             <SidebarGroupLabel>
               <Label htmlFor={label.toLowerCase()}>Config Type</Label>
             </SidebarGroupLabel>
@@ -175,7 +179,7 @@ export default function TemplatesConfigData({
           </SidebarGroup>
 
           {type === ConfigType.Dropdown ? (
-            <SidebarGroup key={label}>
+            <SidebarGroup key={`Value-${id}`}>
               <SidebarGroupLabel>
                 <Label htmlFor={label.toLowerCase()}>List of values</Label>
               </SidebarGroupLabel>

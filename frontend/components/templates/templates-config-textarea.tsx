@@ -26,14 +26,14 @@ export default function TemplatesConfigTextarea({
   };
 
   return (
-    <Card className="bg-background-primary">
+    <Card className="bg-background-primary border border-slate-500">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">{label}</CardTitle>
       </CardHeader>
       <CardContent>
         <Textarea
           placeholder={placeholder}
-          className="min-h-[200px]"
+          className="min-h-[200px] border border-slate-500"
           value={value}
           onChange={(e) => {
             handleTextareaChange(id, e.target.value);
