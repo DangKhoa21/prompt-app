@@ -17,6 +17,14 @@ import { ReqWithRequester } from 'src/shared';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async profile(@Request() req: ReqWithRequester) {
+    const { sub: id } = req.user;
+    const data = await this.userService.findById(id);
+    return { data };
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const data = await this.userService.findById(id);

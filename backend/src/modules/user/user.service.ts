@@ -48,9 +48,11 @@ export class UserService {
     return this.userRepo.findByCond(condition);
   }
 
-  async findById(id: string): Promise<Omit<User, 'password'> | null> {
+  async findById(id: string): Promise<Omit<User, 'password'>> {
     const user = await this.userRepo.findById(id);
-    if (!user) return null;
+    if (!user) {
+      throw AppError.from(ErrUserNotFound, 404);
+    }
     const { password, ...rest } = user;
     return rest;
   }
