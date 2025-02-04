@@ -21,7 +21,7 @@ interface Config {
   configValues: ConfigValue[] | null;
 }
 
-interface Template {
+export interface Template {
   id: string;
   name: string;
   description: string;
@@ -68,36 +68,6 @@ export default function Page() {
       },
     ],
   });
-
-  const handleTextareaChange = (configLabel: string, value: string) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
-  // const handleConfigChange = (
-  //   configId: string,
-  //   labelId: string,
-  //   value: string,
-  // ) => {
-  //   setConfigValue((prevState) => ({
-  //     ...prevState,
-  //     [labelId]: {
-  //       ...prevState.labelId,
-  //       [configId]: value,
-  //     },
-  //   }));
-  // };
-
-  const handleConfigSelectChange = (configId: string, type: ConfigType) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      configs: prevState.configs.map((config) =>
-        config.id === configId ? { ...config, type: ConfigType[type] } : config,
-      ),
-    }));
-  };
 
   return (
     <>
@@ -151,7 +121,7 @@ export default function Page() {
                   label="System Instruction"
                   placeholder="Enter your System Instruction ..."
                   value={promptData.systemInstruction}
-                  handleTextareaChange={handleTextareaChange}
+                  setPromptData={setPromptData}
                 />
 
                 <TemplatesConfigTextarea
@@ -159,7 +129,7 @@ export default function Page() {
                   label="Prompt Template"
                   placeholder="Enter your Prompt Template..."
                   value={promptData.promptTemplate}
-                  handleTextareaChange={handleTextareaChange}
+                  setPromptData={setPromptData}
                 />
               </div>
 
@@ -168,7 +138,7 @@ export default function Page() {
                   <TemplatesConfigData
                     key={config.id}
                     {...config}
-                    handleSelectChange={handleConfigSelectChange}
+                    setPromptData={setPromptData}
                   />
                 ))}
               </div>
@@ -176,7 +146,10 @@ export default function Page() {
 
             <div className="grid items-center justify-end md:grid-cols-2">
               <div className="flex justify-end">
-                <Button variant="ghost" className="h-8 border border-slate-500">
+                <Button
+                  variant="ghost"
+                  className="h-8 mr-3 border border-slate-500"
+                >
                   Parse
                 </Button>
               </div>

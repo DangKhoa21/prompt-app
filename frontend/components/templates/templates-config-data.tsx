@@ -1,3 +1,4 @@
+import { Template } from "@/app/(home)/templates/[id]/page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -33,6 +34,8 @@ import {
 } from "@/components/ui/sidebar";
 import { ConfigType } from "@/services/templates/enum";
 import { Settings, X } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { v7 } from "uuid";
 
 interface ConfigValue {
   id: string;
@@ -44,7 +47,7 @@ interface ConfigProp {
   label: string;
   type: ConfigType;
   configValues: ConfigValue[] | null;
-  handleSelectChange: (configId: string, type: ConfigType) => void;
+  setPromptData: Dispatch<SetStateAction<Template>>;
 }
 
 export default function TemplatesConfigData({
@@ -52,8 +55,64 @@ export default function TemplatesConfigData({
   label,
   type,
   configValues,
-  handleSelectChange,
+  setPromptData,
 }: ConfigProp) {
+  const [newConfigValue, setNewConfigValue] = useState("Happy");
+
+  const handleSelectChange = (configId: string, type: ConfigType) => {
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.map((config) =>
+        config.id === configId ? { ...config, type: ConfigType[type] } : config,
+      ),
+    }));
+  };
+
+  const handleAddConfigValue = (event: React.FormEvent, configId: string) => {
+    event.preventDefault();
+
+    const value = newConfigValue;
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.map((config) =>
+        config.id === configId
+          ? {
+              ...config,
+              configValues: [
+                ...(config.configValues ?? []),
+                { id: v7(), value: value },
+              ],
+            }
+          : config,
+      ),
+    }));
+
+    setNewConfigValue("Happy");
+  };
+
+  const handleDeleteConfig = (configId: string) => {
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.filter((config) => config.id !== configId),
+    }));
+  };
+
+  const handleDeleteConfigValue = (configId: string, configValueId: string) => {
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.map((config) =>
+        config.id === configId
+          ? {
+              ...config,
+              configValues: (config.configValues ?? []).filter(
+                (value) => value.id !== configValueId,
+              ),
+            }
+          : config,
+      ),
+    }));
+  };
+
   return (
     <Card key={id} className="bg-background-primary">
       <CardHeader className="pb-3">
@@ -67,6 +126,7 @@ export default function TemplatesConfigData({
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-destructive"
+              onClick={() => handleDeleteConfig(id)}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -123,18 +183,37 @@ export default function TemplatesConfigData({
               <SidebarGroupContent className="px-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Open</Button>
+                    <Button variant="outline">Show</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
                     <DropdownMenuLabel>
                       &apos;{label}&apos; list values
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {configValues?.map((configValue) => (
-                      <DropdownMenuItem key={configValue.id}>
-                        {configValue.value}
-                      </DropdownMenuItem>
-                    ))}
+                    {configValues === null || configValues.length === 0 ? (
+                      <div className="mx-auto flex items-center justify-center">
+                        Currently empty
+                      </div>
+                    ) : (
+                      configValues.map((configValue) => (
+                        <div
+                          key={configValue.id}
+                          className="flex justify-between px-2 py-1"
+                        >
+                          {configValue.value}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive"
+                            onClick={() =>
+                              handleDeleteConfigValue(id, configValue.id)
+                            }
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))
+                    )}
                     <DropdownMenuSeparator />
                     <Dialog>
                       <DialogTrigger asChild>
@@ -158,13 +237,21 @@ export default function TemplatesConfigData({
                             </Label>
                             <Input
                               id="newValue"
-                              value="Happy"
+                              value={newConfigValue}
+                              onChange={(e) =>
+                                setNewConfigValue(e.target.value)
+                              }
                               className="col-span-3"
                             />
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">Add</Button>
+                          <Button
+                            type="submit"
+                            onClick={(e) => handleAddConfigValue(e, id)}
+                          >
+                            Add
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>

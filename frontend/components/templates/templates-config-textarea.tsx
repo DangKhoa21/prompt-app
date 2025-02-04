@@ -1,12 +1,14 @@
+import { Template } from "@/app/(home)/templates/[id]/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Dispatch, SetStateAction } from "react";
 
 interface configTextareaProp {
   id: string;
   label: string;
   placeholder: string;
   value: string;
-  handleTextareaChange: (id: string, value: string) => void;
+  setPromptData: Dispatch<SetStateAction<Template>>;
 }
 
 export default function TemplatesConfigTextarea({
@@ -14,8 +16,15 @@ export default function TemplatesConfigTextarea({
   label,
   placeholder,
   value,
-  handleTextareaChange,
+  setPromptData,
 }: configTextareaProp) {
+  const handleTextareaChange = (configLabel: string, value: string) => {
+    setPromptData((prevState) => ({
+      ...prevState,
+      [configLabel]: value,
+    }));
+  };
+
   return (
     <Card className="bg-background-primary">
       <CardHeader>
