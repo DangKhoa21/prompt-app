@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import colors from "tailwindcss/colors";
 
 const config: Config = {
   darkMode: ["class"],
@@ -11,71 +10,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Already configure
-        primary: {
-          DEFAULT: "rgb(var(--primary))",
-          10: "rgba(var(--primary), 10)",
-          hover: "rgb(var(--primary-hover))",
-        },
-        secondary: {
-          DEFAULT: "rgb(var(--secondary))",
-          hover: "rgb(var(--secondary-hover))",
-        },
-        tertiary: "rgb(var(--tertiary))",
-
-        success: "rgb(var(--success))",
-        error: "rgb(var(--error))",
-        warining: "var(--warining)",
-        info: "var(--info)",
-
         background: {
-          DEFAULT: "rgb(var(--background))",
-
-          secondary: "rgba(var(--background), 0.9)",
-          tertiary: "rgba(var(--background), 0.8)",
+          DEFAULT: "hsl(var(--background))",
         },
 
         foreground: {
-          DEFAULT: "var(--forregrond)",
-
-          // Not configure yet
-          primary: "var(--foreground-primary)",
-          secondary: "var(--foreground-secondary)",
-          accent: "var(--foreground-accent)",
-          muted: "var(--foreground-muted)",
+          DEFAULT: "hsl(var(--foreground))",
         },
 
-        neutral: colors.gray,
-        theme: colors.sky,
-        gradient: {
-          src: colors.teal,
-          mid: colors.white,
-          des: colors.fuchsia,
-        },
-
-        // Not configure yet
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
 
           hover: "var(--gradient-primary)",
-          hoverSecondary: "var(--gradient-secondary)",
+          hoverForeground: "var(--gradient-secondary)",
         },
 
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-
-        /* primary: {
-                  DEFAULT: 'hsl(var(--primary))',
-                  foreground: 'hsl(var(--primary-foreground))'
-              },
-              secondary: {
-                  DEFAULT: 'hsl(var(--secondary))',
-                  foreground: 'hsl(var(--secondary-foreground))'
-              }, */
-
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",

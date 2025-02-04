@@ -184,7 +184,7 @@ export default function Page() {
           ))}
         </div>
 
-        <div className="px-0 py-8 md:px-4 bg-gradient-to-r from-theme-400 via-background to-theme-600 grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
+        <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
           {templates.map((template, i) => (
             <PromptMarketplaceCard category={""} key={i} {...template} />
           ))}

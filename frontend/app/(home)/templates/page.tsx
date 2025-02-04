@@ -1,8 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import PromptTemplateCard from "@/components/prompt/prompt-templates-card";
-import { ChevronLeft, Search, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { ChevronLeft, Search } from "lucide-react";
+import Link from "next/link";
 
 interface Template {
   id: string;
@@ -54,16 +55,18 @@ export default function Page() {
               </Button>
             </div>
 
-            <div className="bg-white rounded-lg p-4">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-sm font-medium">Your templates</h2>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add new
-                </Button>
+            <div className="bg-background-primary rounded-lg p-6 m-6">
+              <div className="flex items-center justify-between mb-4 mx-4">
+                <h2 className="text-lg font-bold">Your templates</h2>
+                <Button size="sm">Add new</Button>
               </div>
 
-              <div className="space-y-4">
+              <Separator
+                orientation="horizontal"
+                className="w-auto mx-4 my-1 bg-neutral-800"
+              />
+
+              <div className="space-y-4 p-4">
                 {templates.map((template, index) => (
                   <PromptTemplateCard key={index} {...template} />
                 ))}
