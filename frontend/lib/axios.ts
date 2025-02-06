@@ -21,6 +21,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => {
+    if (error.response && error.response.status === 401) {
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("token");
+      }
+    }
     return Promise.reject(
       error.response ? error.response.data : "Something went wrong"
     );
