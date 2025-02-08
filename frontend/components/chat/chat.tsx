@@ -56,8 +56,12 @@ export function Chat({
       }
     },
     onError: (e) => {
-      const err = JSON.parse(e.message);
-      toast.error(err.message);
+      try {
+        const err = JSON.parse(e.message);
+        toast.error(err.message);
+      } catch {
+        toast.error("Something went wrong, please try again!");
+      }
     },
   });
 

@@ -4,13 +4,16 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { PromptService } from './prompt.service';
-import { PromptCreationDTO, PromptUpdateDTO } from './model';
+import {
+  PromptWithConfigsCreationDTO,
+  PromptWithConfigsUpdateDTO,
+} from './model';
 import { JwtAuthGuard } from 'src/common/guard';
 import { ReqWithRequester } from 'src/shared';
 
@@ -22,7 +25,7 @@ export class PromptController {
   @UseGuards(JwtAuthGuard)
   async create(
     @Request() req: ReqWithRequester,
-    @Body() dto: PromptCreationDTO,
+    @Body() dto: PromptWithConfigsCreationDTO,
   ) {
     const { sub: userId } = req.user;
     const data = await this.promptService.create(dto, userId);
@@ -41,12 +44,12 @@ export class PromptController {
     return { data };
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(
     @Request() req: ReqWithRequester,
     @Param('id') id: string,
-    @Body() dto: PromptUpdateDTO,
+    @Body() dto: PromptWithConfigsUpdateDTO,
   ) {
     const { sub: userId } = req.user;
     await this.promptService.update(id, dto, userId);

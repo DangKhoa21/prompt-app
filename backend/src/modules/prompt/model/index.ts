@@ -45,21 +45,12 @@ export const promptCardSchema = z.object({
 
 export type PromptCard = z.infer<typeof promptCardSchema>;
 
-export const promptCreationDTOSchema = promptSchema.pick({
+export const promptUpdateDTOSchema = promptSchema.pick({
   title: true,
   description: true,
   stringTemplate: true,
+  updatedAt: true,
 });
-
-export type PromptCreationDTO = z.infer<typeof promptCreationDTOSchema>;
-
-export const promptUpdateDTOSchema = promptSchema
-  .pick({
-    title: true,
-    description: true,
-    stringTemplate: true,
-  })
-  .partial();
 
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 
@@ -86,8 +77,54 @@ export const configValueSchema = z.object({
 
 export type ConfigValue = z.infer<typeof configValueSchema>;
 
-export type PromptConfig = z.infer<typeof promptConfigSchema> & {
-  values: ConfigValue[];
+export type ConfigValueUpdateDTO = {
+  id: string;
+  value: string;
+  updatedAt: Date;
 };
 
-export type PromptWithConfigs = Prompt & { configs: PromptConfig[] };
+export type PromptConfig = z.infer<typeof promptConfigSchema>;
+
+export type PromptConfigUpdateDTO = {
+  id: string;
+  label: string;
+  type: string;
+  updatedAt: Date;
+};
+
+export type PromptWithConfigs = Prompt & {
+  configs: Array<
+    PromptConfig & {
+      values: ConfigValue[];
+    }
+  >;
+};
+
+export const promptWithConfigsCreationDTOSchema = promptSchema
+  .omit({ createdAt: true, updatedAt: true, creatorId: true })
+  .extend({
+    configs: z.array(
+      promptConfigSchema
+        .omit({ createdAt: true, updatedAt: true, promptId: true })
+        .extend({
+          values: z.array(
+            configValueSchema.omit({
+              createdAt: true,
+              updatedAt: true,
+              promptConfigId: true,
+            }),
+          ),
+        }),
+    ),
+  });
+
+export type PromptWithConfigsCreationDTO = z.infer<
+  typeof promptWithConfigsCreationDTOSchema
+>;
+
+export const promptWithConfigsUpdateDTOSchema =
+  promptWithConfigsCreationDTOSchema;
+
+export type PromptWithConfigsUpdateDTO = z.infer<
+  typeof promptWithConfigsUpdateDTOSchema
+>;
