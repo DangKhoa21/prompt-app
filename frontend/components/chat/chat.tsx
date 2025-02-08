@@ -11,7 +11,7 @@ import { MultimodalInput } from "../multimodal-input";
 
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
-import { SERVER_URL } from "@/config";
+import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export function Chat({
     stop,
     // data: streamingData,
   } = useChat({
-    api: `${SERVER_URL}/api/v1/chat`,
+    api: `${SERVER_URL}/${VERSION_PREFIX}/chat`,
     id,
     body: { id, modelId: selectedModelId },
     initialMessages,
