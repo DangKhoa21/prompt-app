@@ -16,6 +16,7 @@ import {
   promptWithConfigsUpdateDTOSchema,
   PromptConfigUpdateDTO,
   ConfigValueUpdateDTO,
+  PromptCard,
 } from './model';
 import { AppError, ErrForbidden } from 'src/shared';
 
@@ -33,11 +34,13 @@ export class PromptService {
   ): Promise<string> {
     const data = promptWithConfigsCreationDTOSchema.parse(dto);
 
-    const existedPrompt = await this.promptRepo.findByCond({
+    const existedPromptByTitle = await this.promptRepo.findByCond({
       title: data.title,
     });
 
-    if (existedPrompt) {
+    const existedPromptById = await this.promptRepo.findById(data.id);
+
+    if (existedPromptByTitle || existedPromptById) {
       throw AppError.from(ErrPromptExisted, 400);
     }
 
@@ -51,8 +54,6 @@ export class PromptService {
       updatedAt: new Date(),
     };
 
-    await this.promptRepo.insert(prompt);
-
     const configs: PromptConfig[] = data.configs.map((config) => ({
       id: config.id,
       label: config.label,
@@ -61,8 +62,6 @@ export class PromptService {
       createdAt: new Date(),
       updatedAt: new Date(),
     }));
-
-    await this.configRepo.insertMany(configs);
 
     const values: ConfigValue[] = data.configs.flatMap((config) => {
       return config.values.map((value) => ({
@@ -74,12 +73,14 @@ export class PromptService {
       }));
     });
 
-    await this.valueRepo.insertMany(values);
+    await this.promptRepo.insert(prompt);
+    await this.configRepo.insertMany(configs); // not handle the case inserting same id or label in configs yet
+    await this.valueRepo.insertMany(values); // not handle the case inserting same id or value in values yet
 
     return data.id;
   }
 
-  async findAll(): Promise<Prompt[]> {
+  async findAll(): Promise<PromptCard[]> {
     return this.promptRepo.findAll();
   }
 
@@ -89,6 +90,10 @@ export class PromptService {
       throw AppError.from(ErrPromptNotFound, 404);
     }
     return prompt;
+  }
+
+  async findByIds(ids: string[]): Promise<PromptCard[]> {
+    return this.promptRepo.findByIds(ids);
   }
 
   async update(
@@ -101,7 +106,7 @@ export class PromptService {
     const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
 
     if (!existedPrompt) {
-      throw AppError.from(ErrPromptNotFound, 404);
+      throw AppError.from(ErrPromptNotFound, 400);
     }
 
     if (existedPrompt.creatorId !== creatorId) {
@@ -207,15 +212,25 @@ export class PromptService {
   }
 
   async remove(id: string, creatorId: string): Promise<void> {
-    const existedPrompt = await this.promptRepo.findById(id);
+    const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
 
     if (!existedPrompt) {
-      throw AppError.from(ErrPromptNotFound, 404);
+      throw AppError.from(ErrPromptNotFound, 400);
     }
 
     if (existedPrompt.creatorId !== creatorId) {
       throw AppError.from(ErrForbidden, 403);
     }
+
+    const existedValueIds = existedPrompt.configs.flatMap((config) => {
+      return config.values.map((value) => value.id);
+    });
+
+    await this.valueRepo.deleteMany(existedValueIds);
+
+    const existedConfigIds = existedPrompt.configs.map((config) => config.id);
+
+    await this.configRepo.deleteMany(existedConfigIds);
 
     await this.promptRepo.delete(id);
   }

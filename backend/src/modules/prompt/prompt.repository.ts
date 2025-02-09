@@ -43,6 +43,30 @@ export class PromptRepository {
     });
   }
 
+  async findByIds(ids: string[]): Promise<PromptCard[]> {
+    return this.prisma.prompt.findMany({
+      where: { id: { in: ids } },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        stars: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async findAll(): Promise<PromptCard[]> {
     return this.prisma.prompt.findMany({
       include: {

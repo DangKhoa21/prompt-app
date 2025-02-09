@@ -28,12 +28,11 @@ import { usePrompt } from "@/context/prompt-context";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
-  const [generatedPrompt, setGeneratedPrompt] = useState("");
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
 
   const searchParams = useSearchParams();
@@ -79,7 +78,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label],
+            selectedValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -88,7 +87,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label],
+            textareaValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -97,7 +96,6 @@ export function PromptGeneratorSidebar() {
     });
 
     prompt = prompt.replace(/\s{2,}/g, " ");
-    setGeneratedPrompt(prompt);
     setPrompt(prompt);
   };
 
@@ -164,22 +162,6 @@ export function PromptGeneratorSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
-
-        {generatedPrompt && (
-          <SidebarGroup>
-            <SidebarGroupLabel>
-              <Label htmlFor="generated-prompt">Generated Prompt</Label>
-            </SidebarGroupLabel>
-            <SidebarGroupContent className="p-2">
-              <Textarea
-                id="generated-prompt"
-                value={generatedPrompt}
-                readOnly
-                className="h-32"
-              />
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       {data.id !== "1" && (

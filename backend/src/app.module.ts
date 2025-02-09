@@ -6,9 +6,17 @@ import { PrismaModule } from './processors/database/prisma.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { PromptModule } from './modules/prompt/prompt.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { StarModule } from './modules/star/star.module';
 
 @Module({
-  imports: [UserModule, PrismaModule, ChatModule, PromptModule, AuthModule],
+  imports: [
+    StarModule,
+    UserModule,
+    PrismaModule,
+    ChatModule,
+    PromptModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

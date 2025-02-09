@@ -97,13 +97,14 @@ export function MultimodalInput({
     }
   };
 
-  const { prompt } = usePrompt();
+  const { prompt, setPrompt } = usePrompt();
 
   useEffect(() => {
     if (prompt) {
       setInput(prompt);
+      setPrompt("");
     }
-  }, [prompt, setInput]);
+  }, [prompt, setInput, setPrompt]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);

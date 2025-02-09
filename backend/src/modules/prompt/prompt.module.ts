@@ -15,5 +15,6 @@ import { PrismaModule } from 'src/processors/database/prisma.module';
     PromptConfigRepository,
     ConfigValueRepository,
   ],
+  exports: [PromptService],
 })
 export class PromptModule {}
