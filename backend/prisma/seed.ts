@@ -89,7 +89,7 @@ async function main() {
   console.log('Prompt created or found:', prompt);
 
   // Create a prompt called "Translate"
-  const prompt3 = await prisma.prompt.upsert({
+  await prisma.prompt.upsert({
     where: { title: 'Translate' },
     update: {},
     create: {
@@ -135,60 +135,48 @@ async function main() {
   console.log('Tag created or found:', tag);
 
   // Create the prompt configurations
-  const toneConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt.id, label: 'Tone' },
-    update: {},
-    create: {
+  const toneConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Tone',
       type: 'dropdown',
     },
   });
 
-  const lengthConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt.id, label: 'Length' },
-    update: {},
-    create: {
+  const lengthConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Length',
       type: 'dropdown',
     },
   });
 
-  const styleConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt.id, label: 'Style' },
-    update: {},
-    create: {
+  const styleConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Style',
       type: 'dropdown',
     },
   });
 
-  const audienceConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt.id, label: 'Audience' },
-    update: {},
-    create: {
+  const audienceConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Audience',
       type: 'dropdown',
     },
   });
 
-  const contentConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt3.id, label: 'Content' },
-    update: {},
-    create: {
+  const contentConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Content',
       type: 'textarea',
     },
   });
 
-  const targetLanguageConfig = await prisma.promptConfig.upsert({
-    where: { promptId: prompt3.id, label: 'Language' },
-    update: {},
-    create: {
+  const targetLanguageConfig = await prisma.promptConfig.create({
+    data: {
       promptId: prompt.id,
       label: 'Language',
       type: 'dropdown',

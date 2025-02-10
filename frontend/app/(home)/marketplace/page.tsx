@@ -140,7 +140,6 @@ export default function Page() {
   if (isPromptsError) {
     return <span>Error: {promptsError.message}</span>;
   }
-  console.log("Check data: ", promptsData);
   const templates = promptsData;
 
   if (isTagsLoading) {
@@ -150,7 +149,6 @@ export default function Page() {
   if (isTagsError) {
     return <span>Error: {tagsError.message}</span>;
   }
-  console.log("Check tags: ", tagsData);
   const tags = tagsData;
 
   return (

@@ -7,6 +7,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { PromptModule } from './modules/prompt/prompt.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { StarModule } from './modules/star/star.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { StarModule } from './modules/star/star.module';
     ChatModule,
     PromptModule,
     AuthModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
