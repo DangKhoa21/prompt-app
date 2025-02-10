@@ -232,6 +232,8 @@ export class PromptService {
 
     await this.configRepo.deleteMany(existedConfigIds);
 
+    //not handle deleting tags and stars yet
+
     await this.promptRepo.delete(id);
   }
 }

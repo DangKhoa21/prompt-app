@@ -102,7 +102,7 @@ model Tag {
 
 model PromptConfig {
   id        String   @id @default(uuid(7))
-  label     String   @unique
+  label     String
   type      String
   prompt    Prompt   @relation(fields: [promptId], references: [id])
   promptId  String
@@ -114,7 +114,7 @@ model PromptConfig {
 
 model ConfigValue {
   id             String       @id @default(uuid(7))
-  value          String       @unique
+  value          String
   promptConfig   PromptConfig @relation(fields: [promptConfigId], references: [id])
   promptConfigId String
   createdAt      DateTime     @default(now())

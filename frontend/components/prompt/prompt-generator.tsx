@@ -96,6 +96,7 @@ export function PromptGeneratorSidebar() {
     });
 
     prompt = prompt.replace(/\s{2,}/g, " ");
+    prompt = prompt.replace(/\\n/g, "\n");
     setPrompt(prompt);
   };
 
