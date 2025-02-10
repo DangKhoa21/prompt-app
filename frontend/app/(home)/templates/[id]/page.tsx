@@ -2,8 +2,23 @@
 
 import TemplatesConfigData from "@/components/templates/templates-config-data";
 import TemplatesConfigTextarea from "@/components/templates/templates-config-textarea";
+import EditTextField from "@/components/templates/templates-edit-text";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSidebar } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { ConfigType } from "@/services/templates/enum";
 import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
@@ -31,9 +46,9 @@ export interface Template {
   configs: Config[];
 }
 
-// TODO: Implement page for specified ID
+// TODO: Implement page for specified ID (Missing tags, save to cloud)
 export default function Page() {
-  const [promptData, setPromptData] = useState<Template>({
+  const [initialPrompt, setInitialPrompt] = useState<Template>({
     id: "1",
     name: "Template Name",
     description:
@@ -81,19 +96,24 @@ export default function Page() {
     ],
   });
 
+  const [promptData, setPromptData] = useState<Template>(initialPrompt);
+
+  const { open } = useSidebar();
+
   const handleParseTemplate = () => {
     const promptTemplate = promptData.promptTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
-      )
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
+          [],
+      ),
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      configValues: ConfigValue[] | null
+      configValues: ConfigValue[] | null,
     ): Config => ({
       id: id.toString(),
       label,
@@ -111,7 +131,7 @@ export default function Page() {
                 (index + 1).toString(),
                 name,
                 ConfigType.Textarea,
-                null
+                null,
               )
             );
           })
@@ -121,6 +141,15 @@ export default function Page() {
       ...prevState,
       configs: result,
     }));
+  };
+
+  const handleReset = () => {
+    setPromptData(initialPrompt);
+  };
+
+  //TODO: Hanle save to api
+  const handleSave = () => {
+    setInitialPrompt(promptData);
   };
 
   return (
@@ -139,19 +168,21 @@ export default function Page() {
           <div className="max-w-5xl mx-auto space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-2xl font-semibold">{promptData.name}</h1>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Pencil className="h-4 w-4" />
-                </Button>
+                <EditTextField
+                  text={promptData.name}
+                  label="name"
+                  setPromptData={setPromptData}
+                  className="text-2xl font-semibold"
+                ></EditTextField>
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                <p className="text-muted-foreground">
-                  {promptData.description}
-                </p>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Pencil className="h-4 w-4" />
-                </Button>
+                <EditTextField
+                  text={promptData.description}
+                  label="description"
+                  setPromptData={setPromptData}
+                  className="text-muted-foreground text-lg"
+                ></EditTextField>
               </div>
 
               <div className="flex items-center gap-2">
@@ -168,8 +199,13 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-4">
+            <div
+              className={cn(
+                "grid gap-6 h-fit",
+                open ? "md:grid-cols-1" : "md:grid-cols-2",
+              )}
+            >
+              <div className="space-y-4 h-fit">
                 <TemplatesConfigTextarea
                   id="systemInstruction"
                   label="System Instruction"
@@ -187,19 +223,27 @@ export default function Page() {
                 />
               </div>
 
-              <div className="space-y-4">
-                {promptData.configs.map((config) => (
-                  <TemplatesConfigData
-                    key={config.id}
-                    {...config}
-                    setPromptData={setPromptData}
-                  />
-                ))}
+              <div className="h-full">
+                <div className="text-xl font-semibold p-2">List of Configs</div>
+
+                <ScrollArea className="h-[576px] border rounded-md p-4 lg:ml-12">
+                  <div className="space-y-4">
+                    {promptData.configs.map((config) => (
+                      <TemplatesConfigData
+                        key={config.id}
+                        {...config}
+                        setPromptData={setPromptData}
+                        isSidebarOpen={open}
+                      />
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
 
             <div className="grid items-center justify-end md:grid-cols-2">
               <div className="flex justify-end">
+                {/* Parse button */}
                 <Button
                   variant="ghost"
                   className="h-8 mr-3 border border-slate-500"
@@ -209,15 +253,60 @@ export default function Page() {
                 </Button>
               </div>
               <div className="flex gap-6 justify-end">
-                <Button variant="ghost" className="h-8 border border-slate-500">
-                  Reset
-                </Button>
-                <Button
-                  variant="default"
-                  className="h-8 border border-primary hover:bg-primary"
-                >
-                  Save
-                </Button>
+                {/* Reset button */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-8 border border-slate-500"
+                    >
+                      Reset
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your changes.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleReset}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                {/* Saving button */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="default"
+                      className="h-8 border border-primary hover:bg-primary"
+                    >
+                      Save
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you done editing?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Confirm completed your changes and save it.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleSave}>
+                        Confirm
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>

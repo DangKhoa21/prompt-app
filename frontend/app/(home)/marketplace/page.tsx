@@ -8,7 +8,7 @@ import { Search, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getPrompts, getTags } from "@/services/prompt";
 
-// TODO: Fetching data for templates
+// TODO: Seeding more data based on the following sample data
 // const templates = [
 //   {
 //     id: getRandomOption(),

@@ -26,16 +26,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { ConfigType } from "@/services/templates/enum";
-import { Settings, X } from "lucide-react";
+import { List, Plus, Settings, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { v7 } from "uuid";
-import { Separator } from "@/components/ui/separator";
 
 interface ConfigValue {
   id: string;
@@ -48,6 +49,7 @@ interface ConfigProp {
   type: ConfigType;
   configValues: ConfigValue[] | null;
   setPromptData: Dispatch<SetStateAction<Template>>;
+  isSidebarOpen?: boolean;
 }
 
 export default function TemplatesConfigData({
@@ -56,6 +58,7 @@ export default function TemplatesConfigData({
   type,
   configValues,
   setPromptData,
+  isSidebarOpen,
 }: ConfigProp) {
   const [newConfigValue, setNewConfigValue] = useState("Happy");
 
@@ -63,7 +66,7 @@ export default function TemplatesConfigData({
     setPromptData((prevState) => ({
       ...prevState,
       configs: prevState.configs.map((config) =>
-        config.id === configId ? { ...config, type: ConfigType[type] } : config
+        config.id === configId ? { ...config, type: ConfigType[type] } : config,
       ),
     }));
   };
@@ -83,7 +86,7 @@ export default function TemplatesConfigData({
                 { id: v7(), value: value },
               ],
             }
-          : config
+          : config,
       ),
     }));
 
@@ -105,17 +108,20 @@ export default function TemplatesConfigData({
           ? {
               ...config,
               configValues: (config.configValues ?? []).filter(
-                (value) => value.id !== configValueId
+                (value) => value.id !== configValueId,
               ),
             }
-          : config
+          : config,
       ),
     }));
   };
 
+  // TODO: Smaller display on small devices (slide left to delete item instead of click)
   return (
     <Card key={id} className="bg-background-primary border border-slate-500">
-      <CardHeader className="pb-3">
+      <CardHeader
+        className={cn("pt-4 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
+      >
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold">Config {id}</CardTitle>
           <div className="flex items-center gap-2">
@@ -137,8 +143,8 @@ export default function TemplatesConfigData({
         orientation="horizontal"
         className="w-auto mx-6 bg-slate-500"
       ></Separator>
-      <CardContent className="grid gap-4">
-        <div className="grid grid-cols-3 gap-4">
+      <CardContent className="pb-2">
+        <div className="grid grid-cols-2 gap-0">
           <SidebarGroup key={`Name-${id}`}>
             <SidebarGroupLabel>
               <Label htmlFor={label.toLowerCase()}>Label</Label>
@@ -154,7 +160,7 @@ export default function TemplatesConfigData({
               <Label htmlFor={label.toLowerCase()}>Config Type</Label>
             </SidebarGroupLabel>
 
-            <SidebarGroupContent className="px-2">
+            <SidebarGroupContent className="px-2 flex flex-row gap-2 items-center">
               <Select
                 onValueChange={(value) => {
                   const handledValue =
@@ -175,19 +181,14 @@ export default function TemplatesConfigData({
                     ))}
                 </SelectContent>
               </Select>
-            </SidebarGroupContent>
-          </SidebarGroup>
 
-          {type === ConfigType.Dropdown ? (
-            <SidebarGroup key={`Value-${id}`}>
-              <SidebarGroupLabel>
-                <Label htmlFor={label.toLowerCase()}>List of values</Label>
-              </SidebarGroupLabel>
-
-              <SidebarGroupContent className="px-2">
+              {/* Icon show list if type is dropdown */}
+              {type === ConfigType.Dropdown ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Show</Button>
+                    <Button variant="ghost" size="icon" className="w-8 h-8">
+                      <List className="w-4 h-4" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
                     <DropdownMenuLabel>
@@ -202,13 +203,13 @@ export default function TemplatesConfigData({
                       configValues.map((configValue) => (
                         <div
                           key={configValue.id}
-                          className="flex justify-between px-2 py-1"
+                          className="group flex justify-between h-8 text-sm items-center px-2 py-1"
                         >
                           {configValue.value}
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive"
+                            className="hidden group-hover:flex group-focus:flex h-8 w-8 text-destructive"
                             onClick={() =>
                               handleDeleteConfigValue(id, configValue.id)
                             }
@@ -222,7 +223,13 @@ export default function TemplatesConfigData({
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="flex justify-end">
-                          <Button variant="outline">Add new item</Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-8 h-8 mx-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
@@ -261,11 +268,11 @@ export default function TemplatesConfigData({
                     </Dialog>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ) : (
-            <></>
-          )}
+              ) : (
+                <></>
+              )}
+            </SidebarGroupContent>
+          </SidebarGroup>
         </div>
       </CardContent>
     </Card>

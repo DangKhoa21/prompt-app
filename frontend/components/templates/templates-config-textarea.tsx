@@ -18,10 +18,10 @@ export default function TemplatesConfigTextarea({
   value,
   setPromptData,
 }: configTextareaProp) {
-  const handleTextareaChange = (configLabel: string, value: string) => {
+  const handleTextareaChange = (textLabel: string, value: string) => {
     setPromptData((prevState) => ({
       ...prevState,
-      [configLabel]: value,
+      [textLabel]: value,
     }));
   };
 
