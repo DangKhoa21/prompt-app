@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -7,12 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
 import Link from "next/link";
 
-interface MarketplaceCardProps {
+export interface MarketplaceCardProps {
   id: string;
+  variant?: "default" | "hover";
   title: string;
   description: string;
   creator: {
@@ -40,8 +43,10 @@ const formatRating = (num: number): string => {
   return num.toString();
 };
 
+// TODO: Adjust hover card offset to fit the screen
 export function PromptMarketplaceCard({
   id,
+  variant,
   title,
   description,
   creator,
@@ -49,33 +54,103 @@ export function PromptMarketplaceCard({
   stars,
 }: MarketplaceCardProps) {
   const rating = formatRating(stars.length);
+
+  if (variant === "hover") {
+    return (
+      <div className="bg-card hover:shadow-md rounded-3xl">
+        <Link href={`/?promptId=${id}`}>
+          <div className="space-y-1 px-4 pt-2 pb-1">
+            <div className="flex flex-row-reverse items-center justify-between">
+              <div className="opacity-50 hover:opacity-100">
+                <Badge
+                  variant="secondary"
+                  className="flex border-2 items-center gap-1"
+                >
+                  <Star className="h-3 w-3 fill-primary" />
+                  {rating}
+                </Badge>
+              </div>
+            </div>
+            <div>{category}</div>
+          </div>
+          <div className="mt-[-1.75rem] px-4 pb-1">
+            <div>
+              <div className="flex items-center text-xl font-semibold leading-none tracking-tigh text-foreground my-6 min-h-[3.75rem]">
+                <div className="w-full text-center">{title}</div>
+              </div>
+              <div className="my-2 mx-1 text-sm text-foreground">
+                {description}
+              </div>
+            </div>
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="w-auto mx-4 my-1 bg-neutral-800"
+          />
+          <div className="flex flex-row justify-between px-4 pt-1 pb-4 items-center">
+            <div className="flex flex-row gap-2 t-2 items-center">
+              <Avatar className="w-8 h-8">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="text-xs text-foreground-accent">
+                by {creator["username"]}
+              </div>
+            </div>
+            <div className="t-2 text-xs text-foreground">Try it now</div>
+          </div>
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <Link href={`/?promptId=${id}`}>
-      <Card className="group transition-all duration-0 ease-in-out bg-card hover:shadow-md hover:bg-card-foreground hover:duration-300 rounded-3xl">
-        <CardHeader className="space-y-1 px-6 pt-4 pb-1">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-foreground">{title}</CardTitle>
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-primary" />
-              {rating}
-            </Badge>
+    <Card className="bg-card hover:shadow-md rounded-3xl">
+      <Link href={`/?promptId=${id}`}>
+        <CardHeader className="space-y-1 px-4 pt-2 pb-1">
+          <div className="flex flex-row-reverse items-center justify-between">
+            <CardTitle className="opacity-50 hover:opacity-100">
+              <Badge
+                variant="secondary"
+                className="flex border-2 items-center gap-1"
+              >
+                <Star className="h-3 w-3 fill-primary" />
+                {rating}
+              </Badge>
+            </CardTitle>
           </div>
           <CardDescription>{category}</CardDescription>
         </CardHeader>
-        <CardContent className="px-6 pb-1 line-clamp-2">
-          <p className="text-sm text-foreground">{description}</p>
+        <CardContent className="mt-[-1.75rem] px-4 pb-1">
+          <div>
+            <div className="flex items-center text-xl font-semibold leading-none tracking-tigh text-foreground my-6 min-h-[2.5rem]">
+              <div className="w-full text-center">{title}</div>
+            </div>
+            <div className="my-2 mx-1 text-sm text-foreground line-clamp-2">
+              {description}
+            </div>
+          </div>
         </CardContent>
         <Separator
           orientation="horizontal"
-          className="w-auto mx-6 my-1 bg-neutral-800"
+          className="w-auto mx-4 my-1 bg-neutral-800"
         />
-        <CardFooter className="justify-between px-6 pt-1 pb-4 items-center">
-          <p className="t-2 text-xs text-foreground-accent group-hover:text-foreground">
-            by {creator["username"]}
-          </p>
-          <p className="t-2 text-xs text-foreground">Try it now</p>
+        <CardFooter className="justify-between px-4 pt-1 pb-4 items-center">
+          <div className="flex flex-row gap-2 t-2 items-center">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div className="text-xs text-foreground-accent">
+              by {creator["username"]}
+            </div>
+          </div>
+          <div className="t-2 text-xs text-foreground">Try it now</div>
         </CardFooter>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }

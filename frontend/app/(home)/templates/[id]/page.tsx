@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { ConfigType } from "@/services/templates/enum";
+import { ConfigType } from "@/lib/templates/enum";
 import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

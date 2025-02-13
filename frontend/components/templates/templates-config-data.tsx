@@ -33,7 +33,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { ConfigType } from "@/services/templates/enum";
+import { ConfigType } from "@/lib/templates/enum";
 import { List, Plus, Settings, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { v7 } from "uuid";

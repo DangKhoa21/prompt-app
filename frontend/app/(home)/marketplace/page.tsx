@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PromptMarketplaceCard } from "@/components/prompt/prompt-marketplace-card";
-import { Search, ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 
-import { useQuery } from "@tanstack/react-query";
 import { getPrompts, getTags } from "@/services/prompt";
+import { useQuery } from "@tanstack/react-query";
+import PromptHoverCard from "@/components/prompt/prompt-hover-card";
 
 // TODO: Seeding more data based on the following sample data
 // const templates = [
@@ -182,9 +182,9 @@ export default function Page() {
           ))}
         </div>
 
-        <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_320px)]">
+        <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)]">
           {templates.map((template, i) => (
-            <PromptMarketplaceCard category={""} key={i} {...template} />
+            <PromptHoverCard category={""} key={i} {...template} />
           ))}
         </div>
       </div>
