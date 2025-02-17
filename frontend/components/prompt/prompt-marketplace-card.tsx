@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import Link from "next/link";
@@ -22,15 +21,8 @@ export interface MarketplaceCardProps {
     id: string;
     username: string;
   };
-  category: string;
-  stars: [
-    userId: string,
-    promptId: string,
-    user: {
-      id: string;
-      username: string;
-    },
-  ];
+  hasStarred: boolean;
+  starCount: number;
 }
 
 const formatRating = (num: number): string => {
@@ -50,10 +42,10 @@ export function PromptMarketplaceCard({
   title,
   description,
   creator,
-  category,
-  stars,
+  hasStarred,
+  starCount,
 }: MarketplaceCardProps) {
-  const rating = formatRating(stars.length);
+  const rating = formatRating(starCount);
 
   if (variant === "hover") {
     return (
@@ -71,7 +63,6 @@ export function PromptMarketplaceCard({
                 </Badge>
               </div>
             </div>
-            <div>{category}</div>
           </div>
           <div className="mt-[-1.75rem] px-4 pb-1">
             <div>
@@ -122,12 +113,11 @@ export function PromptMarketplaceCard({
               </Badge>
             </CardTitle>
           </div>
-          <CardDescription>{category}</CardDescription>
         </CardHeader>
         <CardContent className="mt-[-1.75rem] px-4 pb-1">
           <div>
             <div className="flex items-center text-xl font-semibold leading-none tracking-tigh text-foreground my-6 min-h-[2.5rem]">
-              <div className="w-full text-center">{title}</div>
+              <div className="w-full">{title}</div>
             </div>
             <div className="my-2 mx-1 text-sm text-foreground line-clamp-2">
               {description}

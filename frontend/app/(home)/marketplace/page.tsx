@@ -1,127 +1,51 @@
 "use client";
 
+import React from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Search } from "lucide-react";
+import { LoadingSpinner } from "@/components/icons";
+import { Search } from "lucide-react";
 
 import { getPrompts, getTags } from "@/services/prompt";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
 import PromptHoverCard from "@/components/prompt/prompt-hover-card";
-
-// TODO: Seeding more data based on the following sample data
-// const templates = [
-//   {
-//     id: getRandomOption(),
-//     title: "Translate",
-//     description: "Translate the provided text into your desired language",
-//     rating: "4.5k",
-//     author: "AI Team",
-//     category: "Language",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Summarize",
-//     description: "Generate concise summaries of long articles",
-//     rating: "5.2k",
-//     author: "Content Team",
-//     category: "Content",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Code Review",
-//     description: "Get detailed code reviews with suggestions for improvements",
-//     rating: "3.8k",
-//     author: "Dev Team",
-//     category: "Development",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Brainstorm",
-//     description: "Give creative suggestions that fit your criterias",
-//     rating: "1.2k",
-//     author: "Content Team",
-//     category: "Content",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Teacher",
-//     description:
-//       "Role-playing option that help AI Agent act as your tutor, explaining concepts that you need",
-//     rating: "2.7k",
-//     author: "AI Team",
-//     category: "Learning",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Analyzing Data",
-//     description:
-//       "Give the data and criterias that fit your demands and AI will give you the expected output",
-//     rating: "4.4k",
-//     author: "Analyst Team",
-//     category: "Analyzing",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Write a Blog",
-//     description:
-//       "Generate a fully detailed blog post on the topic of your choice",
-//     rating: "3.9k",
-//     author: "Content Team",
-//     category: "Writing",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Grammar Check",
-//     description: "Identify and correct grammatical errors in your writing",
-//     rating: "4.7k",
-//     author: "Linguist Team",
-//     category: "Language",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Data Visualization",
-//     description: "Create insightful charts and graphs based on your data",
-//     rating: "5.0k",
-//     author: "Data Team",
-//     category: "Analyzing",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Generate Ideas",
-//     description: "Provide prompts to help brainstorm new and creative ideas",
-//     rating: "3.6k",
-//     author: "Creative Team",
-//     category: "Creativity",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Optimize SEO",
-//     description:
-//       "Analyze and improve the SEO ranking of your website or content",
-//     rating: "4.1k",
-//     author: "SEO Team",
-//     category: "Marketing",
-//   },
-//   {
-//     id: getRandomOption(),
-//     title: "Debug Code",
-//     description: "Find and fix bugs in your code quickly and effectively",
-//     rating: "3.5k",
-//     author: "Dev Team",
-//     category: "Development",
-//   },
-// ];
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
+  const searchParams = useSearchParams();
+  const tagId = searchParams.get("tagId");
+  const { ref, inView } = useInView();
   const {
-    isPending: isPromptsLoading,
-    isError: isPromptsError,
-    data: promptsData,
-    error: promptsError,
-  } = useQuery({
-    queryKey: ["prompts"],
-    queryFn: () => getPrompts(),
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["prompts", tagId],
+    queryFn: ({ pageParam }) => getPrompts({ pageParam, tagId }),
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
+
+  React.useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, inView]);
+
+  const updateTagId = React.useCallback(
+    (tagId: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (tagId.length) params.set("tagId", tagId);
+      else params.delete("tagId");
+      window.history.pushState(null, "", `?${params.toString()}`);
+    },
+    [searchParams]
+  );
 
   const {
     isPending: isTagsLoading,
@@ -133,61 +57,71 @@ export default function Page() {
     queryFn: () => getTags(),
   });
 
-  if (isPromptsLoading) {
-    return <span>Loading...</span>;
+  if (status === "pending") {
+    return null;
   }
 
-  if (isPromptsError) {
-    return <span>Error: {promptsError.message}</span>;
+  if (status === "error") {
+    return <span>Error: {error.message}</span>;
   }
-  const templates = promptsData;
 
   if (isTagsLoading) {
-    return <span>Loading...</span>;
+    return null;
   }
 
   if (isTagsError) {
     return <span>Error: {tagsError.message}</span>;
   }
-  const tags = tagsData;
 
   return (
-    <main className="flex-1 overflow-auto bg-background">
-      <div className="max-w-6xl mx-auto mt-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold mb-2">Marketplace</h1>
-          <p className="text-muted-foreground mb-6">
-            Discover and create custom versions prompts that combine
-            instructions, extra knowledge, and any combination of skills.
-          </p>
-
-          <div className="inline-flex relative mb-6 w-3/5 max-w-screen-lg justify-center">
+    <div className="flex-1 overflow-auto bg-background">
+      <div className="max-w-6xl mx-auto mt-12">
+        <div className="text-center mb-4">
+          <h1 className="text-3xl font-bold mb-2">Marketplace</h1>
+          <div className="w-2/3 mx-auto">
+            <p className="text-muted-foreground mb-4">
+              Discover and create custom versions prompts that combine
+              instructions, extra knowledge, and any combination of skills.
+            </p>
+          </div>
+          <div className="inline-flex relative mb-2 w-3/5 max-w-screen-lg justify-center">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search" className="pl-9" />
           </div>
         </div>
+
         <div className="flex flex-wrap gap-3 mb-8 justify-center">
-          {tags.map((filter, i) => (
+          {tagsData.map((tag) => (
             <Button
-              key={i}
-              variant={i === tags.length - 1 ? "default" : "secondary"}
+              key={tag.id}
+              variant={tag.id === tagId ? "secondary" : "outline"}
               size="sm"
               className="rounded-2xl gap-1 px-4"
+              onClick={() =>
+                tag.id === tagId ? updateTagId("") : updateTagId(tag.id)
+              }
             >
-              {filter.name}
-              {i === tags.length - 1 && (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
+              {tag.name}
             </Button>
           ))}
         </div>
 
         <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)]">
-          {templates.map((template, i) => (
-            <PromptHoverCard category={""} key={i} {...template} />
+          {data.pages.map((group, i) => (
+            <React.Fragment key={i}>
+              {group.data.map((prompt) => (
+                <PromptHoverCard key={prompt.id} {...prompt} />
+              ))}
+            </React.Fragment>
           ))}
         </div>
+
+        <div className="flex justify-center">
+          {isFetchingNextPage ? <LoadingSpinner /> : null}
+        </div>
+
+        <div ref={ref} className="mt-5" />
       </div>
-    </main>
+    </div>
   );
 }

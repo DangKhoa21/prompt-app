@@ -1,34 +1,25 @@
 import axiosInstance from "@/lib/axios";
 import { PromptCard, PromptWithConfigs, Tag } from "./interface";
+import { Paginated } from "../shared";
 
-export async function getPrompts(): Promise<PromptCard[]> {
-  const response = await axiosInstance.get("/prompts");
-  return response.data.data;
+export async function getPrompts({
+  pageParam,
+  tagId,
+}: {
+  pageParam: string;
+  tagId: string | null;
+}): Promise<Paginated<PromptCard>> {
+  const response = await axiosInstance.get("/prompts", {
+    params: {
+      limit: 3,
+      cursor: pageParam.length > 0 ? pageParam : undefined,
+      tagId: tagId ? tagId : undefined,
+    },
+  });
+  return response.data;
 }
 
-// TODO: update fetch function for tags
 export async function getTags(): Promise<Tag[]> {
-  return [
-    {
-      id: "1",
-      name: "Writing",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "2",
-      name: "Summarizing",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "last",
-      name: "More",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
-
   const response = await axiosInstance.get("/tags");
   return response.data.data;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { TagRepository } from './tag.repository';
 import { PromptService } from '../prompt/prompt.service';
 import {
@@ -19,6 +19,7 @@ import { AppError, ErrForbidden } from 'src/shared';
 export class TagService {
   constructor(
     private readonly tagRepo: TagRepository,
+    @Inject(forwardRef(() => PromptService))
     private readonly promptService: PromptService,
   ) {}
 
@@ -137,5 +138,10 @@ export class TagService {
       id,
       deletedTagIdsOfPrompt,
     );
+  }
+
+  async findPromptIdsByTagId(tagId: string): Promise<string[]> {
+    const promptTags = await this.tagRepo.findPromptTagsByTagId(tagId);
+    return promptTags.map((promptTag) => promptTag.promptId);
   }
 }

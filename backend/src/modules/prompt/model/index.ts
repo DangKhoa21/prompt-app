@@ -15,35 +15,22 @@ export const promptSchema = z.object({
 
 export type Prompt = z.infer<typeof promptSchema>;
 
-export const promptCardSchema = z.object({
-  id: z.string().uuid(),
-  title: z.string(),
-  description: z.string(),
-  stringTemplate: z.string(),
-  creatorId: z.string().uuid(),
-  createdAt: z.date().default(new Date()),
-  updatedAt: z.date().default(new Date()),
-  creator: z
-    .object({
-      id: z.string().uuid(),
-      username: z.string().min(1, 'User name is required'),
-    })
-    .optional(),
-  stars: z
-    .array(
-      z.object({
-        promptId: z.string(),
-        userId: z.string().uuid(),
-        user: z.object({
-          id: z.string().uuid(),
-          username: z.string(),
-        }),
-      }),
-    )
-    .optional(),
-});
+export type PromptCardRepo = Prompt & {
+  creator: {
+    id: string;
+    username: string;
+  };
+  stars: Array<{ userId: string }>;
+};
 
-export type PromptCard = z.infer<typeof promptCardSchema>;
+export type PromptCard = Prompt & {
+  creator: {
+    id: string;
+    username: string;
+  };
+  hasStarred: boolean;
+  starCount: number;
+};
 
 export const promptUpdateDTOSchema = promptSchema.pick({
   title: true,
@@ -54,9 +41,17 @@ export const promptUpdateDTOSchema = promptSchema.pick({
 
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 
-export const promptCondDTOSchema = promptSchema.pick({ title: true }).partial();
+export type PromptCondDTO = {
+  title?: string;
+  promptIds?: string[];
+};
 
-export type PromptCondDTO = z.infer<typeof promptCondDTOSchema>;
+export const promptFilterDTOSchema = z.object({
+  search: z.string().optional(),
+  tagId: z.string().uuid().optional(),
+});
+
+export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;
 
 export const promptConfigSchema = z.object({
   id: z.string().uuid(),

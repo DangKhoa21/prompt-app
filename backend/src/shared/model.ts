@@ -28,6 +28,22 @@ export const userSchema = z.object({
   updatedAt: z.date().default(new Date()),
 });
 
+export const pagingDTOSchema = z.object({
+  limit: z.coerce
+    .number()
+    .min(1, { message: 'Limit must be at least 1' })
+    .max(20)
+    .default(9),
+  cursor: z.string().uuid().optional(),
+});
+
+export type PagingDTO = z.infer<typeof pagingDTOSchema>;
+
+export type Paginated<E> = {
+  data: E[];
+  nextCursor?: string;
+};
+
 export interface TokenPayload {
   sub: string;
   username: string;

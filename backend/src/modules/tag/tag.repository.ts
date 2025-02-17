@@ -52,6 +52,12 @@ export class TagRepository {
     });
   }
 
+  async findPromptTagsByTagId(tagId: string): Promise<PromptTag[]> {
+    return this.prisma.promptTag.findMany({
+      where: { tagId },
+    });
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.tag.delete({
       where: { id },

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PromptRepository } from './prompt.repository';
 import { PromptConfigRepository } from './config.repository';
 import { ConfigValueRepository } from './value.repository';
+import { TagService } from '../tag/tag.service';
 import {
   ErrPromptExisted,
   ErrPromptNotFound,
@@ -17,8 +18,16 @@ import {
   PromptConfigUpdateDTO,
   ConfigValueUpdateDTO,
   PromptCard,
+  PromptFilterDTO,
+  promptFilterDTOSchema,
 } from './model';
-import { AppError, ErrForbidden } from 'src/shared';
+import {
+  AppError,
+  ErrForbidden,
+  Paginated,
+  PagingDTO,
+  pagingDTOSchema,
+} from 'src/shared';
 
 @Injectable()
 export class PromptService {
@@ -26,6 +35,8 @@ export class PromptService {
     private readonly promptRepo: PromptRepository,
     private readonly configRepo: PromptConfigRepository,
     private readonly valueRepo: ConfigValueRepository,
+    @Inject(forwardRef(() => TagService))
+    private readonly tagService: TagService,
   ) {}
 
   async create(
@@ -80,8 +91,44 @@ export class PromptService {
     return data.id;
   }
 
-  async findAll(): Promise<PromptCard[]> {
-    return this.promptRepo.findAll();
+  async findAll(
+    userId: string | null,
+    pagingDTO: PagingDTO,
+    filterDTO: PromptFilterDTO,
+  ): Promise<Paginated<PromptCard>> {
+    const paging = pagingDTOSchema.parse(pagingDTO);
+    const filter = promptFilterDTOSchema.parse(filterDTO);
+
+    const promptIdsByTagId = filter.tagId
+      ? await this.tagService.findPromptIdsByTagId(filter.tagId)
+      : undefined;
+
+    const { data: promptCardsRepo, nextCursor } = await this.promptRepo.findAll(
+      paging,
+      { promptIds: promptIdsByTagId },
+    );
+
+    // track if requester has starred a prompt
+    const hasStarredMap: Record<string, boolean> = {};
+
+    if (userId) {
+      promptCardsRepo.forEach((prompt) => {
+        // hasStarredMap[prompt.id] = true if prompt stars list includes userId
+        hasStarredMap[prompt.id] = prompt.stars.some(
+          (star) => star.userId === userId,
+        );
+      });
+    }
+
+    const promptCards = promptCardsRepo.map(({ stars, ...rest }) => {
+      return {
+        ...rest,
+        hasStarred: hasStarredMap[rest.id] === true,
+        starCount: stars.length,
+      };
+    });
+
+    return { data: promptCards, nextCursor };
   }
 
   async findOne(id: string): Promise<PromptWithConfigs> {
