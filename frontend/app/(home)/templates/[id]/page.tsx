@@ -14,13 +14,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
+import { cn, generateUUID } from "@/lib/utils";
 import { ConfigType } from "@/lib/templates/enum";
-import { ChevronLeft, Pencil } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPromptTemplate, updatePromptTemplate } from "@/services/prompt";
@@ -28,7 +27,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
   ConfigValue,
-  PromptConfig,
+  TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 import { toast } from "sonner";
@@ -127,28 +126,26 @@ export default function Page() {
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[] | null,
-    ): PromptConfig => ({
-      id: id.toString(),
+      values: ConfigValue[],
+    ): TemplateConfig => ({
+      id: id,
       label,
       type,
       promptId: promptData.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       values,
     });
 
     const result =
       matches.length !== 0
-        ? matches.map((name, index) => {
+        ? matches.map((name) => {
             const res = promptData.configs.find((c) => c.label === name);
             return (
               res ??
               createConfig(
-                (index + 1).toString(),
+                generateUUID().toString(),
                 name,
                 ConfigType.Textarea,
-                null,
+                [],
               )
             );
           })
@@ -170,6 +167,7 @@ export default function Page() {
 
     updateTemplate(promptData);
     console.log(
+      "Saving prompt: ",
       isUpdateTemplatePending,
       isUpdateTemplateError,
       updateTemplateError,
@@ -255,7 +253,7 @@ export default function Page() {
                     {promptData.configs.map((config, i) => (
                       <TemplatesConfigData
                         key={config.id}
-                        index={i.toString()}
+                        index={i}
                         {...config}
                         setPromptData={setPromptData}
                         isSidebarOpen={open}

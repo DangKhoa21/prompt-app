@@ -21,8 +21,6 @@ import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "sonner";
 
 const useCreatePromptTemplate = () => {
   const router = useRouter();

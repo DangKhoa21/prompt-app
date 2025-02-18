@@ -61,7 +61,7 @@ export interface TemplateConfig {
   label: string;
   type: string;
   promptId: string;
-  values: TemplateConfigValue[] | null;
+  values: TemplateConfigValue[];
 }
 
 export interface PromptWithConfigs extends Prompt {

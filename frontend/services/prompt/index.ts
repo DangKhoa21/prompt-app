@@ -6,7 +6,6 @@ import {
   Tag,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { PromptCard, PromptWithConfigs, Tag } from "./interface";
 import { Paginated } from "../shared";
 
 export async function getPrompts({

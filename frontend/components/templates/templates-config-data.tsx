@@ -42,7 +42,7 @@ import {
 } from "@/services/prompt/interface";
 
 interface ConfigProp extends TemplateConfig {
-  index: string;
+  index: number;
   setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   isSidebarOpen?: boolean;
 }
