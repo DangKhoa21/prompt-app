@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -8,8 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import Link from "next/link";
 
@@ -57,19 +56,17 @@ export function PromptMarketplaceCard({
 
   if (variant === "hover") {
     return (
-      <div className="bg-card hover:shadow-md rounded-3xl">
+      <div className="bg-card">
         <Link href={`/?promptId=${id}`}>
-          <div className="space-y-1 px-4 pt-2 pb-1">
-            <div className="flex flex-row-reverse items-center justify-between">
-              <div className="opacity-50 hover:opacity-100">
-                <Badge
-                  variant="secondary"
-                  className="flex border-2 items-center gap-1"
-                >
-                  <Star className="h-3 w-3 fill-primary" />
-                  {rating}
-                </Badge>
-              </div>
+          <div className="space-y-1 pt-2 pb-1">
+            <div className="flex flex-row-reverse items-center justify-between opacity-50 hover:opacity-100">
+              <Badge
+                variant="secondary"
+                className="flex border-2 items-center gap-1"
+              >
+                <Star className="h-3 w-3 fill-primary" />
+                {rating}
+              </Badge>
             </div>
             <div>{category}</div>
           </div>

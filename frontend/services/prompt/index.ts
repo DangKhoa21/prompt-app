@@ -1,34 +1,18 @@
 import axiosInstance from "@/lib/axios";
-import { PromptCard, PromptWithConfigs, Tag } from "./interface";
+import {
+  PromptCard,
+  PromptWithConfigs,
+  PromptWithConfigsCreation,
+  Tag,
+  TemplateWithConfigs,
+} from "@/services/prompt/interface";
 
 export async function getPrompts(): Promise<PromptCard[]> {
   const response = await axiosInstance.get("/prompts");
   return response.data.data;
 }
 
-// TODO: update fetch function for tags
 export async function getTags(): Promise<Tag[]> {
-  return [
-    {
-      id: "1",
-      name: "Writing",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "2",
-      name: "Summarizing",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "last",
-      name: "More",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
-
   const response = await axiosInstance.get("/tags");
   return response.data.data;
 }
@@ -47,5 +31,41 @@ export async function getPrompt(id: string | null): Promise<PromptWithConfigs> {
     };
   }
   const response = await axiosInstance.get(`/prompts/${id}`);
+  return response.data.data;
+}
+
+export async function getPromptTemplates(): Promise<PromptCard[]> {
+  const response = await axiosInstance.get(`/prompts/templates`);
+  return response.data.data;
+}
+
+export async function getTagsForTemplate(id: string): Promise<Tag[]> {
+  const response = await axiosInstance.get(`/prompts/${id}/tags`);
+  return response.data.data;
+}
+
+export async function getPromptTemplate(
+  id: string,
+): Promise<TemplateWithConfigs> {
+  const response = await axiosInstance.get(`/prompts/${id}`);
+  return response.data.data;
+}
+
+export async function createPromptTemplate(
+  data: PromptWithConfigsCreation,
+): Promise<string> {
+  const response = await axiosInstance.post(`/prompts`, data);
+  return response.data.data;
+}
+
+export async function updatePromptTemplate(
+  data: TemplateWithConfigs,
+): Promise<boolean> {
+  const response = await axiosInstance.put(`/prompts/${data.id}`, data);
+  return response.data.data;
+}
+
+export async function deletePromptTemplate(id: string): Promise<boolean> {
+  const response = await axiosInstance.delete(`/prompts/${id}`);
   return response.data.data;
 }

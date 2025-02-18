@@ -22,86 +22,100 @@ import { cn } from "@/lib/utils";
 import { ConfigType } from "@/lib/templates/enum";
 import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getPromptTemplate, updatePromptTemplate } from "@/services/prompt";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import {
+  ConfigValue,
+  PromptConfig,
+  TemplateWithConfigs,
+} from "@/services/prompt/interface";
+import { toast } from "sonner";
 
-interface ConfigValue {
-  id: string;
-  value: string;
-}
-
-interface Config {
-  id: string;
-  label: string;
-  type: ConfigType;
-  configValues: ConfigValue[] | null;
-}
-
-export interface Template {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[];
-  systemInstruction: string;
-  promptTemplate: string;
-  configs: Config[];
-}
+const useUpdatePromptTemplate = () => {
+  return useMutation({
+    mutationFn: updatePromptTemplate,
+    onSuccess: (res: boolean) => {
+      console.log(res);
+    },
+    onError: (error: string) => {
+      console.error("Error updating template:", error);
+    },
+  });
+};
 
 // TODO: Implement page for specified ID (Missing tags, save to cloud)
 export default function Page() {
-  const [initialPrompt, setInitialPrompt] = useState<Template>({
-    id: "1",
-    name: "Template Name",
-    description:
-      "This template is used for writing, brainstorming new idea for your project, ... etc",
-    tags: ["Writing", "Project", "Creative"],
-    systemInstruction:
-      "You are asked to perform the following action with specified role, follow them strictly.",
-    promptTemplate:
-      "You are my ${Role}, and your task is to help me in ${Field} at the level of ${Level}. More detail: ${Detail}",
-    configs: [
-      {
-        id: "1",
-        label: "Role",
-        type: ConfigType.Dropdown,
-        configValues: [
-          { id: "1", value: "Teacher" },
-          { id: "2", value: "Assistant" },
-        ],
-      },
-      {
-        id: "2",
-        label: "Field",
-        type: ConfigType.Dropdown,
-        configValues: [
-          { id: "1", value: "Computer Science" },
-          { id: "2", value: "Information Technology" },
-        ],
-      },
-      {
-        id: "3",
-        label: "Level",
-        type: ConfigType.Dropdown,
-        configValues: [
-          { id: "1", value: "Beginner" },
-          { id: "2", value: "Intermediate" },
-          { id: "3", value: "Expert" },
-        ],
-      },
-      {
-        id: "4",
-        label: "Detail",
-        type: ConfigType.Textarea,
-        configValues: null,
-      },
-    ],
+  const params = useParams();
+  const id = params.id.toString();
+  console.log(id);
+
+  const {
+    isPending: isPromptTemplateLoading,
+    isError: isPromptTemplateError,
+    data: promptTemplateData,
+    error: promptTemplateError,
+  } = useQuery({
+    queryKey: ["templates", id],
+    queryFn: () => getPromptTemplate(id),
   });
 
-  const [promptData, setPromptData] = useState<Template>(initialPrompt);
+  console.log(
+    isPromptTemplateLoading,
+    isPromptTemplateError,
+    promptTemplateError,
+  );
+
+  const [initialPrompt, setInitialPrompt] = useState<TemplateWithConfigs>({
+    id: "",
+    title: "",
+    description: "",
+    stringTemplate: "",
+    creatorId: "",
+    configs: [],
+  });
+
+  const [promptData, setPromptData] =
+    useState<TemplateWithConfigs>(initialPrompt);
+
+  const {
+    mutate: updateTemplate,
+    isPending: isUpdateTemplatePending,
+    isError: isUpdateTemplateError,
+    error: updateTemplateError,
+  } = useUpdatePromptTemplate();
 
   const { open } = useSidebar();
 
+  useEffect(() => {
+    if (isPromptTemplateError) {
+      toast.error(
+        `Failed to load messages for chat ${id} (${promptTemplateError?.message})`,
+      );
+    } else if (!isPromptTemplateLoading && promptTemplateData) {
+      setInitialPrompt(promptTemplateData);
+      setPromptData(promptTemplateData);
+      toast.dismiss();
+    }
+  }, [
+    isPromptTemplateError,
+    isPromptTemplateLoading,
+    id,
+    promptTemplateData,
+    promptTemplateError,
+  ]);
+
+  if (isPromptTemplateLoading) {
+    return "Loading";
+  }
+
+  if (!promptData) {
+    return <>Prompt not found.</>;
+  }
+
   const handleParseTemplate = () => {
-    const promptTemplate = promptData.promptTemplate;
+    const promptTemplate = promptData.stringTemplate;
     const matches = Array.from(
       new Set(
         promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
@@ -113,12 +127,15 @@ export default function Page() {
       id: string,
       label: string,
       type: ConfigType,
-      configValues: ConfigValue[] | null,
-    ): Config => ({
+      values: ConfigValue[] | null,
+    ): PromptConfig => ({
       id: id.toString(),
       label,
       type,
-      configValues,
+      promptId: promptData.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      values,
     });
 
     const result =
@@ -150,6 +167,13 @@ export default function Page() {
   //TODO: Hanle save to api
   const handleSave = () => {
     setInitialPrompt(promptData);
+
+    updateTemplate(promptData);
+    console.log(
+      isUpdateTemplatePending,
+      isUpdateTemplateError,
+      updateTemplateError,
+    );
   };
 
   return (
@@ -169,8 +193,8 @@ export default function Page() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <EditTextField
-                  text={promptData.name}
-                  label="name"
+                  text={promptData.title}
+                  label="title"
                   setPromptData={setPromptData}
                   className="text-2xl font-semibold"
                 ></EditTextField>
@@ -185,40 +209,40 @@ export default function Page() {
                 ></EditTextField>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="flex flex-wrap gap-2">
-                  {promptData.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
+              {/* <div className="flex items-center gap-2"> */}
+              {/*   <div className="flex flex-wrap gap-2"> */}
+              {/*     {promptData.tags.map((tag) => ( */}
+              {/*       <Badge key={tag} variant="secondary"> */}
+              {/*         {tag} */}
+              {/*       </Badge> */}
+              {/*     ))} */}
+              {/*   </div> */}
+              {/*   <Button variant="ghost" size="icon" className="h-8 w-8"> */}
+              {/*     <Pencil className="h-4 w-4" /> */}
+              {/*   </Button> */}
+              {/* </div> */}
             </div>
 
             <div
               className={cn(
-                "grid gap-6 h-fit",
+                "grid gap-6 h-fit lg:grid-cols-2",
                 open ? "md:grid-cols-1" : "md:grid-cols-2",
               )}
             >
               <div className="space-y-4 h-fit">
-                <TemplatesConfigTextarea
-                  id="systemInstruction"
-                  label="System Instruction"
-                  placeholder="Enter your System Instruction ..."
-                  value={promptData.systemInstruction}
-                  setPromptData={setPromptData}
-                />
+                {/* <TemplatesConfigTextarea */}
+                {/*   id="systemInstruction" */}
+                {/*   label="System Instruction" */}
+                {/*   placeholder="Enter your System Instruction ..." */}
+                {/*   value={promptData.systemInstruction} */}
+                {/*   setPromptData={setPromptData} */}
+                {/* /> */}
 
                 <TemplatesConfigTextarea
-                  id="promptTemplate"
+                  id="stringTemplate"
                   label="Prompt Template"
                   placeholder="Enter your Prompt Template..."
-                  value={promptData.promptTemplate}
+                  value={promptData.stringTemplate}
                   setPromptData={setPromptData}
                 />
               </div>
@@ -228,9 +252,10 @@ export default function Page() {
 
                 <ScrollArea className="h-[576px] border rounded-md p-4 lg:ml-12">
                   <div className="space-y-4">
-                    {promptData.configs.map((config) => (
+                    {promptData.configs.map((config, i) => (
                       <TemplatesConfigData
                         key={config.id}
+                        index={i.toString()}
                         {...config}
                         setPromptData={setPromptData}
                         isSidebarOpen={open}

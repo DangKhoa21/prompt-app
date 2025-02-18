@@ -96,6 +96,10 @@ export class PromptService {
     return this.promptRepo.findByIds(ids);
   }
 
+  async findByUserWithConfigs(userId: string): Promise<PromptCard[]> {
+    return this.promptRepo.findByUserWithConfigs(userId);
+  }
+
   async update(
     id: string,
     dto: PromptWithConfigsUpdateDTO,

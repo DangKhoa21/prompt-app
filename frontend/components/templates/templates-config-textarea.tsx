@@ -1,6 +1,6 @@
-import { Template } from "@/app/(home)/templates/[id]/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { TemplateWithConfigs } from "@/services/prompt/interface";
 import { Dispatch, SetStateAction } from "react";
 
 interface configTextareaProp {
@@ -8,7 +8,7 @@ interface configTextareaProp {
   label: string;
   placeholder: string;
   value: string;
-  setPromptData: Dispatch<SetStateAction<Template>>;
+  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
 }
 
 export default function TemplatesConfigTextarea({

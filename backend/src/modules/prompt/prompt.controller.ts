@@ -38,6 +38,14 @@ export class PromptController {
     return { data };
   }
 
+  @Get('templates')
+  @UseGuards(JwtAuthGuard)
+  async findAllByUser(@Request() req: ReqWithRequester) {
+    const { sub: userId } = req.user;
+    const data = await this.promptService.findByUserWithConfigs(userId);
+    return { data };
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const data = await this.promptService.findOne(id);

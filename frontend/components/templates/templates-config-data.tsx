@@ -1,4 +1,3 @@
-import { Template } from "@/app/(home)/templates/[id]/page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -37,26 +36,23 @@ import { ConfigType } from "@/lib/templates/enum";
 import { List, Plus, Settings, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { v7 } from "uuid";
+import {
+  TemplateConfig,
+  TemplateWithConfigs,
+} from "@/services/prompt/interface";
 
-interface ConfigValue {
-  id: string;
-  value: string;
-}
-
-interface ConfigProp {
-  id: string;
-  label: string;
-  type: ConfigType;
-  configValues: ConfigValue[] | null;
-  setPromptData: Dispatch<SetStateAction<Template>>;
+interface ConfigProp extends TemplateConfig {
+  index: string;
+  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   isSidebarOpen?: boolean;
 }
 
 export default function TemplatesConfigData({
   id,
+  index,
   label,
   type,
-  configValues,
+  values,
   setPromptData,
   isSidebarOpen,
 }: ConfigProp) {
@@ -82,7 +78,7 @@ export default function TemplatesConfigData({
           ? {
               ...config,
               configValues: [
-                ...(config.configValues ?? []),
+                ...(config.values ?? []),
                 { id: v7(), value: value },
               ],
             }
@@ -107,7 +103,7 @@ export default function TemplatesConfigData({
         config.id === configId
           ? {
               ...config,
-              configValues: (config.configValues ?? []).filter(
+              configValues: (config.values ?? []).filter(
                 (value) => value.id !== configValueId,
               ),
             }
@@ -123,7 +119,9 @@ export default function TemplatesConfigData({
         className={cn("pt-4 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
       >
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">Config {id}</CardTitle>
+          <CardTitle className="text-base font-semibold">
+            Config {index + 1}
+          </CardTitle>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Settings className="h-4 w-4" />
@@ -195,23 +193,23 @@ export default function TemplatesConfigData({
                       &apos;{label}&apos; list values
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {configValues === null || configValues.length === 0 ? (
+                    {values === null || values.length === 0 ? (
                       <div className="mx-auto flex items-center justify-center">
                         Currently empty
                       </div>
                     ) : (
-                      configValues.map((configValue) => (
+                      values.map((value) => (
                         <div
-                          key={configValue.id}
+                          key={value.id}
                           className="group flex justify-between h-8 text-sm items-center px-2 py-1"
                         >
-                          {configValue.value}
+                          {value.value}
                           <Button
                             variant="ghost"
                             size="icon"
                             className="hidden group-hover:flex group-focus:flex h-8 w-8 text-destructive"
                             onClick={() =>
-                              handleDeleteConfigValue(id, configValue.id)
+                              handleDeleteConfigValue(id, value.id)
                             }
                           >
                             <X className="h-4 w-4" />

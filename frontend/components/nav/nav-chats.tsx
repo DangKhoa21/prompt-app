@@ -93,7 +93,7 @@ const ChatItem = ({
 );
 
 export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile, open } = useSidebar();
   const pathname = usePathname();
   const match = pathname.match(/\/chat\/([^/]+)/);
   const id = match ? match[1] : null;
@@ -142,7 +142,7 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
       <SidebarGroup>
         <SidebarGroupContent>
           <div className="text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2 p-2">
-            <div>Login to save and revisit previous chats!</div>
+            {open ? <div>Login to save and revisit previous chats!</div> : ""}
           </div>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -221,7 +221,7 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
         lastWeek: [],
         lastMonth: [],
         older: [],
-      } as GroupedChats
+      } as GroupedChats,
     );
   };
 

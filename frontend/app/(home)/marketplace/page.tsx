@@ -4,9 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Search } from "lucide-react";
 
+import PromptHoverCard from "@/components/prompt/prompt-hover-card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { getPrompts, getTags } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import PromptHoverCard from "@/components/prompt/prompt-hover-card";
 
 // TODO: Seeding more data based on the following sample data
 // const templates = [
@@ -149,7 +155,10 @@ export default function Page() {
   if (isTagsError) {
     return <span>Error: {tagsError.message}</span>;
   }
-  const tags = tagsData;
+
+  const noTags = 2;
+  const tags = tagsData.slice(0, noTags);
+  const remainingTags = tagsData.slice(noTags);
 
   return (
     <main className="flex-1 overflow-auto bg-background">
@@ -170,16 +179,52 @@ export default function Page() {
           {tags.map((filter, i) => (
             <Button
               key={i}
-              variant={i === tags.length - 1 ? "default" : "secondary"}
+              variant="secondary"
               size="sm"
               className="rounded-2xl gap-1 px-4"
             >
               {filter.name}
-              {i === tags.length - 1 && (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
             </Button>
           ))}
+          {remainingTags.length !== 0 ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="rounded-2xl gap-1 px-4"
+                >
+                  More
+                  <ChevronDown className="mr-[-0.25rem] h-4 w-4 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40">
+                {/* <DropdownMenuGroup> */}
+                {/*   <DropdownMenuItem> */}
+                {/*     Profile */}
+                {/*     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                {/*   </DropdownMenuItem> */}
+                {/*   <DropdownMenuItem> */}
+                {/*     Billing */}
+                {/*     <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                {/*   </DropdownMenuItem> */}
+                {/*   <DropdownMenuItem> */}
+                {/*     Settings */}
+                {/*     <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                {/*   </DropdownMenuItem> */}
+                {/*   <DropdownMenuItem> */}
+                {/*     Keyboard shortcuts */}
+                {/*     <DropdownMenuShortcut>⌘K</DropdownMenuShortcut> */}
+                {/*   </DropdownMenuItem> */}
+                {/* </DropdownMenuGroup> */}
+                {remainingTags.map((filter, i) => (
+                  <DropdownMenuItem key={i}>{filter.name}</DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            ""
+          )}
         </div>
 
         <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)]">

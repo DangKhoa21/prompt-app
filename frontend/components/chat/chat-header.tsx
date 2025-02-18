@@ -8,6 +8,7 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { ModelSelector } from "@/components/model-selector";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import UserAvatarNavigator from "@/components/navigator/user-avatar-navigator";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
@@ -66,6 +67,9 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
+
+          <UserAvatarNavigator />
+
           <SidebarTrigger2 className="h-7" />
         </div>
       </div>
