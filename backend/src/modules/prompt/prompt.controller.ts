@@ -6,16 +6,18 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { PromptService } from './prompt.service';
 import {
+  PromptFilterDTO,
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
-import { JwtAuthGuard } from 'src/common/guard';
-import { ReqWithRequester } from 'src/shared';
+import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
+import { PagingDTO, ReqWithRequester, ReqWithRequesterOpt } from 'src/shared';
 
 @Controller('prompts')
 export class PromptController {
@@ -33,9 +35,20 @@ export class PromptController {
   }
 
   @Get()
-  async findAll() {
-    const data = await this.promptService.findAll();
-    return { data };
+  @UseGuards(JwtAuthGuardOptional)
+  async findAll(
+    @Request() req: ReqWithRequesterOpt,
+    @Query() pagingDTO: PagingDTO,
+    @Query() filterDTO: PromptFilterDTO,
+  ) {
+    const requester = req.user;
+    const userId = requester ? requester.sub : null;
+    const result = await this.promptService.findAll(
+      userId,
+      pagingDTO,
+      filterDTO,
+    );
+    return result;
   }
 
   @Get('templates')

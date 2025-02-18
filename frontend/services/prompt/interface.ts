@@ -20,14 +20,8 @@ export interface PromptCard {
     id: string;
     username: string;
   };
-  stars: [
-    userId: string,
-    promptId: string,
-    user: {
-      id: string;
-      username: string;
-    },
-  ];
+  hasStarred: boolean;
+  starCount: number;
 }
 
 export interface PromptTemplate {

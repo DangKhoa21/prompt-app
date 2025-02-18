@@ -35,7 +35,10 @@ export class JwtAuthGuardOptional extends AuthGuard('jwt') {
         throw ErrTokenInvalid.withLog('Token parse failed').withMessage(
           'Token expired. Please login again.',
         );
-      } else if (info?.message === 'jwt malformed') {
+      } else if (
+        info?.message === 'jwt malformed' ||
+        info?.message === 'No auth token'
+      ) {
         return null; // if request sent with "Authorization: Bearer" aka sent without login
       }
       throw ErrTokenInvalid.withLog('Token parse failed').withLog(

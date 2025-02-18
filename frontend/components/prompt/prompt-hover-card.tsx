@@ -9,7 +9,7 @@ import {
 } from "@/components/prompt/prompt-marketplace-card";
 
 export default function PromptHoverCard(
-  marketplaceCardProps: MarketplaceCardProps,
+  marketplaceCardProps: MarketplaceCardProps
 ) {
   return (
     <HoverCard>

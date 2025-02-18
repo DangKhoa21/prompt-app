@@ -6,10 +6,26 @@ import {
   Tag,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { PromptCard, PromptWithConfigs, Tag } from "./interface";
+import { Paginated } from "../shared";
 
-export async function getPrompts(): Promise<PromptCard[]> {
-  const response = await axiosInstance.get("/prompts");
-  return response.data.data;
+export async function getPrompts({
+  limit,
+  pageParam,
+  tagId,
+}: {
+  limit?: number;
+  pageParam: string;
+  tagId?: string | null;
+}): Promise<Paginated<PromptCard>> {
+  const response = await axiosInstance.get("/prompts", {
+    params: {
+      limit: limit ? limit : undefined,
+      cursor: pageParam.length > 0 ? pageParam : undefined,
+      tagId: tagId ? tagId : undefined,
+    },
+  });
+  return response.data;
 }
 
 export async function getTags(): Promise<Tag[]> {

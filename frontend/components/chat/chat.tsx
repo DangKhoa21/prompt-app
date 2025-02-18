@@ -29,6 +29,7 @@ export function Chat({
   const queryClient = useQueryClient();
   const router = useRouter();
   const { token, isAuthenticated } = useAuth();
+  const searchParams = new URLSearchParams(window.location.search);
 
   const {
     messages,
@@ -50,7 +51,7 @@ export function Chat({
       if (messages.length === 0) {
         queryClient.invalidateQueries({ queryKey: ["history"] });
         if (isAuthenticated) {
-          router.push(`/chat/${id}`);
+          router.push(`/chat/${id}?${searchParams.toString()}`);
           router.refresh();
         }
       }

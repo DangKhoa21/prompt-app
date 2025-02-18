@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/processors/database/prisma.service';
 import {
   Prompt,
-  PromptCard,
+  PromptCardRepo,
   PromptCondDTO,
   PromptUpdateDTO,
   PromptWithConfigs,
 } from './model';
+import { Paginated, PagingDTO } from 'src/shared';
 
 @Injectable()
 export class PromptRepository {
@@ -84,9 +85,29 @@ export class PromptRepository {
       },
     });
   }
+  async list(
+    paging: PagingDTO,
+    cond: PromptCondDTO,
+  ): Promise<Paginated<PromptCardRepo>> {
+    const { cursor, limit } = paging;
+    const { promptIds, creatorId } = cond;
 
-  async findAll(): Promise<PromptCard[]> {
-    return this.prisma.prompt.findMany({
+    let where = {};
+    if (promptIds) {
+      where = { id: { in: promptIds } };
+    }
+    if (creatorId) {
+      where = { ...where, creatorId };
+    }
+
+    const data: PromptCardRepo[] = await this.prisma.prompt.findMany({
+      take: limit,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: {
+        id: 'desc',
+      },
+      where,
       include: {
         creator: {
           select: {
@@ -95,17 +116,16 @@ export class PromptRepository {
           },
         },
         stars: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
+          select: {
+            userId: true,
           },
         },
       },
     });
+
+    const nextCursor = data.length > 0 ? data[data.length - 1].id : undefined;
+
+    return { data, nextCursor };
   }
 
   async update(id: string, prompt: PromptUpdateDTO): Promise<void> {
