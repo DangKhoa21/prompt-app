@@ -22,6 +22,7 @@ import {
   promptFilterDTOSchema,
   PromptCondDTO,
   PromptCardRepo,
+  TemplateCard,
 } from './model';
 import {
   AppError,
@@ -148,7 +149,7 @@ export class PromptService {
     return this.promptRepo.list(paging, cond);
   }
 
-  async findByUserWithConfigs(userId: string): Promise<PromptCard[]> {
+  async findByUserWithConfigs(userId: string): Promise<TemplateCard[]> {
     return this.promptRepo.findByUserWithConfigs(userId);
   }
 

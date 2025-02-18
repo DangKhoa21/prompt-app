@@ -6,6 +6,7 @@ import {
   PromptCondDTO,
   PromptUpdateDTO,
   PromptWithConfigs,
+  TemplateCard,
 } from './model';
 import { Paginated, PagingDTO } from 'src/shared';
 
@@ -44,7 +45,7 @@ export class PromptRepository {
     });
   }
 
-  async findByUserWithConfigs(creatorId: string): Promise<PromptCard[]> {
+  async findByUserWithConfigs(creatorId: string): Promise<TemplateCard[]> {
     return this.prisma.prompt.findMany({
       where: { creatorId },
       include: {
@@ -62,7 +63,7 @@ export class PromptRepository {
     });
   }
 
-  async findByIds(ids: string[]): Promise<PromptCard[]> {
+  async findByIds(ids: string[]): Promise<TemplateCard[]> {
     return this.prisma.prompt.findMany({
       where: { id: { in: ids } },
       include: {

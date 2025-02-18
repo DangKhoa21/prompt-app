@@ -32,6 +32,8 @@ export type PromptCard = Prompt & {
   starCount: number;
 };
 
+export type TemplateCard = Prompt;
+
 export const promptUpdateDTOSchema = promptSchema.pick({
   title: true,
   description: true,
