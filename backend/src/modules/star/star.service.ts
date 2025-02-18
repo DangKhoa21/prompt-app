@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { StarRepository } from './star.repository';
 import { PromptService } from '../prompt/prompt.service';
 import { ErrAlreadyStarred, ErrNotStarred, Star } from './model';
-import { AppError } from 'src/shared';
+import { AppError, PagingDTO, pagingDTOSchema } from 'src/shared';
 
 @Injectable()
 export class StarService {
@@ -36,13 +36,27 @@ export class StarService {
     await this.starRepo.delete(star);
   }
 
-  async getStarredPrompts(userId: string) {
+  async getStarredPrompts(userId: string, pagingDTO: PagingDTO) {
+    const paging = pagingDTOSchema.parse(pagingDTO);
     const starsByUserId = await this.starRepo.findStarsByUserId(userId);
 
     const starredPromptIds = starsByUserId.map((star) => star.promptId);
 
-    const starredPrompts = await this.promptService.findByIds(starredPromptIds);
+    const { data: promptCardsRepo, nextCursor } = await this.promptService.list(
+      paging,
+      {
+        promptIds: starredPromptIds,
+      },
+    );
 
-    return starredPrompts;
+    const promptCards = promptCardsRepo.map(({ stars, ...rest }) => {
+      return {
+        ...rest,
+        hasStarred: true,
+        starCount: stars.length,
+      };
+    });
+
+    return { data: promptCards, nextCursor };
   }
 }

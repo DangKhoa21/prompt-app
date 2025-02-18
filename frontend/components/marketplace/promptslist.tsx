@@ -20,7 +20,7 @@ export default function PromptsList({ tagId }: { tagId: string }) {
     status,
   } = useInfiniteQuery({
     queryKey: ["prompts", tagId],
-    queryFn: ({ pageParam }) => getPrompts({ pageParam, tagId }),
+    queryFn: ({ pageParam }) => getPrompts({ limit: 3, pageParam, tagId }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });

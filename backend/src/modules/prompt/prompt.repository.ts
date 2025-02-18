@@ -44,36 +44,21 @@ export class PromptRepository {
     });
   }
 
-  async findByIds(ids: string[]): Promise<any> {
-    return this.prisma.prompt.findMany({
-      where: { id: { in: ids } },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-        stars: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
-
-  async findAll(
+  async list(
     paging: PagingDTO,
     cond: PromptCondDTO,
   ): Promise<Paginated<PromptCardRepo>> {
     const { cursor, limit } = paging;
-    const { promptIds } = cond;
+    const { promptIds, creatorId } = cond;
+
+    let where = {};
+    if (promptIds) {
+      where = { id: { in: promptIds } };
+    }
+    if (creatorId) {
+      where = { ...where, creatorId };
+    }
+
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
@@ -81,7 +66,7 @@ export class PromptRepository {
       orderBy: {
         id: 'desc',
       },
-      where: promptIds ? { id: { in: promptIds } } : {},
+      where,
       include: {
         creator: {
           select: {

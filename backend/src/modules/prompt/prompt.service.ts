@@ -20,6 +20,8 @@ import {
   PromptCard,
   PromptFilterDTO,
   promptFilterDTOSchema,
+  PromptCondDTO,
+  PromptCardRepo,
 } from './model';
 import {
   AppError,
@@ -103,9 +105,9 @@ export class PromptService {
       ? await this.tagService.findPromptIdsByTagId(filter.tagId)
       : undefined;
 
-    const { data: promptCardsRepo, nextCursor } = await this.promptRepo.findAll(
+    const { data: promptCardsRepo, nextCursor } = await this.promptRepo.list(
       paging,
-      { promptIds: promptIdsByTagId },
+      { promptIds: promptIdsByTagId, creatorId: filter.creatorId },
     );
 
     // track if requester has starred a prompt
@@ -139,8 +141,11 @@ export class PromptService {
     return prompt;
   }
 
-  async findByIds(ids: string[]): Promise<PromptCard[]> {
-    return this.promptRepo.findByIds(ids);
+  async list(
+    paging: PagingDTO,
+    cond: PromptCondDTO,
+  ): Promise<Paginated<PromptCardRepo>> {
+    return this.promptRepo.list(paging, cond);
   }
 
   async update(

@@ -4,12 +4,13 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { StarService } from './star.service';
 import { JwtAuthGuard } from 'src/common/guard';
-import { ReqWithRequester } from 'src/shared';
+import { PagingDTO, ReqWithRequester } from 'src/shared';
 
 @Controller()
 export class StarController {
@@ -36,9 +37,13 @@ export class StarController {
 
   @Get('users/starred-prompts')
   @UseGuards(JwtAuthGuard)
-  async getStarredPrompts(@Request() req: ReqWithRequester) {
+  async getStarredPrompts(
+    @Request() req: ReqWithRequester,
+    @Query() pagingDTO: PagingDTO,
+  ) {
     const { sub: userId } = req.user;
-    const data = await this.starService.getStarredPrompts(userId);
-    return { data };
+    // currently, this is a temporary approach
+    const result = await this.starService.getStarredPrompts(userId, pagingDTO);
+    return result;
   }
 }

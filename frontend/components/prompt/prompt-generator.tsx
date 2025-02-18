@@ -21,9 +21,8 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { getPrompt } from "@/services/prompt";
+import { getPrompt, getPrompts } from "@/services/prompt";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { usePrompt } from "@/context/prompt-context";
 
 export function PromptGeneratorSidebar() {
@@ -43,12 +42,26 @@ export function PromptGeneratorSidebar() {
     queryFn: () => getPrompt(promptId),
   });
 
-  if (isPending) {
+  const {
+    isPending: isPromptsPending,
+    isError: isPromptsError,
+    data: promptsData,
+    error: promptsError,
+  } = useQuery({
+    queryKey: ["prompts"],
+    queryFn: () => getPrompts({ pageParam: "" }),
+  });
+
+  if (isPending || isPromptsPending) {
     return <span>Loading...</span>;
   }
 
   if (isError) {
     return <span>Error: {error.message}</span>;
+  }
+
+  if (isPromptsError) {
+    return <span>Error: {promptsError.message}</span>;
   }
 
   const handleSelectChange = (configLabel: string, value: string) => {
@@ -63,6 +76,12 @@ export function PromptGeneratorSidebar() {
       ...prevState,
       [configLabel]: value,
     }));
+  };
+
+  const handlePromptChange = (promptId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (promptId !== "None") params.set("promptId", promptId);
+    window.history.replaceState(null, "", `?${params.toString()}`);
   };
 
   const generatePrompt = () => {
@@ -104,10 +123,12 @@ export function PromptGeneratorSidebar() {
     <>
       <SidebarHeader className="pb-0">
         <div className="flex items-center p-2">
-          <Button variant="ghost" className="h-8 w-8">
-            <Link href="/marketplace">
-              <ChevronLeft />
-            </Link>
+          <Button
+            variant="ghost"
+            className="h-8 w-8"
+            onClick={() => window.history.back()}
+          >
+            <ChevronLeft />
           </Button>
           <div className="text-base leading-tight ml-2">
             <span className="truncate font-semibold">{data.title}</span>
@@ -119,6 +140,28 @@ export function PromptGeneratorSidebar() {
         <SidebarGroup>
           <SidebarGroupContent className="px-4">
             <p>{data.description}</p>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Label htmlFor="promptList">Change prompt template</Label>
+          </SidebarGroupLabel>
+
+          <SidebarGroupContent className="px-2">
+            <Select onValueChange={(id) => handlePromptChange(id)}>
+              <SelectTrigger id={"promptList"}>
+                <SelectValue placeholder={`Select a prompt template`} />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                <SelectItem value="None">None</SelectItem>
+                {promptsData.data.map((prompt) => (
+                  <SelectItem key={prompt.id} value={prompt.id}>
+                    {prompt.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </SidebarGroupContent>
         </SidebarGroup>
 

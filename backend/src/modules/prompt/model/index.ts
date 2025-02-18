@@ -44,11 +44,13 @@ export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 export type PromptCondDTO = {
   title?: string;
   promptIds?: string[];
+  creatorId?: string;
 };
 
 export const promptFilterDTOSchema = z.object({
   search: z.string().optional(),
   tagId: z.string().uuid().optional(),
+  creatorId: z.string().uuid().optional(),
 });
 
 export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;

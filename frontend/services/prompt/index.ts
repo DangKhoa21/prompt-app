@@ -3,15 +3,17 @@ import { PromptCard, PromptWithConfigs, Tag } from "./interface";
 import { Paginated } from "../shared";
 
 export async function getPrompts({
+  limit,
   pageParam,
   tagId,
 }: {
+  limit?: number;
   pageParam: string;
-  tagId: string | null;
+  tagId?: string | null;
 }): Promise<Paginated<PromptCard>> {
   const response = await axiosInstance.get("/prompts", {
     params: {
-      limit: 3,
+      limit: limit ? limit : undefined,
       cursor: pageParam.length > 0 ? pageParam : undefined,
       tagId: tagId ? tagId : undefined,
     },
