@@ -69,6 +69,7 @@ export interface PromptWithConfigs extends Prompt {
 }
 
 export interface TemplateWithConfigs extends PromptTemplate {
+  tags: TemplateTag[];
   configs: TemplateConfig[];
 }
 
@@ -97,4 +98,9 @@ export interface Tag {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface TemplateTag {
+  id: string;
+  name: string;
 }

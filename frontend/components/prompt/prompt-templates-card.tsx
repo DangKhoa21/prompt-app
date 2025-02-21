@@ -4,6 +4,7 @@ import { deletePromptTemplate } from "@/services/prompt";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Settings, X } from "lucide-react";
 import Link from "next/link";
+import ConfirmDialog from "../utils/confirm-dialog";
 
 interface TemplateCardProps {
   id: string;
@@ -58,14 +59,15 @@ export default function PromptTemplateCard({
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Settings className="h-4 w-4" />
             </Button>
-            <Button
+            <ConfirmDialog
+              description=""
               variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={handleDeleteTemplate}
+              type="icon"
+              className="text-destructive hover:text-destructive"
+              action={handleDeleteTemplate}
             >
               <X className="h-4 w-4" />
-            </Button>
+            </ConfirmDialog>
           </div>
         </div>
         <Link href={"/templates/" + id}>

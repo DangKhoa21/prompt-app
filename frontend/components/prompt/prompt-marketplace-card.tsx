@@ -34,7 +34,7 @@ const formatRating = (num: number): string => {
   return num.toString();
 };
 
-// TODO: Adjust hover card offset to fit the screen
+// TODO: Define new hover-card to fit the purpose
 export function PromptMarketplaceCard({
   id,
   variant,

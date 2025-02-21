@@ -52,7 +52,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
             </Button>
           </BetterTooltip>
           <Separator orientation="vertical" className="h-4" />
-          {!isAuthenticated && (
+          {isAuthenticated === false ? (
             <>
               <Button
                 variant="ghost"
@@ -66,9 +66,9 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
               </Button>
               <Separator orientation="vertical" className="h-4" />
             </>
+          ) : (
+            <UserAvatarNavigator />
           )}
-
-          <UserAvatarNavigator />
 
           <SidebarTrigger2 className="h-7" />
         </div>

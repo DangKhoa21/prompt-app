@@ -3,33 +3,24 @@
 import TemplatesConfigData from "@/components/templates/templates-config-data";
 import TemplatesConfigTextarea from "@/components/templates/templates-config-textarea";
 import EditTextField from "@/components/templates/templates-edit-text";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
-import { cn, generateUUID } from "@/lib/utils";
+import ConfirmDialog from "@/components/utils/confirm-dialog";
 import { ConfigType } from "@/lib/templates/enum";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { cn, generateUUID } from "@/lib/utils";
 import { getPromptTemplate, updatePromptTemplate } from "@/services/prompt";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import {
   ConfigValue,
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronLeft, Pencil } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const useUpdatePromptTemplate = () => {
@@ -48,7 +39,6 @@ const useUpdatePromptTemplate = () => {
 export default function Page() {
   const params = useParams();
   const id = params.id.toString();
-  console.log(id);
 
   const {
     isPending: isPromptTemplateLoading,
@@ -72,6 +62,7 @@ export default function Page() {
     description: "",
     stringTemplate: "",
     creatorId: "",
+    tags: [],
     configs: [],
   });
 
@@ -166,6 +157,7 @@ export default function Page() {
     setInitialPrompt(promptData);
 
     updateTemplate(promptData);
+    console.log(promptData);
     console.log(
       "Saving prompt: ",
       isUpdateTemplatePending,
@@ -207,18 +199,18 @@ export default function Page() {
                 ></EditTextField>
               </div>
 
-              {/* <div className="flex items-center gap-2"> */}
-              {/*   <div className="flex flex-wrap gap-2"> */}
-              {/*     {promptData.tags.map((tag) => ( */}
-              {/*       <Badge key={tag} variant="secondary"> */}
-              {/*         {tag} */}
-              {/*       </Badge> */}
-              {/*     ))} */}
-              {/*   </div> */}
-              {/*   <Button variant="ghost" size="icon" className="h-8 w-8"> */}
-              {/*     <Pencil className="h-4 w-4" /> */}
-              {/*   </Button> */}
-              {/* </div> */}
+              <div className="flex items-center gap-2">
+                <div className="flex flex-wrap gap-2">
+                  {promptData.tags?.map((tag, i) => (
+                    <Badge key={i} variant="secondary">
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div
@@ -266,70 +258,37 @@ export default function Page() {
 
             <div className="grid items-center justify-end md:grid-cols-2">
               <div className="flex justify-end">
-                {/* Parse button */}
-                <Button
+                <ConfirmDialog
+                  description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
                   variant="ghost"
-                  className="h-8 mr-3 border border-slate-500"
-                  onClick={handleParseTemplate}
+                  action={handleParseTemplate}
+                  className="mr-3 border-slate-500"
                 >
                   Parse
-                </Button>
+                </ConfirmDialog>
               </div>
               <div className="flex gap-6 justify-end">
-                {/* Reset button */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="h-8 border border-slate-500"
-                    >
-                      Reset
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your changes.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleReset}>
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <ConfirmDialog
+                  description={
+                    "This action can't be undone, the newst changes will be deleted!"
+                  }
+                  variant={"outline"}
+                  action={handleReset}
+                  className={"border-slate-500"}
+                >
+                  Reset
+                </ConfirmDialog>
 
-                {/* Saving button */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="default"
-                      className="h-8 border border-primary hover:bg-primary"
-                    >
-                      Save
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you done editing?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Confirm completed your changes and save it.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleSave}>
-                        Confirm
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <ConfirmDialog
+                  description={
+                    "This will save your templates, the older values will permanently be deleted!"
+                  }
+                  variant={"default"}
+                  action={handleSave}
+                  className={"border-primary hover:border-primary"}
+                >
+                  Save
+                </ConfirmDialog>
               </div>
             </div>
           </div>
