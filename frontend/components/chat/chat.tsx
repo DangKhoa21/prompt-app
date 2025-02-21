@@ -14,7 +14,7 @@ import { Overview } from "@/components/overview";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 
 export function Chat({
@@ -29,7 +29,7 @@ export function Chat({
   const queryClient = useQueryClient();
   const router = useRouter();
   const { token, isAuthenticated } = useAuth();
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = useSearchParams();
 
   const {
     messages,

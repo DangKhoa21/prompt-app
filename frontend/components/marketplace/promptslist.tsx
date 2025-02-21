@@ -45,7 +45,7 @@ export default function PromptsList({ tagId }: { tagId: string }) {
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.data.map((prompt) => (
-              <PromptHoverCard key={prompt.id} {...prompt} />
+              <PromptHoverCard key={prompt.id} {...prompt} tagId={tagId} />
             ))}
           </React.Fragment>
         ))}

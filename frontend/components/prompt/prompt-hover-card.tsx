@@ -3,13 +3,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  MarketplaceCardProps,
-  PromptMarketplaceCard,
-} from "@/components/prompt/prompt-marketplace-card";
+import { PromptMarketplaceCard } from "@/components/prompt/prompt-marketplace-card";
+import { PromptCard } from "@/services/prompt/interface";
 
 export default function PromptHoverCard(
-  marketplaceCardProps: MarketplaceCardProps
+  marketplaceCardProps: PromptCard & { tagId?: string }
 ) {
   return (
     <HoverCard>
@@ -20,7 +18,7 @@ export default function PromptHoverCard(
         </div>
       </HoverCardTrigger>
       {/* Hover card */}
-      <HoverCardContent sideOffset={0} className="w-96">
+      <HoverCardContent sideOffset={-150} className="w-80">
         <PromptMarketplaceCard {...marketplaceCardProps} variant="hover" />
       </HoverCardContent>
     </HoverCard>

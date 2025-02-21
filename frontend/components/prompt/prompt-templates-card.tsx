@@ -20,7 +20,7 @@ const useDeletePromptTemplate = () => {
     mutationFn: deletePromptTemplate,
     onSuccess: (deletedId) => {
       console.log(deletedId);
-      queryClient.invalidateQueries(["templates"]);
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
     onError: (error: string) => {
       console.error("Error creating template:", error);
@@ -46,7 +46,7 @@ export default function PromptTemplateCard({
     console.log(
       isDeleteTemplatePending,
       isDeleteTemplateError,
-      deleteTemplateError,
+      deleteTemplateError
     );
   };
 

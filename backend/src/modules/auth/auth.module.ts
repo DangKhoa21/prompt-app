@@ -14,7 +14,7 @@ import { JWT_SECRET } from 'src/shared';
     JwtModule.register({
       secret: JWT_SECRET,
       signOptions: {
-        expiresIn: '1h', // JWT expirates in 1 hour
+        expiresIn: '1h', // JWT expires in 1 hour
       },
     }),
   ],
