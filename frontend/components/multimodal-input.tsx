@@ -1,23 +1,28 @@
 "use client";
 
 import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
+import cx from "classnames";
 import { motion } from "framer-motion";
-import React, {
+import type React from "react";
+import {
   useRef,
   useEffect,
   useState,
   useCallback,
-  Dispatch,
-  SetStateAction,
-  ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
+  type ChangeEvent,
 } from "react";
 import { toast } from "sonner";
+import useWindowSize from "@/components/use-window-size";
+
+import { sanitizeUIMessages } from "@/lib/utils";
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
 // import { PreviewAttachment } from "./preview-attachment";
-import useWindowSize from "@/components/use-window-size";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { usePrompt } from "@/context/prompt-context";
 
 const suggestedActions = [
   {
@@ -33,6 +38,7 @@ const suggestedActions = [
 ];
 
 export function MultimodalInput({
+  //chatId,
   input,
   setInput,
   isLoading,
@@ -40,9 +46,12 @@ export function MultimodalInput({
   attachments,
   setAttachments,
   messages,
+  setMessages,
   append,
   handleSubmit,
+  className,
 }: {
+  chatId: string;
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
@@ -50,6 +59,7 @@ export function MultimodalInput({
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<Message>;
+  setMessages: Dispatch<SetStateAction<Array<Message>>>;
   append: (
     message: Message | CreateMessage,
     chatRequestOptions?: ChatRequestOptions
@@ -60,6 +70,7 @@ export function MultimodalInput({
     },
     chatRequestOptions?: ChatRequestOptions
   ) => void;
+  className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -74,10 +85,26 @@ export function MultimodalInput({
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${
-        textareaRef.current.scrollHeight + 0
+        textareaRef.current.scrollHeight + 2
       }px`;
     }
   };
+
+  const resetHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = "98px";
+    }
+  };
+
+  const { prompt, setPrompt } = usePrompt();
+
+  useEffect(() => {
+    if (prompt) {
+      setInput(prompt);
+      setPrompt("");
+    }
+  }, [prompt, setInput, setPrompt]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -93,11 +120,12 @@ export function MultimodalInput({
     });
 
     setAttachments([]);
+    resetHeight();
 
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [attachments, handleSubmit, setAttachments, width]);
+  }, [handleSubmit, attachments, setAttachments, width]);
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -169,20 +197,21 @@ export function MultimodalInput({
                 key={index}
                 className={index > 1 ? "hidden sm:block" : "block"}
               >
-                <button
+                <Button
+                  variant="ghost"
                   onClick={async () => {
                     append({
                       role: "user",
                       content: suggestedAction.action,
                     });
                   }}
-                  className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                  className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
                 >
                   <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
+                  <span className="text-muted-foreground">
                     {suggestedAction.label}
                   </span>
-                </button>
+                </Button>
               </motion.div>
             ))}
           </div>
@@ -222,8 +251,12 @@ export function MultimodalInput({
         placeholder="Send a message..."
         value={input}
         onChange={handleInput}
-        className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none"
+        className={cx(
+          "min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-xl !text-base bg-muted",
+          className
+        )}
         rows={3}
+        autoFocus
         onKeyDown={(event) => {
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
@@ -239,17 +272,18 @@ export function MultimodalInput({
 
       {isLoading ? (
         <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 border dark:border-zinc-600"
           onClick={(event) => {
             event.preventDefault();
             stop();
+            setMessages((messages) => sanitizeUIMessages(messages));
           }}
         >
           <StopIcon size={14} />
         </Button>
       ) : (
         <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 border dark:border-zinc-600"
           onClick={(event) => {
             event.preventDefault();
             submitForm();
@@ -261,7 +295,7 @@ export function MultimodalInput({
       )}
 
       <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-2 right-10 m-0.5 dark:border-zinc-700"
+        className="rounded-full p-1.5 h-fit absolute bottom-2 right-11 m-0.5 dark:border-zinc-700"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();

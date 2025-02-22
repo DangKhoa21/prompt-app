@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// db model
+model User {
+  id        String   @id @default(uuid(7))
+  username  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chats   Chat[]
+  prompts Prompt[]
+  stars   Star[]
+  roles   UserRole[]
+}
+
+model Role {
+  id        String   @id @default(uuid(7))
+  role      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users UserRole[]
+}
+
+model UserRole {
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId String
+
+  @@id([userId, roleId])
+}
+
+model Chat {
+  id        String   @id @default(uuid(7))
+  title     String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+}
+
+model Message {
+  id        String   @id @default(uuid(7))
+  role      String
+  content   Json
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Prompt {
+  id             String   @id @default(uuid(7))
+  title          String   @unique
+  description    String
+  stringTemplate String
+  creator        User     @relation(fields: [creatorId], references: [id])
+  creatorId      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tags    PromptTag[]
+  configs PromptConfig[]
+  stars   Star[]
+}
+
+model PromptTag {
+  prompt   Prompt @relation(fields: [promptId], references: [id])
+  promptId String
+  tag      Tag    @relation(fields: [tagId], references: [id])
+  tagId    String
+
+  @@id([promptId, tagId])
+}
+
+model Tag {
+  id        String   @id @default(uuid(7))
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prompts PromptTag[]
+}
+
+model PromptConfig {
+  id        String   @id @default(uuid(7))
+  label     String
+  type      String
+  prompt    Prompt   @relation(fields: [promptId], references: [id])
+  promptId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  values ConfigValue[]
+}
+
+model ConfigValue {
+  id             String       @id @default(uuid(7))
+  value          String
+  promptConfig   PromptConfig @relation(fields: [promptConfigId], references: [id])
+  promptConfigId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Star {
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  prompt   Prompt @relation(fields: [promptId], references: [id])
+  promptId String
+
+  @@id([userId, promptId])
+}
