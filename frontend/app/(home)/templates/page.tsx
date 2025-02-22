@@ -98,6 +98,8 @@ export default function Page() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
+    } else {
+      router.replace("/templates");
     }
   }, [isAuthenticated, router]);
 
