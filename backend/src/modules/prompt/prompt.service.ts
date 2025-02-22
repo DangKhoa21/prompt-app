@@ -97,7 +97,11 @@ export class PromptService {
 
     const { data: promptCardsRepo, nextCursor } = await this.promptRepo.list(
       paging,
-      { promptIds: promptIdsByTagId, creatorId: filter.creatorId },
+      {
+        promptIds: promptIdsByTagId,
+        creatorId: filter.creatorId,
+        search: filter.search,
+      },
     );
 
     // track if requester has starred a prompt

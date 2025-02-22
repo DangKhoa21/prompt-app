@@ -91,7 +91,7 @@ export class PromptRepository {
     cond: PromptCondDTO,
   ): Promise<Paginated<PromptCardRepo>> {
     const { cursor, limit } = paging;
-    const { promptIds, creatorId } = cond;
+    const { promptIds, creatorId, search } = cond;
 
     let where = {};
     if (promptIds) {
@@ -99,6 +99,9 @@ export class PromptRepository {
     }
     if (creatorId) {
       where = { ...where, creatorId };
+    }
+    if (search) {
+      where = { ...where, title: { contains: search, mode: 'insensitive' } };
     }
 
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({

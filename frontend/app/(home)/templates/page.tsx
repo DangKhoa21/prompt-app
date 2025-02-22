@@ -21,6 +21,7 @@ import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const useCreatePromptTemplate = () => {
   const router = useRouter();
@@ -40,6 +41,7 @@ const useCreatePromptTemplate = () => {
 export default function Page() {
   // const { open } = useSidebar();
   const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const {
     isPending: isPromptTemplatesLoading,
@@ -56,7 +58,7 @@ export default function Page() {
     isPromptTemplatesLoading,
     isPromptTemplatesError,
     promptTemplatesData,
-    promptTemplatesError,
+    promptTemplatesError
   );
 
   const tagsQueries = useQueries({
@@ -93,9 +95,11 @@ export default function Page() {
   //   }
   // }, [isPromptTemplatesError, promptTemplatesError, isPromptTemplatesLoading, promptTemplatesData])
 
-  if (!isAuthenticated) {
-    return "You are not login yet, please login manage your templates";
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, router]);
 
   const handleNewTemplate = () => {
     const values: ConfigsValueCreation[] = [
@@ -138,7 +142,7 @@ export default function Page() {
     console.log(
       isCreateTemplatePending,
       isCreateTemplateError,
-      createTemplateError,
+      createTemplateError
     );
 
     const tags = ["Writing", "Project", "Creative"];

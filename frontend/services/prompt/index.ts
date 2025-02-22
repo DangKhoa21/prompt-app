@@ -12,16 +12,19 @@ export async function getPrompts({
   limit,
   pageParam,
   tagId,
+  search,
 }: {
   limit?: number;
   pageParam: string;
   tagId?: string | null;
+  search?: string;
 }): Promise<Paginated<PromptCard>> {
   const response = await axiosInstance.get("/prompts", {
     params: {
       limit: limit ? limit : undefined,
       cursor: pageParam.length > 0 ? pageParam : undefined,
       tagId: tagId ? tagId : undefined,
+      search,
     },
   });
   return response.data;
@@ -60,21 +63,21 @@ export async function getTagsForTemplate(id: string): Promise<Tag[]> {
 }
 
 export async function getPromptTemplate(
-  id: string,
+  id: string
 ): Promise<TemplateWithConfigs> {
   const response = await axiosInstance.get(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function createPromptTemplate(
-  data: PromptWithConfigsCreation,
+  data: PromptWithConfigsCreation
 ): Promise<string> {
   const response = await axiosInstance.post(`/prompts`, data);
   return response.data.data;
 }
 
 export async function updatePromptTemplate(
-  data: TemplateWithConfigs,
+  data: TemplateWithConfigs
 ): Promise<boolean> {
   const response = await axiosInstance.put(`/prompts/${data.id}`, data);
   return response.data.data;
