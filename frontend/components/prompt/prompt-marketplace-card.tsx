@@ -99,7 +99,7 @@ export function PromptMarketplaceCard({
 
   if (variant === "hover") {
     return (
-      <div className="bg-card hover:backdrop-blur-md overflow-hidden">
+      <div className="bg-card overflow-hidden">
         <Link href={`/?promptId=${id}`}>
           <CardTitle className="flex items-center justify-between text-base">
             <div className="pl-1">Prompt Details</div>
@@ -137,7 +137,7 @@ export function PromptMarketplaceCard({
 
   return (
     <Link href={`/?promptId=${id}`}>
-      <Card className="bg-card hover:shadow-md rounded-3xl h-52 flex flex-col">
+      <Card className="bg-card rounded-3xl h-52 flex flex-col">
         <CardHeader className="space-y-1 px-4 pt-2 pb-1">
           <CardTitle className="flex items-start justify-between mt-2 text-xl">
             <div className="pl-1">{title}</div>
