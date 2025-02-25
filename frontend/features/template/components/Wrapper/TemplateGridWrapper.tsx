@@ -63,7 +63,6 @@ export function TemplateGridWrapper() {
                   name,
                 }),
               )}
-              // tags={[]}
             />
           ))}
         </div>

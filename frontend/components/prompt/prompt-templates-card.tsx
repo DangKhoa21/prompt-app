@@ -13,21 +13,6 @@ interface TemplateCardProps {
   tags: TemplateTag[];
 }
 
-const useDeletePromptTemplate = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: deletePromptTemplate,
-    onSuccess: (deletedId) => {
-      console.log(deletedId);
-      queryClient.invalidateQueries({ queryKey: ["templates"] });
-    },
-    onError: (error: string) => {
-      console.error("Error creating template:", error);
-    },
-  });
-};
-
 export default function PromptTemplateCard({
   id,
   title,
@@ -35,6 +20,7 @@ export default function PromptTemplateCard({
   tags,
 }: TemplateCardProps) {
   const { mutateAsync } = useDeletePromptTemplate();
+
   const handleDeleteTemplate = () => {
     const deletePromptTemplate = mutateAsync(id);
 
