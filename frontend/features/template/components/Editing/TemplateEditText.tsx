@@ -1,19 +1,21 @@
-import { Template } from "@/app/(home)/templates/[id]/page";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { TemplateWithConfigs } from "@/services/prompt/interface";
 import { Check, Pencil, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface EditTextFieldProps {
   text: string;
   label: string;
-  setPromptData: Dispatch<SetStateAction<Template>>;
+  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   className?: string;
 }
 
-export default function EditTextField({
+export function EditTextField({
   text,
   label,
   setPromptData,
@@ -38,7 +40,7 @@ export default function EditTextField({
       <div
         className={cn(
           "flex flex-col gap-4 w-full",
-          label === "name" ? "md:w-2/3 lg:w-1/3" : "md:w-4/5",
+          label === "name" ? "md:w-2/3 lg:w-1/3" : "md:w-4/5"
         )}
       >
         <Label

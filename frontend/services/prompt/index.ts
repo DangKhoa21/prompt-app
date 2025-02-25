@@ -4,6 +4,7 @@ import {
   PromptWithConfigs,
   PromptWithConfigsCreation,
   Tag,
+  TemplateTag,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 import { Paginated } from "../shared";
@@ -54,7 +55,7 @@ export async function getPromptTemplates(): Promise<PromptCard[]> {
   return response.data.data;
 }
 
-export async function getTagsForTemplate(id: string): Promise<Tag[]> {
+export async function getTagsForTemplate(id: string): Promise<TemplateTag[]> {
   const response = await axiosInstance.get(`/prompts/${id}/tags`);
   return response.data.data;
 }
@@ -77,6 +78,13 @@ export async function updatePromptTemplate(
   data: TemplateWithConfigs,
 ): Promise<boolean> {
   const response = await axiosInstance.put(`/prompts/${data.id}`, data);
+  return response.data.data;
+}
+
+export async function updateTag(data: TemplateWithConfigs): Promise<boolean> {
+  const response = await axiosInstance.put(`/prompts/${data.id}/tags`, {
+    tagIds: data.tags.map((tag) => tag.id),
+  });
   return response.data.data;
 }
 

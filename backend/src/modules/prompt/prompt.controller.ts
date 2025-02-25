@@ -10,14 +10,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { PromptService } from './prompt.service';
+import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
+import { PagingDTO, ReqWithRequester, ReqWithRequesterOpt } from 'src/shared';
 import {
   PromptFilterDTO,
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
-import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
-import { PagingDTO, ReqWithRequester, ReqWithRequesterOpt } from 'src/shared';
+import { PromptService } from './prompt.service';
 
 @Controller('prompts')
 export class PromptController {

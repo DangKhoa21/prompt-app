@@ -53,7 +53,7 @@ export interface PromptConfig {
   promptId: string;
   createdAt: Date;
   updatedAt: Date;
-  values: ConfigValue[] | null;
+  values: ConfigValue[];
 }
 
 export interface TemplateConfig {

@@ -44,7 +44,7 @@ export default function ConfirmDialog({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure? This action can$apos;t be undone!
+              Are you sure? This action can&apos;t be undone!
             </AlertDialogTitle>
             <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>

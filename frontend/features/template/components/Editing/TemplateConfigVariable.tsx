@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -32,7 +34,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { ConfigType } from "@/lib/templates/enum";
+import { ConfigType } from "@/features/template/types/configType";
 import { List, Plus, Settings, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { v7 } from "uuid";
@@ -41,13 +43,13 @@ import {
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 
-interface ConfigProp extends TemplateConfig {
+interface ConfigVariableProps extends TemplateConfig {
   index: number;
   setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   isSidebarOpen?: boolean;
 }
 
-export default function TemplatesConfigData({
+export function TemplatesConfigVariable({
   id,
   index,
   label,
@@ -55,14 +57,14 @@ export default function TemplatesConfigData({
   values,
   setPromptData,
   isSidebarOpen,
-}: ConfigProp) {
+}: ConfigVariableProps) {
   const [newConfigValue, setNewConfigValue] = useState("Happy");
 
   const handleSelectChange = (configId: string, type: ConfigType) => {
     setPromptData((prevState) => ({
       ...prevState,
       configs: prevState.configs.map((config) =>
-        config.id === configId ? { ...config, type: ConfigType[type] } : config,
+        config.id === configId ? { ...config, type: ConfigType[type] } : config
       ),
     }));
   };
@@ -82,7 +84,7 @@ export default function TemplatesConfigData({
                 { id: v7(), value: value },
               ],
             }
-          : config,
+          : config
       ),
     }));
 
@@ -104,10 +106,10 @@ export default function TemplatesConfigData({
           ? {
               ...config,
               configValues: (config.values ?? []).filter(
-                (value) => value.id !== configValueId,
+                (value) => value.id !== configValueId
               ),
             }
-          : config,
+          : config
       ),
     }));
   };
