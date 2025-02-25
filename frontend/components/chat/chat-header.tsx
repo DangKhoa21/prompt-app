@@ -1,4 +1,4 @@
-import { Compass, Plus } from "lucide-react";
+import { Compass, PencilRuler, Plus } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -42,6 +42,22 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <ModelSelector selectedModelId={selectedModelId} />
 
         <div className="flex items-center gap-2 ml-auto">
+          {isAuthenticated && (
+            <>
+              <Button
+                variant="ghost"
+                className="h-8 p-2"
+                onClick={() => {
+                  router.push("/templates");
+                  router.refresh();
+                }}
+              >
+                <PencilRuler />
+                {!isMobile && "Templates"}
+              </Button>
+              <Separator orientation="vertical" className="h-4" />
+            </>
+          )}
           <Button
             variant="ghost"
             className="h-8 p-2"

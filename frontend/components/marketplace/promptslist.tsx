@@ -2,6 +2,7 @@
 
 import React from "react";
 
+import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
 
 import { getPrompts } from "@/services/prompt";
@@ -10,7 +11,13 @@ import { useInView } from "react-intersection-observer";
 import PromptHoverCard from "@/components/prompt/prompt-hover-card";
 import { cn } from "@/lib/utils";
 
-export default function PromptsList({ tagId }: { tagId: string }) {
+export default function PromptsList({
+  tagId,
+  search,
+}: {
+  tagId: string;
+  search: string;
+}) {
   const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
@@ -21,8 +28,9 @@ export default function PromptsList({ tagId }: { tagId: string }) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["prompts", tagId],
-    queryFn: ({ pageParam }) => getPrompts({ limit: 3, pageParam, tagId }),
+    queryKey: ["prompts", tagId, search],
+    queryFn: ({ pageParam }) =>
+      getPrompts({ limit: 3, pageParam, tagId, search }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -42,7 +50,13 @@ export default function PromptsList({ tagId }: { tagId: string }) {
   }
 
   return (
-    <>
+    <motion.div
+      key="promptlist"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ delay: 0.3 }}
+    >
       {/* backdrop when hover */}
       <div
         className={cn(
@@ -77,6 +91,6 @@ export default function PromptsList({ tagId }: { tagId: string }) {
       </div>
 
       <div ref={ref} className="mt-5" />
-    </>
+    </motion.div>
   );
 }

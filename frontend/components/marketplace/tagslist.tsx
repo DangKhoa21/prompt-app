@@ -2,6 +2,7 @@
 
 import React from "react";
 
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getTags } from "@/services/prompt";
@@ -41,20 +42,28 @@ export default function TagsList() {
   }
 
   return (
-    <div className="flex flex-wrap gap-3 mb-8 justify-center">
-      {tagsData.map((tag) => (
-        <Button
-          key={tag.id}
-          variant={tag.id === tagId ? "secondary" : "outline"}
-          size="sm"
-          className="rounded-2xl gap-1 px-4"
-          onClick={() =>
-            tag.id === tagId ? updateTagId("") : updateTagId(tag.id)
-          }
-        >
-          {tag.name}
-        </Button>
-      ))}
-    </div>
+    <motion.div
+      key="taglist"
+      initial={{ opacity: 0, scale: 0.98, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ delay: 0.4 }}
+    >
+      <div className="flex flex-wrap gap-3 mb-8 justify-center">
+        {tagsData.map((tag) => (
+          <Button
+            key={tag.id}
+            variant={tag.id === tagId ? "secondary" : "outline"}
+            size="sm"
+            className="rounded-2xl gap-1 px-4"
+            onClick={() =>
+              tag.id === tagId ? updateTagId("") : updateTagId(tag.id)
+            }
+          >
+            {tag.name}
+          </Button>
+        ))}
+      </div>
+    </motion.div>
   );
 }
