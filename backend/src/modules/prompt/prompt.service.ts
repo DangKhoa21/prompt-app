@@ -4,7 +4,6 @@ import { PromptConfigRepository } from './config.repository';
 import { ConfigValueRepository } from './value.repository';
 import { TagService } from '../tag/tag.service';
 import {
-  ErrPromptExisted,
   ErrPromptNotFound,
   Prompt,
   PromptWithConfigsCreationDTO,
@@ -47,16 +46,6 @@ export class PromptService {
     creatorId: string,
   ): Promise<string> {
     const data = promptWithConfigsCreationDTOSchema.parse(dto);
-
-    const existedPromptByTitle = await this.promptRepo.findByCond({
-      title: data.title,
-    });
-
-    const existedPromptById = await this.promptRepo.findById(data.id);
-
-    if (existedPromptByTitle || existedPromptById) {
-      throw AppError.from(ErrPromptExisted, 400);
-    }
 
     const prompt: Prompt = {
       id: data.id,
@@ -108,7 +97,11 @@ export class PromptService {
 
     const { data: promptCardsRepo, nextCursor } = await this.promptRepo.list(
       paging,
-      { promptIds: promptIdsByTagId, creatorId: filter.creatorId },
+      {
+        promptIds: promptIdsByTagId,
+        creatorId: filter.creatorId,
+        search: filter.search,
+      },
     );
 
     // track if requester has starred a prompt

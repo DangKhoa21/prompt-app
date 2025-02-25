@@ -44,6 +44,7 @@ export const promptUpdateDTOSchema = promptSchema.pick({
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
 
 export type PromptCondDTO = {
+  search?: string;
   title?: string;
   promptIds?: string[];
   creatorId?: string;

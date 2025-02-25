@@ -8,8 +8,10 @@ import { getPrompts } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import PromptHoverCard from "@/components/prompt/prompt-hover-card";
+import { cn } from "@/lib/utils";
 
 export default function PromptsList({ tagId }: { tagId: string }) {
+  const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
     data,
@@ -41,11 +43,24 @@ export default function PromptsList({ tagId }: { tagId: string }) {
 
   return (
     <>
-      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)]">
+      {/* backdrop when hover */}
+      <div
+        className={cn(
+          "fixed inset-0 bg-background/80 backdrop-blur-[1px] transition-all duration-200 z-10",
+          isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      />
+
+      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.data.map((prompt) => (
-              <PromptHoverCard key={prompt.id} {...prompt} />
+              <PromptHoverCard
+                key={prompt.id}
+                {...prompt}
+                tagId={tagId}
+                setIsHovered={setIsHovered}
+              />
             ))}
           </React.Fragment>
         ))}

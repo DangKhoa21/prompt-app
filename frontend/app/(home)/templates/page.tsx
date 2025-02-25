@@ -8,13 +8,120 @@ import { TemplateGridWrapper } from "@/features/template";
 import { AddNewTemplateButton } from "@/features/template/components/AddNewTemplateButton";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
   const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
-  if (!isAuthenticated) {
-    return "You are not login yet, please login manage your templates";
-  }
+  const {
+    isPending: isPromptTemplatesLoading,
+    isError: isPromptTemplatesError,
+    data: promptTemplatesData,
+    error: promptTemplatesError,
+  } = useQuery({
+    queryKey: ["templates"],
+    queryFn: () => getPromptTemplates(),
+    enabled: isAuthenticated,
+  });
+
+  console.log(
+    isPromptTemplatesLoading,
+    isPromptTemplatesError,
+    promptTemplatesData,
+    promptTemplatesError
+  );
+
+  const tagsQueries = useQueries({
+    queries: (promptTemplatesData || []).map((template) => ({
+      queryKey: ["tags", template.id],
+      queryFn: () => getTagsForTemplate(template.id),
+      enabled: !!template.id,
+    })),
+  });
+
+  const templatesWithTags = promptTemplatesData?.map((template, index) => ({
+    ...template,
+    tags: tagsQueries[index]?.data || [],
+  }));
+
+  console.log(templatesWithTags);
+
+  const {
+    mutate: addTemplate,
+    isPending: isCreateTemplatePending,
+    isError: isCreateTemplateError,
+    error: createTemplateError,
+  } = useCreatePromptTemplate();
+
+  // useEffect(() => {
+  //   if (isPromptTemplatesError) {
+  //     toast.error(
+  //       `Failed to load templates for chat (${promptTemplatesError?.message})`,
+  //     );
+  //   } else if (!isPromptTemplatesLoading &&  promptTemplatesData) {
+  //     promptTemplatesData.map((template) => {
+  //
+  //     })
+  //   }
+  // }, [isPromptTemplatesError, promptTemplatesError, isPromptTemplatesLoading, promptTemplatesData])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/login");
+    } else {
+      router.replace("/templates");
+    }
+  }, [isAuthenticated, router]);
+
+  const handleNewTemplate = () => {
+    const values: ConfigsValueCreation[] = [
+      {
+        id: generateUUID(),
+        value: "Teacher",
+      },
+      {
+        id: generateUUID(),
+        value: "Assistant",
+      },
+    ];
+
+    const configs: ConfigsCreation[] = [
+      {
+        id: generateUUID(),
+        label: "Role",
+        type: ConfigType.Dropdown.toString(),
+        values: values,
+      },
+      {
+        id: generateUUID(),
+        label: "Detail",
+        type: ConfigType.Textarea.toString(),
+        values: [],
+      },
+    ];
+
+    const template: PromptWithConfigsCreation = {
+      id: generateUUID(),
+      title: "Template Name",
+      description:
+        "This template is used for writing, brainstorming new idea for your project, ... etc",
+      stringTemplate:
+        "You are my ${Role}, and your task is to help me in ${Field} at the level of ${Level}. More detail: ${Detail}",
+      configs: configs,
+    };
+
+    addTemplate(template);
+    console.log(
+      isCreateTemplatePending,
+      isCreateTemplateError,
+      createTemplateError
+    );
+
+    const tags = ["Writing", "Project", "Creative"];
+    console.log(tags);
+  };
 
   return (
     <>

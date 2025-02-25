@@ -13,6 +13,21 @@ interface TemplateCardProps {
   tags: TemplateTag[];
 }
 
+const useDeletePromptTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deletePromptTemplate,
+    onSuccess: (deletedId) => {
+      console.log(deletedId);
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
+    },
+    onError: (error: string) => {
+      console.error("Error creating template:", error);
+    },
+  });
+};
+
 export default function PromptTemplateCard({
   id,
   title,

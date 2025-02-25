@@ -8,11 +8,14 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { ModelSelector } from "@/components/model-selector";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useWindowSize } from "usehooks-ts";
 import UserAvatarNavigator from "@/components/navigator/user-avatar-navigator";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { width: windowWidth } = useWindowSize();
+  const isMobile = windowWidth ? windowWidth < 768 : false;
 
   return (
     <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
@@ -39,18 +42,17 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <ModelSelector selectedModelId={selectedModelId} />
 
         <div className="flex items-center gap-2 ml-auto">
-          <BetterTooltip content="Marketplace">
-            <Button
-              variant="ghost"
-              className="h-7 p-2"
-              onClick={() => {
-                router.push("/marketplace");
-                router.refresh();
-              }}
-            >
-              <Compass />
-            </Button>
-          </BetterTooltip>
+          <Button
+            variant="ghost"
+            className="h-8 p-2"
+            onClick={() => {
+              router.push("/marketplace");
+              router.refresh();
+            }}
+          >
+            <Compass />
+            {!isMobile && "Marketplace"}
+          </Button>
           <Separator orientation="vertical" className="h-4" />
           {isAuthenticated === false ? (
             <>
