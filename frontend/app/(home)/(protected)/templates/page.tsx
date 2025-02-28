@@ -3,30 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/context/auth-context";
 import { TemplateGridWrapper } from "@/features/template";
 import { AddNewTemplateButton } from "@/features/template/components/AddNewTemplateButton";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Page() {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
-    } else {
-      router.replace("/templates");
-    }
-  }, [isAuthenticated, router]);
-
   return (
     <>
       <div className="flex h-screen">
-        <main className="flex-1 overflow-auto bg-slate-50 p-4">
+        <main className="flex-1 overflow-auto bg-background p-4">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/marketplace">

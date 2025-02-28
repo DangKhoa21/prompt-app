@@ -13,7 +13,10 @@ export default function PromptHoverCard(
   }
 ) {
   return (
-    <HoverCard onOpenChange={marketplaceCardProps.setIsHovered}>
+    <HoverCard
+      onOpenChange={marketplaceCardProps.setIsHovered}
+      openDelay={1000}
+    >
       <HoverCardTrigger asChild>
         {/* Display card */}
         <div className="transition-all hover:scale-105">

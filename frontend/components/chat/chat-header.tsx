@@ -9,7 +9,6 @@ import { ModelSelector } from "@/components/model-selector";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useWindowSize } from "usehooks-ts";
-import UserAvatarNavigator from "@/components/navigator/user-avatar-navigator";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
@@ -70,7 +69,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
             {!isMobile && "Marketplace"}
           </Button>
           <Separator orientation="vertical" className="h-4" />
-          {isAuthenticated === false ? (
+          {!isAuthenticated && (
             <>
               <Button
                 variant="ghost"
@@ -84,8 +83,6 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
               </Button>
               <Separator orientation="vertical" className="h-4" />
             </>
-          ) : (
-            <UserAvatarNavigator />
           )}
 
           <SidebarTrigger2 className="h-7" />

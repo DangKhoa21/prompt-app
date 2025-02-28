@@ -2,8 +2,8 @@ import React, { Suspense } from "react";
 
 import { LoadingSpinner } from "@/components/icons";
 
-import TagsList from "@/components/marketplace/tagslist";
-import PromptsList from "@/components/marketplace/promptslist";
+import TagsList from "@/components/marketplace/tags-list";
+import PromptsList from "@/components/marketplace/prompts-list";
 import { MarketHeader } from "@/components/marketplace/market-header";
 import { MarketSearch } from "@/components/marketplace/market-search";
 

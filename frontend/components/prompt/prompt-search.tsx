@@ -84,7 +84,7 @@ export function PromptSearch() {
           className="ml-auto text-muted-foreground font-medium"
           variant="secondary"
         >
-          Ctrk + Q
+          Ctrl + Q
         </Badge>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>

@@ -69,7 +69,7 @@ model Message {
 
 model Prompt {
   id             String   @id @default(uuid(7))
-  title          String   @unique
+  title          String
   description    String
   stringTemplate String
   creator        User     @relation(fields: [creatorId], references: [id])

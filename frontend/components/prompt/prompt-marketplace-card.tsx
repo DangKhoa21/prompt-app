@@ -9,7 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { cn, formatRating } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { PromptCard } from "@/services/prompt/interface";
 import { Star } from "lucide-react";
 import Link from "next/link";
@@ -31,6 +32,7 @@ export function PromptMarketplaceCard({
   starCount,
 }: PromptCard & { variant?: "default" | "hover"; tagId?: string }) {
   const rating = formatRating(starCount);
+  const detailURL = createPromptDetailURL(title, id);
 
   const queryClient = useQueryClient();
   const starMutation = useMutation({
@@ -100,7 +102,7 @@ export function PromptMarketplaceCard({
   if (variant === "hover") {
     return (
       <div className="bg-card overflow-hidden">
-        <Link href={`/?promptId=${id}`}>
+        <Link href={detailURL}>
           <CardTitle className="flex items-center justify-between text-base">
             <div className="pl-1">Prompt Details</div>
             <Badge
@@ -136,7 +138,7 @@ export function PromptMarketplaceCard({
   }
 
   return (
-    <Link href={`/?promptId=${id}`}>
+    <Link href={detailURL}>
       <Card className="bg-card rounded-3xl h-52 flex flex-col">
         <CardHeader className="space-y-1 px-4 pt-2 pb-1">
           <CardTitle className="flex items-start justify-between mt-2 text-xl">
@@ -178,7 +180,14 @@ export function PromptMarketplaceCard({
                 by {creator["username"]}
               </div>
             </div>
-            <div className="t-2 text-xs text-foreground">Try it now</div>
+
+            <Button
+              variant="secondary"
+              className="t-2 text-xs text-foreground rounded-2xl"
+              asChild
+            >
+              <Link href={`/?promptId=${id}`}>Try it now</Link>
+            </Button>
           </CardFooter>
         </div>
       </Card>
