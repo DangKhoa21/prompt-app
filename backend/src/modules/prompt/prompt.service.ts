@@ -3,6 +3,7 @@ import { PromptRepository } from './prompt.repository';
 import { PromptConfigRepository } from './config.repository';
 import { ConfigValueRepository } from './value.repository';
 import { TagService } from '../tag/tag.service';
+import { StarService } from '../star/star.service';
 import {
   ErrPromptNotFound,
   Prompt,
@@ -17,8 +18,6 @@ import {
   PromptConfigUpdateDTO,
   ConfigValueUpdateDTO,
   PromptCard,
-  PromptFilterDTO,
-  promptFilterDTOSchema,
   PromptCondDTO,
   PromptCardRepo,
   TemplateCard,
@@ -29,6 +28,8 @@ import {
   Paginated,
   PagingDTO,
   pagingDTOSchema,
+  PromptFilterDTO,
+  promptFilterDTOSchema,
 } from 'src/shared';
 
 @Injectable()
@@ -39,6 +40,8 @@ export class PromptService {
     private readonly valueRepo: ConfigValueRepository,
     @Inject(forwardRef(() => TagService))
     private readonly tagService: TagService,
+    @Inject(forwardRef(() => StarService))
+    private readonly starService: StarService,
   ) {}
 
   async create(
@@ -282,7 +285,13 @@ export class PromptService {
 
     await this.configRepo.deleteMany(existedConfigIds);
 
-    //not handle deleting tags and stars yet
+    //not the best approach
+    await this.tagService.updateTagsOfPrompt(id, { tagIds: [] }, creatorId);
+    try {
+      await this.starService.unstar(id, creatorId);
+    } catch (error) {
+      console.log(error); // really not
+    }
 
     await this.promptRepo.delete(id);
   }

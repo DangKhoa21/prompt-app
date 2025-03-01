@@ -32,7 +32,7 @@ export function TemplateGridWrapper({ filter }: { filter: PromptFilter }) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["prompts", creatorId, updatedFilter],
+    queryKey: ["prompts", updatedFilter],
     queryFn: ({ pageParam }) =>
       getPrompts({ pageParam, filter: updatedFilter }),
     initialPageParam: "",
