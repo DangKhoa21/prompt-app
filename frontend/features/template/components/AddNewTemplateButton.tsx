@@ -64,8 +64,8 @@ export function AddNewTemplateButton() {
 
   return (
     <>
-      <Button size="sm" onClick={handleNewTemplate}>
-        Add new
+      <Button className="h-10" onClick={handleNewTemplate}>
+        Add
       </Button>
     </>
   );

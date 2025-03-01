@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getTags } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 export default function TagsList() {
   const searchParams = useSearchParams();
@@ -33,6 +34,24 @@ export default function TagsList() {
     [router, searchParams]
   );
 
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 200;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
+
   if (isTagsLoading) {
     return null;
   }
@@ -48,8 +67,11 @@ export default function TagsList() {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.4 }}
+      className={cn("sticky top-14 pt-1 pb-2 z-10 bg-background mb-4", {
+        "border-b": scrolled,
+      })}
     >
-      <div className="flex flex-wrap gap-3 mb-8 justify-center">
+      <div className="flex flex-wrap gap-3 justify-center">
         {tagsData.map((tag) => (
           <Button
             key={tag.id}

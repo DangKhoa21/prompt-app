@@ -20,14 +20,15 @@ export function MarketSearch() {
   }, 500);
 
   return (
-    <motion.div
-      key="marketplace"
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ delay: 0.3 }}
-    >
-      <div className="text-center mb-4">
+    <>
+      <motion.div
+        key="marketplace"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ delay: 0.3 }}
+        className="text-center"
+      >
         <h1 className="text-3xl font-bold mb-2">Marketplace</h1>
         <div className="w-2/3 mx-auto">
           <p className="text-muted-foreground mb-4">
@@ -35,7 +36,16 @@ export function MarketSearch() {
             instructions, extra knowledge, and any combination of skills.
           </p>
         </div>
-        <div className="inline-flex relative mb-2 w-3/5 max-w-screen-lg justify-center">
+      </motion.div>
+      <motion.div
+        key="marketsearch"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ delay: 0.3 }}
+        className="sticky top-2.5 z-20 text-center w-3/5 max-w-screen-lg mx-auto"
+      >
+        <div className="inline-flex relative mb-6 w-full justify-center">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search"
@@ -46,7 +56,7 @@ export function MarketSearch() {
             defaultValue={searchParams.get("search")?.toString()}
           />
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }

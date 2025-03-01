@@ -32,7 +32,7 @@ export function PromptSearch() {
     useInfiniteQuery({
       queryKey: ["prompts", searchQuery],
       queryFn: ({ pageParam }) =>
-        getPrompts({ limit: 3, pageParam, search: searchQuery }),
+        getPrompts({ pageParam, filter: { search: searchQuery } }),
       initialPageParam: "",
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });

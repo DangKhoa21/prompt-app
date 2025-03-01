@@ -6,18 +6,13 @@ import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
 
 import { getPrompts } from "@/services/prompt";
+import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import PromptHoverCard from "@/components/prompt/prompt-hover-card";
 import { cn } from "@/lib/utils";
 
-export default function PromptsList({
-  tagId,
-  search,
-}: {
-  tagId: string;
-  search: string;
-}) {
+export default function PromptsList({ filter }: { filter: PromptFilter }) {
   const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
@@ -28,9 +23,8 @@ export default function PromptsList({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["prompts", tagId, search],
-    queryFn: ({ pageParam }) =>
-      getPrompts({ limit: 3, pageParam, tagId, search }),
+    queryKey: ["prompts", filter],
+    queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -42,7 +36,11 @@ export default function PromptsList({
   }, [fetchNextPage, hasNextPage, inView]);
 
   if (status === "pending") {
-    return null;
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (status === "error") {
@@ -72,7 +70,7 @@ export default function PromptsList({
               <PromptHoverCard
                 key={prompt.id}
                 {...prompt}
-                tagId={tagId}
+                filter={filter}
                 setIsHovered={setIsHovered}
               />
             ))}
