@@ -6,12 +6,15 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback, useWindowSize } from "usehooks-ts";
 import { AddNewTemplateButton } from "@/features/template/components/AddNewTemplateButton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function TemplatesSearch() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { width } = useWindowSize();
+  const isMobile = width ? width < 768 : false;
 
   const handleSearch = useDebounceCallback((search: string) => {
     const params = new URLSearchParams(searchParams);
@@ -19,6 +22,13 @@ export function TemplatesSearch() {
     else params.delete("search");
     router.push(`?${params.toString()}`);
   }, 500);
+
+  const handeTabChange = (tab: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (tab == "starred") params.set("tab", tab);
+    else params.delete("tab");
+    router.push(`?${params.toString()}`);
+  };
 
   return (
     <motion.div
@@ -40,6 +50,21 @@ export function TemplatesSearch() {
           defaultValue={searchParams.get("search")?.toString()}
         />
       </div>
+
+      <Tabs
+        defaultValue={searchParams.get("tab") || "created"}
+        onValueChange={handeTabChange}
+        className="w-[220px]"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="created">
+            {isMobile ? "Cr" : "Created"}
+          </TabsTrigger>
+          <TabsTrigger value="starred">
+            {isMobile ? "St" : "Starred"}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <AddNewTemplateButton />
     </motion.div>

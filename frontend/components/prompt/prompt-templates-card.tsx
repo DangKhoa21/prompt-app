@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
-import { PromptCard } from "@/services/prompt/interface";
+import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Star } from "lucide-react";
 import Link from "next/link";
 
@@ -23,11 +23,12 @@ export default function PromptTemplateCard({
   creator,
   hasStarred,
   starCount,
-}: PromptCard) {
+  filter,
+}: PromptCard & { filter?: PromptFilter }) {
   const rating = formatRating(starCount);
   const detailURL = createPromptDetailURL(title, id);
-  const starMutation = useStarPrompt({ promptId: id });
-  const unstarMutation = useUnstarPrompt({ promptId: id });
+  const starMutation = useStarPrompt({ filter, promptId: id });
+  const unstarMutation = useUnstarPrompt({ filter, promptId: id });
 
   const handleStar = (event: React.MouseEvent) => {
     event.preventDefault();

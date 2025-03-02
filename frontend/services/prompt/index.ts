@@ -31,6 +31,25 @@ export async function getPrompts({
   return response.data;
 }
 
+export async function getStarredPrompts({
+  pageParam,
+  filter,
+}: {
+  pageParam: string;
+  filter?: PromptFilter;
+}): Promise<Paginated<PromptCard>> {
+  const { tagId, search } = filter || {};
+  const response = await axiosInstance.get("/users/starred-prompts", {
+    params: {
+      limit: PAGE_LIMIT,
+      cursor: pageParam.length > 0 ? pageParam : undefined,
+      tagId: tagId ? tagId : undefined,
+      search,
+    },
+  });
+  return response.data;
+}
+
 export async function getTags(): Promise<Tag[]> {
   const response = await axiosInstance.get("/tags");
   return response.data.data;

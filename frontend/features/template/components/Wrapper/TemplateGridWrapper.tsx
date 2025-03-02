@@ -6,13 +6,19 @@ import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
 
 import { getUserProfile } from "@/services/user";
-import { getPrompts } from "@/services/prompt";
+import { getPrompts, getStarredPrompts } from "@/services/prompt";
 import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import PromptTemplateCard from "@/components/prompt/prompt-templates-card";
 
-export function TemplateGridWrapper({ filter }: { filter: PromptFilter }) {
+export function TemplateGridWrapper({
+  filter,
+  tab,
+}: {
+  filter: PromptFilter;
+  tab: string;
+}) {
   const { ref, inView } = useInView();
 
   const { data: user } = useQuery({
@@ -32,9 +38,11 @@ export function TemplateGridWrapper({ filter }: { filter: PromptFilter }) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["prompts", updatedFilter],
+    queryKey: ["prompts", updatedFilter, tab],
     queryFn: ({ pageParam }) =>
-      getPrompts({ pageParam, filter: updatedFilter }),
+      tab === "starred"
+        ? getStarredPrompts({ pageParam, filter })
+        : getPrompts({ pageParam, filter: updatedFilter }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -74,15 +82,13 @@ export function TemplateGridWrapper({ filter }: { filter: PromptFilter }) {
     >
       <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
         {templatesData.map((template, index) => (
-          <PromptTemplateCard key={index} {...template} />
+          <PromptTemplateCard
+            key={index}
+            {...template}
+            filter={updatedFilter}
+          />
         ))}
       </div>
-
-      {templatesData.length === 0 && (
-        <div className="flex justify-center items-center">
-          You haven&apos;t created any prompt yet, please create new one
-        </div>
-      )}
 
       {hasNextPage ? null : (
         <div className="flex justify-center">

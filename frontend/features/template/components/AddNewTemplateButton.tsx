@@ -6,10 +6,15 @@ import {
   ConfigsValueCreation,
   PromptWithConfigsCreation,
 } from "@/services/prompt/interface";
+import { Plus } from "lucide-react";
+import { useWindowSize } from "usehooks-ts";
 import { toast } from "sonner";
 
 export function AddNewTemplateButton() {
   const { mutateAsync } = useCreatePromptTemplate();
+  const { width } = useWindowSize();
+  const isMobile = width ? width < 768 : false;
+
   const handleNewTemplate = () => {
     const values: ConfigsValueCreation[] = [
       {
@@ -39,11 +44,11 @@ export function AddNewTemplateButton() {
 
     const template: PromptWithConfigsCreation = {
       id: generateUUID(),
-      title: "Template Name",
+      title: "Sample Template",
       description:
-        "This template is used for writing, brainstorming new idea for your project, ... etc",
+        "This is a sample template for you to create your own prompt template",
       stringTemplate:
-        "You are my ${Role}, and your task is to help me in ${Field} at the level of ${Level}. More detail: ${Detail}",
+        "Act as a/an ${Role}, your task is to help me in ${Detail}.",
       configs: configs,
     };
 
@@ -58,14 +63,13 @@ export function AddNewTemplateButton() {
       },
     });
 
-    const tags = ["Writing", "Project", "Creative"];
-    console.log(tags);
+    // const tags = ["Writing", "Project", "Creative"];
   };
 
   return (
     <>
       <Button className="h-10" onClick={handleNewTemplate}>
-        Add
+        {isMobile ? <Plus className="h-4 w-4" /> : "Add"}
       </Button>
     </>
   );

@@ -82,8 +82,8 @@ export const useStarPrompt = ({
   return useMutation({
     mutationFn: starPrompt,
     onSuccess: () => {
-      queryClient.setQueryData(
-        ["prompts", filter],
+      queryClient.setQueriesData(
+        { queryKey: ["prompts", filter] },
         (oldData: InfiniteData<Paginated<PromptCard>>) => {
           const newPages = oldData.pages.map((group) => {
             const newGroup = group.data.map((p) => {
@@ -119,8 +119,8 @@ export const useUnstarPrompt = ({
   return useMutation({
     mutationFn: unstarPrompt,
     onSuccess: () => {
-      queryClient.setQueryData(
-        ["prompts", filter],
+      queryClient.setQueriesData(
+        { queryKey: ["prompts", filter] },
         (oldData: InfiniteData<Paginated<PromptCard>>) => {
           const newPages = oldData.pages.map((group) => {
             const newGroup = group.data.map((p) => {
