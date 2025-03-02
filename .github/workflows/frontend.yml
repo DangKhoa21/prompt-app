@@ -2,6 +2,8 @@ name: Deploy Frontend
 
 on:
   push:
+    branches:
+      - "*"
     paths:
       - "frontend/**"
   pull_request:

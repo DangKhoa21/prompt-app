@@ -2,6 +2,8 @@ name: Deploy Backend
 
 on:
   push:
+    branches:
+      - "*"
     paths:
       - "backend/**"
   pull_request:
@@ -40,6 +42,9 @@ jobs:
 
       - name: Check style
         run: pnpm run lint
+
+      - name: Generate Prisma client
+        run: pnpx prisma generate
 
       - name: Build project
         run: pnpm run build
