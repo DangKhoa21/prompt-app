@@ -10,14 +10,18 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { PromptService } from './prompt.service';
+import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
 import {
   PromptFilterDTO,
+  PagingDTO,
+  ReqWithRequester,
+  ReqWithRequesterOpt,
+} from 'src/shared';
+import {
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
-import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
-import { PagingDTO, ReqWithRequester, ReqWithRequesterOpt } from 'src/shared';
+import { PromptService } from './prompt.service';
 
 @Controller('prompts')
 export class PromptController {
@@ -51,13 +55,13 @@ export class PromptController {
     return result;
   }
 
-  @Get('templates')
-  @UseGuards(JwtAuthGuard)
-  async findAllByUser(@Request() req: ReqWithRequester) {
-    const { sub: userId } = req.user;
-    const data = await this.promptService.findByUserWithConfigs(userId);
-    return { data };
-  }
+  // @Get('templates')
+  // @UseGuards(JwtAuthGuard)
+  // async findAllByUser(@Request() req: ReqWithRequester) {
+  //   const { sub: userId } = req.user;
+  //   const data = await this.promptService.findByUserWithConfigs(userId);
+  //   return { data };
+  // }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

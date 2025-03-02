@@ -46,10 +46,8 @@ async function main() {
   });
 
   // Create a prompt called "Write For Me"
-  const prompt = await prisma.prompt.upsert({
-    where: { title: 'Write For Me' },
-    update: {},
-    create: {
+  const prompt = await prisma.prompt.create({
+    data: {
       title: 'Write For Me',
       description:
         'A prompt designed to assist in writing various forms of content.',
@@ -61,10 +59,8 @@ async function main() {
   console.log('Prompt created or found:', prompt);
 
   // Create a prompt called "Few-shot prompting"
-  const prompt1 = await prisma.prompt.upsert({
-    where: { title: 'Few-shot prompting' },
-    update: {},
-    create: {
+  const prompt1 = await prisma.prompt.create({
+    data: {
       title: 'Few-shot prompting',
       description:
         'Few-shot prompting technique template, designed for complex task that require EXAMPLES to clarify.',
@@ -74,10 +70,8 @@ async function main() {
   });
 
   // Create a prompt called "Chain of Though prompting"
-  const prompt2 = await prisma.prompt.upsert({
-    where: { title: 'Chain of Thought prompting' },
-    update: {},
-    create: {
+  const prompt2 = await prisma.prompt.create({
+    data: {
       title: 'Chain of Thought prompting',
       description:
         'Chain of Though prompting technique template, design for solving complex problems step-by-step, showing the thought of the AI and evaluate the correctness of each step.',
@@ -89,10 +83,8 @@ async function main() {
   console.log('Prompt created or found:', prompt);
 
   // Create a prompt called "Translate"
-  await prisma.prompt.upsert({
-    where: { title: 'Translate' },
-    update: {},
-    create: {
+  await prisma.prompt.create({
+    data: {
       title: 'Translate',
       description: 'Translate your content to another language',
       stringTemplate:

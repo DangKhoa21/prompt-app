@@ -29,6 +29,17 @@ export const formatRating = (num: number): string => {
   return num.toString();
 };
 
+export function createPromptDetailURL(title: string, id: string): string {
+  const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
+  const detailUrl = `prompts/${formattedTitle}-i${id}`;
+  return detailUrl;
+}
+
+export function getIdFromDetailURL(url: string): string {
+  const match = url.split("-i");
+  return match[match.length - 1];
+}
+
 export function sanitizeResponseMessages(
   messages: Array<CoreToolMessage | CoreAssistantMessage>
 ): Array<CoreToolMessage | CoreAssistantMessage> {

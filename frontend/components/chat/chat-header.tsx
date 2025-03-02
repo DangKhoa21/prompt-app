@@ -1,4 +1,4 @@
-import { Compass, Plus } from "lucide-react";
+import { Compass, PencilRuler, Plus } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -9,7 +9,6 @@ import { ModelSelector } from "@/components/model-selector";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { useWindowSize } from "usehooks-ts";
-import UserAvatarNavigator from "@/components/navigator/user-avatar-navigator";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
@@ -42,6 +41,22 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <ModelSelector selectedModelId={selectedModelId} />
 
         <div className="flex items-center gap-2 ml-auto">
+          {isAuthenticated && (
+            <>
+              <Button
+                variant="ghost"
+                className="h-8 p-2"
+                onClick={() => {
+                  router.push("/templates");
+                  router.refresh();
+                }}
+              >
+                <PencilRuler />
+                {!isMobile && "Templates"}
+              </Button>
+              <Separator orientation="vertical" className="h-4" />
+            </>
+          )}
           <Button
             variant="ghost"
             className="h-8 p-2"
@@ -54,7 +69,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
             {!isMobile && "Marketplace"}
           </Button>
           <Separator orientation="vertical" className="h-4" />
-          {isAuthenticated === false ? (
+          {!isAuthenticated && (
             <>
               <Button
                 variant="ghost"
@@ -68,8 +83,6 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
               </Button>
               <Separator orientation="vertical" className="h-4" />
             </>
-          ) : (
-            <UserAvatarNavigator />
           )}
 
           <SidebarTrigger2 className="h-7" />

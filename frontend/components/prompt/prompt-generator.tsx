@@ -29,10 +29,10 @@ import { PromptSearch } from "./prompt-search";
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
 
   const searchParams = useSearchParams();
@@ -78,7 +78,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label]
+            selectedValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -87,7 +87,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label]
+            textareaValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -133,7 +133,7 @@ export function PromptGeneratorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {data.configs.map((config) => (
+        {data.configs?.map((config) => (
           <SidebarGroup key={config.label}>
             <SidebarGroupLabel>
               <Label htmlFor={config.label.toLowerCase()}>{config.label}</Label>

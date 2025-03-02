@@ -1,27 +1,47 @@
 import axiosInstance from "@/lib/axios";
 import {
   PromptCard,
+  PromptFilter,
   PromptWithConfigs,
   PromptWithConfigsCreation,
   Tag,
+  TemplateTag,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { Paginated } from "../shared";
+import { Paginated } from "@/services/shared";
+import { PAGE_LIMIT } from "@/config";
 
 export async function getPrompts({
-  limit,
   pageParam,
-  tagId,
-  search,
+  filter,
 }: {
-  limit?: number;
   pageParam: string;
-  tagId?: string | null;
-  search?: string;
+  filter?: PromptFilter;
 }): Promise<Paginated<PromptCard>> {
+  const { tagId, search, creatorId } = filter || {};
   const response = await axiosInstance.get("/prompts", {
     params: {
-      limit: limit ? limit : undefined,
+      limit: PAGE_LIMIT,
+      cursor: pageParam.length > 0 ? pageParam : undefined,
+      tagId: tagId ? tagId : undefined,
+      search,
+      creatorId: creatorId ? creatorId : undefined,
+    },
+  });
+  return response.data;
+}
+
+export async function getStarredPrompts({
+  pageParam,
+  filter,
+}: {
+  pageParam: string;
+  filter?: PromptFilter;
+}): Promise<Paginated<PromptCard>> {
+  const { tagId, search } = filter || {};
+  const response = await axiosInstance.get("/users/starred-prompts", {
+    params: {
+      limit: PAGE_LIMIT,
       cursor: pageParam.length > 0 ? pageParam : undefined,
       tagId: tagId ? tagId : undefined,
       search,
@@ -52,12 +72,7 @@ export async function getPrompt(id: string | null): Promise<PromptWithConfigs> {
   return response.data.data;
 }
 
-export async function getPromptTemplates(): Promise<PromptCard[]> {
-  const response = await axiosInstance.get(`/prompts/templates`);
-  return response.data.data;
-}
-
-export async function getTagsForTemplate(id: string): Promise<Tag[]> {
+export async function getTagsForTemplate(id: string): Promise<TemplateTag[]> {
   const response = await axiosInstance.get(`/prompts/${id}/tags`);
   return response.data.data;
 }
@@ -80,6 +95,13 @@ export async function updatePromptTemplate(
   data: TemplateWithConfigs
 ): Promise<boolean> {
   const response = await axiosInstance.put(`/prompts/${data.id}`, data);
+  return response.data.data;
+}
+
+export async function updateTag(data: TemplateWithConfigs): Promise<boolean> {
+  const response = await axiosInstance.put(`/prompts/${data.id}/tags`, {
+    tagIds: data.tags.map((tag) => tag.id),
+  });
   return response.data.data;
 }
 

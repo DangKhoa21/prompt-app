@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <SidebarLeft />
+      <SidebarLeft className="z-20" />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );

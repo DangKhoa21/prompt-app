@@ -28,6 +28,14 @@ export const userSchema = z.object({
   updatedAt: z.date().default(new Date()),
 });
 
+export const promptFilterDTOSchema = z.object({
+  search: z.string().optional(),
+  tagId: z.string().uuid().optional(),
+  creatorId: z.string().uuid().optional(),
+});
+
+export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;
+
 export const pagingDTOSchema = z.object({
   limit: z.coerce
     .number()

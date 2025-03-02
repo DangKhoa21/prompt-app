@@ -1,8 +1,10 @@
-import { TemplateWithConfigs } from "@/services/prompt/interface";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { TemplateWithConfigs } from "@/services/prompt/interface";
 import { Check, Pencil, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 
@@ -13,7 +15,7 @@ interface EditTextFieldProps {
   className?: string;
 }
 
-export default function EditTextField({
+export function EditTextField({
   text,
   label,
   setPromptData,

@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { TemplateWithConfigs } from "@/services/prompt/interface";
@@ -11,7 +13,7 @@ interface configTextareaProp {
   setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
 }
 
-export default function TemplatesConfigTextarea({
+export function TemplatesConfigTextarea({
   id,
   label,
   placeholder,

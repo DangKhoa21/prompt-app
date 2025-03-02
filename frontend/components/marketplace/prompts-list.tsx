@@ -2,14 +2,18 @@
 
 import React from "react";
 
+import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
 
 import { getPrompts } from "@/services/prompt";
+import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import PromptHoverCard from "@/components/prompt/prompt-hover-card";
+import { cn } from "@/lib/utils";
 
-export default function PromptsList({ tagId }: { tagId: string }) {
+export default function PromptsList({ filter }: { filter: PromptFilter }) {
+  const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
     data,
@@ -19,8 +23,8 @@ export default function PromptsList({ tagId }: { tagId: string }) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["prompts", tagId],
-    queryFn: ({ pageParam }) => getPrompts({ limit: 3, pageParam, tagId }),
+    queryKey: ["prompts", filter],
+    queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -32,7 +36,11 @@ export default function PromptsList({ tagId }: { tagId: string }) {
   }, [fetchNextPage, hasNextPage, inView]);
 
   if (status === "pending") {
-    return null;
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (status === "error") {
@@ -40,12 +48,31 @@ export default function PromptsList({ tagId }: { tagId: string }) {
   }
 
   return (
-    <>
-      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)]">
+    <motion.div
+      key="promptlist"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ delay: 0.3 }}
+    >
+      {/* backdrop when hover */}
+      <div
+        className={cn(
+          "fixed inset-0 bg-background/80 backdrop-blur-[1px] transition-all duration-200 z-10",
+          isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      />
+
+      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.data.map((prompt) => (
-              <PromptHoverCard key={prompt.id} {...prompt} tagId={tagId} />
+              <PromptHoverCard
+                key={prompt.id}
+                {...prompt}
+                filter={filter}
+                setIsHovered={setIsHovered}
+              />
             ))}
           </React.Fragment>
         ))}
@@ -62,6 +89,6 @@ export default function PromptsList({ tagId }: { tagId: string }) {
       </div>
 
       <div ref={ref} className="mt-5" />
-    </>
+    </motion.div>
   );
 }
