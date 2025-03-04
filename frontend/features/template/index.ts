@@ -1,11 +1,15 @@
-export * from "./components/Wrapper/TemplateGridWrapper";
-export * from "./components/Wrapper/TemplateEditWrapper";
-export * from "./components/Section/TemplateEditSection";
-export * from "./components/Section/TemplateGridSection";
-export * from "./components/Editing/TemplateEditText";
-export * from "./components/Editing/TemplateConfigTextarea";
-export * from "./components/Editing/TemplateEditTag"
-export * from "./components/Editing/TemplateConfigVariable";
+export * from "./components/edit/template-config-textarea";
+export * from "./components/edit/template-config-value";
+export * from "./components/edit/template-edit-tag";
+export * from "./components/edit/template-edit-text";
 
-export * from "./types/configType";
+export * from "./components/section/template-edit-section";
+export * from "./components/section/template-grid-section";
+
+export * from "./components/wrapper/template-edit-wrapper";
+export * from "./components/wrapper/template-grid-wrapper";
+
+export * from "./components/add-new-template-button";
+
 export * from "./hooks";
+export * from "./types/config-type";

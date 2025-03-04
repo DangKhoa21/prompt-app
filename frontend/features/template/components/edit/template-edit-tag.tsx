@@ -77,15 +77,19 @@ export function TemplateEditTag({ tags, setPromptData }: TemplateEditTagProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <div>Tags: </div>
-        <div className="flex flex-wrap gap-2">
+      <div className="flex items-center m-1 gap-2">
+        <div className="basis-1/5 text-base font-semibold">Tags: </div>
+        <div className="basis-4/5 flex flex-wrap gap-2">
           {tags?.map((tag, i) => (
-            <Badge key={i} variant="secondary" className="group">
+            <Badge
+              key={i}
+              variant="secondary"
+              className="group relative transition-all ease-in-out duration-300 hover:pr-[2.05rem]"
+            >
               {tag.name}
               <Button
-                variant="default"
-                className="mx-2 h-6 w-6 hidden group-hover:flex"
+                variant="ghost"
+                className="absolute right-[0.525rem] h-4 w-4 opacity-0 transition-all ease-in-out group-hover:opacity-100 duration-300"
                 size="icon"
                 onClick={() => {
                   handleDeleteTag(tag.id);
@@ -95,42 +99,42 @@ export function TemplateEditTag({ tags, setPromptData }: TemplateEditTagProps) {
               </Button>
             </Badge>
           ))}
-        </div>
 
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              aria-expanded={open}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Command>
-              <CommandInput placeholder="Search tag..." className="h-9" />
-              <CommandList>
-                <CommandEmpty>No remaining tag found.</CommandEmpty>
-                <CommandGroup>
-                  {remainingTags.map((remainingTag) => (
-                    <CommandItem
-                      key={remainingTag.id}
-                      value={remainingTag.name}
-                      onSelect={(currentValue) => {
-                        handleAddTag(remainingTag.id, currentValue);
-                        setOpen(false);
-                      }}
-                    >
-                      {remainingTag.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                aria-expanded={open}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search tag..." className="h-9" />
+                <CommandList>
+                  <CommandEmpty>No remaining tags found.</CommandEmpty>
+                  <CommandGroup>
+                    {remainingTags.map((remainingTag) => (
+                      <CommandItem
+                        key={remainingTag.id}
+                        value={remainingTag.name}
+                        onSelect={(currentValue) => {
+                          handleAddTag(remainingTag.id, currentValue);
+                          setOpen(false);
+                        }}
+                      >
+                        {remainingTag.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </>
   );

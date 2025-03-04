@@ -64,29 +64,41 @@ export async function getTagsForTemplate(id: string): Promise<TemplateTag[]> {
 }
 
 export async function getPromptTemplate(
-  id: string
+  id: string,
 ): Promise<TemplateWithConfigs> {
   const response = await axiosInstance.get(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function createPromptTemplate(
-  data: PromptWithConfigsCreation
+  data: PromptWithConfigsCreation,
 ): Promise<string> {
+  // Change config type to lowercase
+  data.configs = data.configs.map((config) => ({
+    ...config,
+    type: config.type.toLowerCase(),
+  }));
   const response = await axiosInstance.post(`/prompts`, data);
   return response.data.data;
 }
 
 export async function updatePromptTemplate(
-  data: TemplateWithConfigs
+  data: TemplateWithConfigs,
 ): Promise<boolean> {
+  data.configs = data.configs.map((config) => ({
+    ...config,
+    type: config.type.toLowerCase(),
+  }));
   const response = await axiosInstance.put(`/prompts/${data.id}`, data);
   return response.data.data;
 }
 
-export async function updateTag(data: TemplateWithConfigs): Promise<boolean> {
-  const response = await axiosInstance.put(`/prompts/${data.id}/tags`, {
-    tagIds: data.tags.map((tag) => tag.id),
+export async function updateTag(
+  id: string,
+  data: TemplateTag[],
+): Promise<boolean> {
+  const response = await axiosInstance.put(`/prompts/${id}/tags`, {
+    tagIds: data.map((tag) => tag.id),
   });
   return response.data.data;
 }

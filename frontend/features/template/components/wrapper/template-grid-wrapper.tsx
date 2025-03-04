@@ -2,7 +2,7 @@ import { LoadingSpinner } from "@/components/icons";
 import PromptTemplateCard from "@/components/prompt/prompt-templates-card";
 import { getPromptTemplates, getTagsForTemplate } from "@/services/prompt";
 import { TemplateTag } from "@/services/prompt/interface";
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 
 export function TemplateGridWrapper() {
   const {

@@ -6,6 +6,7 @@ import {
   updatePromptTemplate,
   updateTag,
 } from "@/services/prompt";
+import { TemplateTag } from "@/services/prompt/interface";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -36,8 +37,16 @@ export const useUpdatePromptTemplate = () => {
 };
 
 export const useUpdateTag = () => {
+  const handleUpdateTags = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: TemplateTag[];
+  }) => updateTag(id, data);
+
   return useMutation({
-    mutationFn: updateTag,
+    mutationFn: handleUpdateTags,
     onSuccess: (res: boolean) => {
       console.log("Updating tags status: ", res);
     },

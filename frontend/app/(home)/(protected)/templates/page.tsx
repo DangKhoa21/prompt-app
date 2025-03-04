@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { TemplateGridWrapper } from "@/features/template";
-import { AddNewTemplateButton } from "@/features/template/components/AddNewTemplateButton";
+import { AddNewTemplateButton, TemplateGridWrapper } from "@/features/template";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 

@@ -13,9 +13,9 @@ export default async function Page({
   const { id } = await params;
   return (
     <>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="p-4">
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/templates">
                 <ChevronLeft className="h-4 w-4" />

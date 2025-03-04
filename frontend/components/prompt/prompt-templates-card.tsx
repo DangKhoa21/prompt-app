@@ -1,10 +1,6 @@
-import ConfirmDialog from "@/components/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
-import { useDeletePromptTemplate } from "@/features/template";
 import { TemplateTag } from "@/services/prompt/interface";
-import { X } from "lucide-react";
 import Link from "next/link";
-import { toast } from "sonner";
 
 interface TemplateCardProps {
   id: string;
@@ -19,21 +15,6 @@ export default function PromptTemplateCard({
   description,
   tags,
 }: TemplateCardProps) {
-  const { mutateAsync } = useDeletePromptTemplate();
-
-  const handleDeleteTemplate = () => {
-    const deletePromptTemplate = mutateAsync(id);
-
-    toast.promise(deletePromptTemplate, {
-      loading: "Deleting prompt template...",
-      success: "Deleting prompt template successfully",
-      error: (e) => {
-        console.error(e);
-        return "Failed to delete prompt template";
-      },
-    });
-  };
-
   return (
     <div className="bg-card">
       <div className="flex flex-col mb-2 bg-slate-50 rounded-lg p-4 border border-slate-500 max-h-[140px] justify-between">
@@ -44,17 +25,6 @@ export default function PromptTemplateCard({
           >
             {title}
           </Link>
-          <div className="flex items-center">
-            <ConfirmDialog
-              description=""
-              variant="ghost"
-              type="icon"
-              className="text-destructive hover:text-destructive"
-              action={handleDeleteTemplate}
-            >
-              <X className="h-4 w-4" />
-            </ConfirmDialog>
-          </div>
         </div>
         <Link href={"/templates/" + id}>
           <div className="text-sm text-muted-foreground items-center mb-2 line-clamp-2">

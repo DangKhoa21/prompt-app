@@ -33,15 +33,15 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
-import { ConfigType } from "@/features/template/types/configType";
-import { List, Plus, Settings, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
-import { v7 } from "uuid";
 import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { List, Plus, X } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { v7 } from "uuid";
 
 interface ConfigVariableProps extends TemplateConfig {
   index: number;
@@ -58,13 +58,20 @@ export function TemplatesConfigVariable({
   setPromptData,
   isSidebarOpen,
 }: ConfigVariableProps) {
-  const [newConfigValue, setNewConfigValue] = useState("Happy");
+  const [newConfigValue, setNewConfigValue] = useState("");
+  const [latestAdded, setLatestAdded] = useState("");
+  const [addingError, setAddingError] = useState("");
 
   const handleSelectChange = (configId: string, type: ConfigType) => {
     setPromptData((prevState) => ({
       ...prevState,
       configs: prevState.configs.map((config) =>
-        config.id === configId ? { ...config, type: ConfigType[type] } : config
+        config.id === configId
+          ? {
+              ...config,
+              type: ConfigType[type.toUpperCase() as keyof typeof ConfigType],
+            }
+          : config,
       ),
     }));
   };
@@ -73,29 +80,33 @@ export function TemplatesConfigVariable({
     event.preventDefault();
 
     const value = newConfigValue;
+
+    if (!value) {
+      setAddingError("Value should not be empty");
+      return;
+    }
+
+    if (values.some((config) => config.value === value)) {
+      setAddingError(`Already have config name: "${value}"`);
+      return;
+    }
     setPromptData((prevState) => ({
       ...prevState,
       configs: prevState.configs.map((config) =>
         config.id === configId
           ? {
               ...config,
-              configValues: [
+              values: [
                 ...(config.values ?? []),
-                { id: v7(), value: value },
+                { id: v7(), value: value, promptConfigId: id },
               ],
             }
-          : config
+          : config,
       ),
     }));
 
-    setNewConfigValue("Happy");
-  };
-
-  const handleDeleteConfig = (configId: string) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      configs: prevState.configs.filter((config) => config.id !== configId),
-    }));
+    setLatestAdded(value);
+    setNewConfigValue("");
   };
 
   const handleDeleteConfigValue = (configId: string, configValueId: string) => {
@@ -105,38 +116,25 @@ export function TemplatesConfigVariable({
         config.id === configId
           ? {
               ...config,
-              configValues: (config.values ?? []).filter(
-                (value) => value.id !== configValueId
+              values: (config.values ?? []).filter(
+                (value) => value.id !== configValueId,
               ),
             }
-          : config
+          : config,
       ),
     }));
   };
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)
   return (
-    <Card key={id} className="bg-background-primary border border-slate-500">
+    <Card key={id} className="border border-slate-500">
       <CardHeader
-        className={cn("pt-4 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
+        className={cn("pt-6 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
       >
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold">
             Config {index + 1}
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive"
-              onClick={() => handleDeleteConfig(id)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </CardHeader>
       <Separator
@@ -144,7 +142,7 @@ export function TemplatesConfigVariable({
         className="w-auto mx-6 bg-slate-500"
       ></Separator>
       <CardContent className="pb-2">
-        <div className="grid grid-cols-2 gap-0">
+        <div className="grid grid-cols-3 gap-0">
           <SidebarGroup key={`Name-${id}`}>
             <SidebarGroupLabel>
               <Label htmlFor={label.toLowerCase()}>Label</Label>
@@ -155,7 +153,7 @@ export function TemplatesConfigVariable({
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarGroup key={`Type-${id}`}>
+          <SidebarGroup key={`Type-${id}`} className="col-span-2">
             <SidebarGroupLabel>
               <Label htmlFor={label.toLowerCase()}>Config Type</Label>
             </SidebarGroupLabel>
@@ -164,35 +162,96 @@ export function TemplatesConfigVariable({
               <Select
                 onValueChange={(value) => {
                   const handledValue =
-                    ConfigType[value as keyof typeof ConfigType];
+                    ConfigType[value.toUpperCase() as keyof typeof ConfigType];
                   handleSelectChange(id, handledValue);
                 }}
               >
-                <SelectTrigger id={type.toString()}>
-                  <SelectValue placeholder={`${type}`} />
+                <SelectTrigger id={type.toString()} className="max-w-36">
+                  <SelectValue
+                    placeholder={`${type[0].toUpperCase()}${type.slice(1)}`}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(ConfigType)
                     .filter((value) => isNaN(Number(value)))
                     .map((config) => (
                       <SelectItem key={config} value={config.toString()}>
-                        {config}
+                        {config[0].toUpperCase()}
+                        {config.slice(1)}
                       </SelectItem>
                     ))}
                 </SelectContent>
               </Select>
 
               {/* Icon show list if type is dropdown */}
-              {type === ConfigType.Dropdown ? (
+              {type === ConfigType.DROPDOWN ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="w-8 h-8">
-                      <List className="w-4 h-4" />
+                    <Button variant="outline" size="icon">
+                      <List className="w-8 h-8" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
-                    <DropdownMenuLabel>
-                      &apos;{label}&apos; list values
+                    <DropdownMenuLabel className="flex flex-row items-center justify-between">
+                      <div>&apos;{label}&apos; list values</div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="flex justify-end">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-4 h-4 mr-1"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Adding new value for {label}
+                            </DialogTitle>
+                            <DialogDescription>
+                              Let&apos;s add new value to your config.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="newValue" className="text-right">
+                                Value
+                              </Label>
+                              <Input
+                                id="newValue"
+                                value={newConfigValue}
+                                onChange={(e) => {
+                                  setNewConfigValue(e.target.value);
+                                  setLatestAdded("");
+                                  setAddingError("");
+                                }}
+                                className="col-span-3"
+                              />
+                            </div>
+                          </div>
+                          {latestAdded && (
+                            <div className="flex justify-center text-green-500">
+                              Added: {latestAdded}
+                            </div>
+                          )}
+                          {addingError && (
+                            <div className="flex justify-center text-destructive">
+                              Error: {addingError}
+                            </div>
+                          )}
+                          <DialogFooter>
+                            <Button
+                              type="submit"
+                              onClick={(e) => handleAddConfigValue(e, id)}
+                            >
+                              Add
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {values === null || values.length === 0 ? (
@@ -203,69 +262,22 @@ export function TemplatesConfigVariable({
                       values.map((value) => (
                         <div
                           key={value.id}
-                          className="group flex justify-between h-8 text-sm items-center px-2 py-1"
+                          className="group flex justify-between h-10 text-sm items-center px-2 py-1 hover:bg-accent"
                         >
                           {value.value}
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="hidden group-hover:flex group-focus:flex h-8 w-8 text-destructive"
+                            className="opacity-0 -translate-x-2 transition ease-in-out delay-150 duration-300 group-hover:opacity-100 group-hover:translate-x-2"
                             onClick={() =>
                               handleDeleteConfigValue(id, value.id)
                             }
                           >
-                            <X className="h-4 w-4" />
+                            <X />
                           </Button>
                         </div>
                       ))
                     )}
-                    <DropdownMenuSeparator />
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <div className="flex justify-end">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="w-8 h-8 mx-2"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>
-                            Adding new value for {label}
-                          </DialogTitle>
-                          <DialogDescription>
-                            Let&apos;s add new value to your config.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="newValue" className="text-right">
-                              Value
-                            </Label>
-                            <Input
-                              id="newValue"
-                              value={newConfigValue}
-                              onChange={(e) =>
-                                setNewConfigValue(e.target.value)
-                              }
-                              className="col-span-3"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button
-                            type="submit"
-                            onClick={(e) => handleAddConfigValue(e, id)}
-                          >
-                            Add
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
