@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounceCallback, useWindowSize } from "usehooks-ts";
-import { AddNewTemplateButton } from "@/features/template/components/AddNewTemplateButton";
+import { AddNewTemplateButton } from "@/features/template";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function TemplatesSearch() {

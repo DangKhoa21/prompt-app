@@ -315,7 +315,7 @@ export function TemplatesConfigVariable({
                           key={value.id}
                           className="group flex justify-between h-10 text-sm items-center px-2 py-1 hover:bg-accent"
                         >
-                          {value.value instanceof String ? value.value : ""}
+                          {typeof value.value === "string" ? value.value : ""}
                           <Button
                             variant="ghost"
                             size="icon"

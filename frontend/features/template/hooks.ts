@@ -6,9 +6,11 @@ import {
   updatePromptTemplate,
   updateTag,
 } from "@/services/prompt";
-import { TemplateTag } from "@/services/prompt/interface";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PromptCard, PromptFilter } from "@/services/prompt/interface";
+import {
+  PromptCard,
+  PromptFilter,
+  TemplateTag,
+} from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
 import { starPrompt, unstarPrompt } from "@/services/star";
 import {
@@ -105,7 +107,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {
@@ -142,7 +144,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {

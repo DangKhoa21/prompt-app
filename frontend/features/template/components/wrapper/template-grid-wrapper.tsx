@@ -11,9 +11,6 @@ import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import PromptTemplateCard from "@/components/prompt/prompt-templates-card";
-import { getPromptTemplates, getTagsForTemplate } from "@/services/prompt";
-import { TemplateTag } from "@/services/prompt/interface";
-import { useQueries, useQuery } from "@tanstack/react-query";
 
 export function TemplateGridWrapper({
   filter,
