@@ -29,6 +29,7 @@ import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "@/services/user";
+import { Setting } from "@/features/setting";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -104,6 +105,9 @@ export function NavUser() {
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
+
+              <Setting />
+
               <DropdownMenuItem>
                 <CreditCard />
                 Billing

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 
 import AppProviders from "@/providers/app-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 import localFont from "next/font/local";
 import "./globals.css";
@@ -33,8 +34,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppProviders>
-          <Toaster position="top-center" />
-          {children}
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Toaster position="top-center" />
+            {children}
+          </ThemeProvider>
         </AppProviders>
       </body>
     </html>

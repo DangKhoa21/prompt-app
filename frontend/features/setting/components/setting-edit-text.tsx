@@ -1,24 +1,26 @@
 "use client";
 
 import { EditTextField } from "@/components/edit-text-field";
-import { TemplateWithConfigs } from "@/services/prompt/interface";
+import { User } from "@/services/user/interface";
 import { Dispatch, SetStateAction } from "react";
 
 interface EditTextFieldProps {
   text: string;
   label: string;
-  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
+  setUserData: Dispatch<SetStateAction<User>>;
+  editable?: boolean;
   className?: string;
 }
 
-export function TemplateEditTextField({
+export function SettingEditTextField({
   text,
   label,
-  setPromptData,
+  setUserData,
+  editable = true,
   className,
 }: EditTextFieldProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPromptData((prevState) => ({
+    setUserData((prevState) => ({
       ...prevState,
       [label]: e.target.value,
     }));
@@ -29,7 +31,8 @@ export function TemplateEditTextField({
       text={text}
       label={label}
       handleChange={handleChange}
+      editable={editable}
       className={className}
-    />
+    ></EditTextField>
   );
 }

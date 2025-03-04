@@ -5,8 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   ConfigType,
-  EditTextField,
   TemplateEditTag,
+  TemplateEditTextField,
   TemplatesConfigTextarea,
   TemplatesConfigVariable,
   useDeletePromptTemplate,
@@ -146,14 +146,14 @@ export function TemplateEditSection({
       </div>
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col">
-          <EditTextField
+          <TemplateEditTextField
             text={promptData.title}
             label="title"
             setPromptData={setPromptData}
             className="text-2xl font-semibold"
           />
 
-          <EditTextField
+          <TemplateEditTextField
             text={promptData.description}
             label="description"
             setPromptData={setPromptData}
