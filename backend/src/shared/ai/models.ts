@@ -20,6 +20,18 @@ export const models: Array<Model> = [
     apiIdentifier: 'gemini-1.5-pro-002',
     description: 'For complex, multi-step tasks',
   },
+  {
+    id: 'deepseek-chat',
+    label: 'DeepSeek V3',
+    apiIdentifier: 'deepseek/deepseek-chat',
+    description: 'For general conversations and broad task handling',
+  },
+  {
+    id: 'deepseek-reasoner',
+    label: 'DeepSeek R1',
+    apiIdentifier: 'deepseek/deepseek-r1',
+    description: 'For logical reasoning and complex problem-solving',
+  },
 ] as const;
 
 export const DEFAULT_MODEL_NAME: string = 'gemini-1.5-flash-002';

@@ -1,12 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import type { Message } from "ai";
 import cx from "classnames";
-import { motion } from "framer-motion";
-import { SparklesIcon } from "@/components/icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { SparklesIcon, ChevronDownIcon, LoaderIcon } from "@/components/icons";
 import { Markdown } from "@/components/markdown";
 
-export const PreviewMessage = ({ message }: { message: Message }) => {
+export const PreviewMessage = ({
+  message,
+  isLoading,
+}: {
+  message: Message;
+  isLoading: boolean;
+}) => {
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"
@@ -26,6 +33,13 @@ export const PreviewMessage = ({ message }: { message: Message }) => {
         )}
 
         <div className="flex flex-col gap-2 w-full">
+          {message.reasoning && (
+            <MessageReasoning
+              isLoading={isLoading}
+              reasoning={message.reasoning}
+            />
+          )}
+
           {message.content && (
             <div className="flex flex-col gap-4">
               <Markdown>{message.content as string}</Markdown>
@@ -68,3 +82,70 @@ export const ThinkingMessage = () => {
     </motion.div>
   );
 };
+
+export function MessageReasoning({
+  isLoading,
+  reasoning,
+}: {
+  isLoading: boolean;
+  reasoning: string;
+}) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const variants = {
+    collapsed: {
+      height: 0,
+      opacity: 0,
+      marginTop: 0,
+      marginBottom: 0,
+    },
+    expanded: {
+      height: "auto",
+      opacity: 1,
+      marginTop: "1rem",
+      marginBottom: "0.5rem",
+    },
+  };
+
+  return (
+    <div className="flex flex-col">
+      {isLoading ? (
+        <div className="flex flex-row gap-2 items-center">
+          <div className="font-medium">Reasoning</div>
+          <div className="animate-spin">
+            <LoaderIcon />
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-row gap-2 items-center">
+          <div className="font-medium">Reasoned for a few seconds</div>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              setIsExpanded(!isExpanded);
+            }}
+          >
+            <ChevronDownIcon />
+          </div>
+        </div>
+      )}
+
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            key="content"
+            initial="collapsed"
+            animate="expanded"
+            exit="collapsed"
+            variants={variants}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+            className="pl-4 text-zinc-600 dark:text-zinc-400 border-l flex flex-col gap-4"
+          >
+            <Markdown>{reasoning}</Markdown>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

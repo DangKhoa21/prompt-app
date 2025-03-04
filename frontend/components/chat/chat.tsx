@@ -82,8 +82,12 @@ export function Chat({
         >
           {messages.length === 0 && <Overview />}
 
-          {messages.map((message) => (
-            <PreviewMessage key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <PreviewMessage
+              key={message.id}
+              message={message}
+              isLoading={isLoading && messages.length - 1 === index}
+            />
           ))}
 
           {isLoading &&
