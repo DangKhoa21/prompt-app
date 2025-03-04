@@ -54,6 +54,7 @@ export function TemplatesConfigVariable({
   index,
   label,
   type,
+  field = [],
   values,
   setPromptData,
   isSidebarOpen,
@@ -119,6 +120,56 @@ export function TemplatesConfigVariable({
               values: (config.values ?? []).filter(
                 (value) => value.id !== configValueId,
               ),
+            }
+          : config,
+      ),
+    }));
+  };
+
+  const handleAddArrayConfigValue = (
+    event: React.FormEvent,
+    configId: string,
+  ) => {
+    event.preventDefault();
+
+    const value = newConfigValue;
+
+    if (!value) {
+      setAddingError("Value should not be empty");
+      return;
+    }
+
+    if (field.some((name) => name === value)) {
+      setAddingError(`Already have field name: "${value}"`);
+      return;
+    }
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.map((config) =>
+        config.id === configId
+          ? {
+              ...config,
+              field: [...(config.field ?? []), value],
+            }
+          : config,
+      ),
+    }));
+
+    setLatestAdded(value);
+    setNewConfigValue("");
+  };
+
+  const handleDeleteArrayConfigValue = (
+    configId: string,
+    fieldName: string,
+  ) => {
+    setPromptData((prevState) => ({
+      ...prevState,
+      configs: prevState.configs.map((config) =>
+        config.id === configId
+          ? {
+              ...config,
+              field: (config.field ?? []).filter((name) => name !== fieldName),
             }
           : config,
       ),
@@ -254,7 +305,7 @@ export function TemplatesConfigVariable({
                       </Dialog>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {values === null || values.length === 0 ? (
+                    {values.length === 0 ? (
                       <div className="mx-auto flex items-center justify-center">
                         Currently empty
                       </div>
@@ -264,7 +315,7 @@ export function TemplatesConfigVariable({
                           key={value.id}
                           className="group flex justify-between h-10 text-sm items-center px-2 py-1 hover:bg-accent"
                         >
-                          {value.value}
+                          {value.value instanceof String ? value.value : ""}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -280,6 +331,109 @@ export function TemplatesConfigVariable({
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              ) : type === ConfigType.ARRAY ? (
+                <>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <List className="w-8 h-8" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel className="flex flex-row items-center justify-between">
+                        <div>&apos;{label}&apos; list values</div>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <div className="flex justify-end">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="w-4 h-4 mr-1"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>
+                                Adding new value for {label}
+                              </DialogTitle>
+                              <DialogDescription>
+                                Let&apos;s add new value to your config.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                  htmlFor="newValue"
+                                  className="text-right"
+                                >
+                                  Value
+                                </Label>
+                                <Input
+                                  id="newValue"
+                                  value={newConfigValue}
+                                  onChange={(e) => {
+                                    setNewConfigValue(e.target.value);
+                                    setLatestAdded("");
+                                    setAddingError("");
+                                  }}
+                                  className="col-span-3"
+                                />
+                              </div>
+                            </div>
+                            {latestAdded && (
+                              <div className="flex justify-center text-green-500">
+                                Added: {latestAdded}
+                              </div>
+                            )}
+                            {addingError && (
+                              <div className="flex justify-center text-destructive">
+                                Error: {addingError}
+                              </div>
+                            )}
+                            <DialogFooter>
+                              <Button
+                                type="submit"
+                                onClick={(e) =>
+                                  handleAddArrayConfigValue(e, id)
+                                }
+                              >
+                                Add
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {field.length === 0 ? (
+                        <div className="mx-auto flex items-center justify-center">
+                          Currently empty
+                        </div>
+                      ) : (
+                        field.map((name, i) => (
+                          <div
+                            key={i}
+                            className="group flex justify-between h-10 text-sm items-center px-2 py-1 hover:bg-accent"
+                          >
+                            {name}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="opacity-0 -translate-x-2 transition ease-in-out delay-150 duration-300 group-hover:opacity-100 group-hover:translate-x-2"
+                              onClick={() =>
+                                handleDeleteArrayConfigValue(id, name)
+                              }
+                            >
+                              <X />
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
               ) : (
                 <></>
               )}

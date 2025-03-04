@@ -25,6 +25,7 @@ import { getPrompt } from "@/services/prompt";
 import { useSearchParams } from "next/navigation";
 import { usePrompt } from "@/context/prompt-context";
 import { PromptSearch } from "./prompt-search";
+import { ArrayConfig } from "@/features/prompt-generator";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
@@ -170,6 +171,10 @@ export function PromptGeneratorSidebar() {
                   }
                   // className={config.className}
                 />
+              ) : config.type === "array" ? (
+                <>
+                  <ArrayConfig></ArrayConfig>
+                </>
               ) : null}
             </SidebarGroupContent>
           </SidebarGroup>

@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TemplateTag } from "@/services/prompt/interface";
 import Link from "next/link";
 
@@ -16,17 +17,12 @@ export default function PromptTemplateCard({
   tags,
 }: TemplateCardProps) {
   return (
-    <div className="bg-card">
-      <div className="flex flex-col mb-2 bg-slate-50 rounded-lg p-4 border border-slate-500 max-h-[140px] justify-between">
-        <div className="flex flex-row justify-between w-full">
-          <Link
-            href={"/templates/" + id}
-            className="text-base font-bold my-auto"
-          >
-            {title}
-          </Link>
-        </div>
+    <Card className="max-h[140px]">
         <Link href={"/templates/" + id}>
+      <CardHeader className="flex flex-row justify-between w-full">
+          {title}
+      </CardHeader>
+      <CardContent>
           <div className="text-sm text-muted-foreground items-center mb-2 line-clamp-2">
             {description}
           </div>
@@ -37,8 +33,8 @@ export default function PromptTemplateCard({
               </Badge>
             ))}
           </div>
+      </CardContent>
         </Link>
-      </div>
-    </div>
+    </Card>
   );
 }

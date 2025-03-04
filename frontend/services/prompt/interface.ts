@@ -1,3 +1,5 @@
+import { ConfigType } from "@/features/template";
+
 export interface Prompt {
   id: string;
   title: string;
@@ -42,8 +44,15 @@ export interface ConfigValue {
 
 export interface TemplateConfigValue {
   id: string;
-  value: string;
+  value: string | TemplateArrayValue[];
   promptConfigId: string;
+}
+
+export interface TemplateArrayValue {
+  id: string;
+  label: string;
+  value: string;
+  configValueId: string;
 }
 
 export interface PromptConfig {
@@ -59,7 +68,8 @@ export interface PromptConfig {
 export interface TemplateConfig {
   id: string;
   label: string;
-  type: string;
+  type: ConfigType;
+  field?: string[];
   promptId: string;
   values: TemplateConfigValue[];
 }
