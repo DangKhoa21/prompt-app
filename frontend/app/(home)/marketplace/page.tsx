@@ -16,9 +16,10 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const tagId = searchParams?.tagId || "";
   const search = searchParams?.search || "";
+  const filter = { tagId, search };
 
   return (
-    <div className="flex-1 overflow-auto bg-background">
+    <div className="flex-1 bg-background">
       <MarketHeader />
 
       <div className="max-w-6xl mx-auto">
@@ -29,7 +30,7 @@ export default async function Page(props: {
         </Suspense>
 
         <Suspense fallback={<LoadingSpinner />}>
-          <PromptsList tagId={tagId} search={search} />
+          <PromptsList filter={filter} />
         </Suspense>
       </div>
     </div>

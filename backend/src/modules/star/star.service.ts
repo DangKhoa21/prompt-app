@@ -1,14 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { StarRepository } from './star.repository';
 import { PromptService } from '../prompt/prompt.service';
+import { TagService } from '../tag/tag.service';
 import { ErrAlreadyStarred, ErrNotStarred, Star } from './model';
-import { AppError, PagingDTO, pagingDTOSchema } from 'src/shared';
+import {
+  AppError,
+  PagingDTO,
+  pagingDTOSchema,
+  PromptFilterDTO,
+  promptFilterDTOSchema,
+} from 'src/shared';
 
 @Injectable()
 export class StarService {
   constructor(
     private readonly starRepo: StarRepository,
+    @Inject(forwardRef(() => PromptService))
     private readonly promptService: PromptService,
+    private readonly tagService: TagService,
   ) {}
 
   async star(promptId: string, userId: string): Promise<void> {
@@ -36,16 +45,32 @@ export class StarService {
     await this.starRepo.delete(star);
   }
 
-  async getStarredPrompts(userId: string, pagingDTO: PagingDTO) {
+  async getStarredPrompts(
+    userId: string,
+    pagingDTO: PagingDTO,
+    filterDTO: PromptFilterDTO,
+  ) {
     const paging = pagingDTOSchema.parse(pagingDTO);
-    const starsByUserId = await this.starRepo.findStarsByUserId(userId);
+    const filter = promptFilterDTOSchema.parse(filterDTO);
 
+    const promptIdsByTagId = filter.tagId
+      ? await this.tagService.findPromptIdsByTagId(filter.tagId)
+      : undefined;
+
+    const starsByUserId = await this.starRepo.findStarsByUserId(userId);
     const starredPromptIds = starsByUserId.map((star) => star.promptId);
+
+    const promptIds = promptIdsByTagId
+      ? promptIdsByTagId.filter((promptId) =>
+          starredPromptIds.includes(promptId),
+        )
+      : starredPromptIds;
 
     const { data: promptCardsRepo, nextCursor } = await this.promptService.list(
       paging,
       {
-        promptIds: starredPromptIds,
+        promptIds,
+        search: filter.search,
       },
     );
 

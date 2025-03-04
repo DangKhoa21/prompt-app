@@ -154,7 +154,9 @@ export class ChatService {
           },
         });
 
-        result.mergeIntoDataStream(dataStreamWriter);
+        result.mergeIntoDataStream(dataStreamWriter, {
+          sendReasoning: true,
+        });
       },
       onError: (error) => {
         console.error(error);

@@ -114,3 +114,9 @@ export interface TemplateTag {
   id: string;
   name: string;
 }
+
+export interface PromptFilter {
+  search?: string;
+  tagId?: string;
+  creatorId?: string;
+}

@@ -101,7 +101,7 @@ export class TagService {
 
   async updateTagsOfPrompt(
     id: string,
-    dto: TagsToPromptDTO[],
+    dto: TagsToPromptDTO,
     creatorId: string,
   ): Promise<void> {
     const existedPrompt = await this.promptService.findOne(id); // check if prompt exists

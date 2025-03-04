@@ -63,7 +63,7 @@ export class TagController {
   async updateTagsOfPrompt(
     @Req() req: ReqWithRequester,
     @Param('id') id: string,
-    @Body() dto: TagsToPromptDTO[],
+    @Body() dto: TagsToPromptDTO,
   ) {
     const { sub: creatorId } = req.user;
     await this.tagService.updateTagsOfPrompt(id, dto, creatorId);

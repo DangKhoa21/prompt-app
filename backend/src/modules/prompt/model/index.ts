@@ -50,14 +50,6 @@ export type PromptCondDTO = {
   creatorId?: string;
 };
 
-export const promptFilterDTOSchema = z.object({
-  search: z.string().optional(),
-  tagId: z.string().uuid().optional(),
-  creatorId: z.string().uuid().optional(),
-});
-
-export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;
-
 export const promptConfigSchema = z.object({
   id: z.string().uuid(),
   label: z.string(),
