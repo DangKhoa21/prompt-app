@@ -35,9 +35,9 @@ export function PromptGeneratorSidebar() {
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
     {},
   );
-  const [arrayValues, setArrayValues] = useState<Record<string, string[][]>>(
-    {},
-  );
+  const [arrayValues, setArrayValues] = useState<
+    Record<string, { id: string; values: string[] }[]>
+  >({});
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
