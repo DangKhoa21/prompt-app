@@ -35,6 +35,9 @@ export function PromptGeneratorSidebar() {
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
     {},
   );
+  const [arrayValues, setArrayValues] = useState<Record<string, string[][]>>(
+    {},
+  );
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
@@ -173,7 +176,14 @@ export function PromptGeneratorSidebar() {
                 />
               ) : config.type === "array" ? (
                 <>
-                  <ArrayConfig></ArrayConfig>
+                  <ArrayConfig
+                    id={config.label}
+                    labels={config.values.map((value) => {
+                      return value.value;
+                    })}
+                    values={arrayValues[config.label]}
+                    setArrayValues={setArrayValues}
+                  ></ArrayConfig>
                 </>
               ) : null}
             </SidebarGroupContent>

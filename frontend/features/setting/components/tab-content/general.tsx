@@ -11,7 +11,7 @@ export function GeneralContent() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // Prevents hydration mismatch
+  if (!mounted) return <div className="hidden" />; // Prevents hydration mismatch
 
   return (
     <>

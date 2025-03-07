@@ -30,6 +30,7 @@ export function PersonalizationContent() {
       <SettingEditTextField
         text={userData.email}
         label="email"
+        editable={false}
         setUserData={setUserData}
         className="text-base"
       ></SettingEditTextField>
