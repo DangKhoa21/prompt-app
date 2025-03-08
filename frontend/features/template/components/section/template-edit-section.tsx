@@ -104,6 +104,26 @@ export function TemplateEditSection({
   };
 
   const handleSave = () => {
+    let errorConfigs: string[] = [];
+
+    promptData.configs.map((config) => {
+      if (
+        config.type === ConfigType.DROPDOWN ||
+        config.type === ConfigType.ARRAY
+      ) {
+        if (config.values.length < 2) {
+          errorConfigs = [...errorConfigs, config.label];
+        }
+      }
+    });
+
+    if (errorConfigs.length) {
+      toast.error(
+        `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs.map((config) => config).join(", ")}`,
+      );
+      return;
+    }
+
     savingPrompt = promptData;
     const updatePromptTemplatePromise = mutateUpdateTemplate(savingPrompt);
 
