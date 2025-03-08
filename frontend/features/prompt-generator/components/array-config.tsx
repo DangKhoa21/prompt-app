@@ -1,6 +1,6 @@
+import ConfirmDialog from "@/components/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
@@ -19,19 +21,23 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { v7 } from "uuid";
 
 function SortableItem({
   itemId,
+  itemGivenName,
   labels,
   values,
   handleTextareaChange,
+  handleDeleteItem,
 }: {
   itemId: string;
+  itemGivenName?: string;
   labels: string[];
   values: string[];
   handleTextareaChange: (id: string, label: number, value: string) => void;
+  handleDeleteItem: (itemId: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: itemId });
@@ -41,57 +47,114 @@ function SortableItem({
     transition,
   };
 
-  const valueIndex = parseInt(itemId.split("-")[1]);
+  const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
+
+  const [isEditName, setIsEditName] = useState(false);
+
+  const itemNameInputRef = useRef<HTMLInputElement>(null);
+
+  const itemIdNumber = itemId.split("-").slice(1).join("-");
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="p-2 bg-card text-card-foreground rounded-md shadow-md cursor-pointer flex items-center justify-between"
+      className="bg-card text-card-foreground rounded-md shadow-md cursor-pointer flex items-center justify-between"
     >
-      <GripVertical
-        {...attributes}
-        {...listeners}
-        className="w-4 h-4 mr-2 shrink-0 focus:outline-none "
-      ></GripVertical>
+      <Button {...attributes} {...listeners} variant="ghost" size="icon">
+        <GripVertical className="w-4 h-4 shrink-0 focus:outline-none "></GripVertical>
+      </Button>
       <Dialog>
         <DialogTrigger asChild>
-          <div className="px-0 flex w-full gap-2 overflow-hidden justify-between hover:bg-card/90 focus:bg-card/90">
-            <div className="truncate">{itemId}</div>
+          <div className="flex w-full h-10 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
+            <div className="truncate">{itemName}</div>
             <Badge className="mr-1">View</Badge>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent
+          className="w-[800px] max-w-[800px] h-[540px] flex flex-col"
+          onEscapeKeyDown={(e) => {
+            if (isEditName) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>
+              {isEditName ? (
+                <Input
+                  ref={itemNameInputRef}
+                  value={itemName}
+                  onChange={(e) => {
+                    setItemName(e.target.value);
+                  }}
+                  onBlur={() => setIsEditName(false)}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter" || e.key === "Escape")
+                      setIsEditName(false);
+                  }}
+                  className="basis-4/5"
+                />
+              ) : (
+                <div
+                  onClick={() => {
+                    setIsEditName(true);
+                    setTimeout(() => itemNameInputRef.current?.focus(), 0);
+                  }}
+                  className="basis-4/5 text-2xl font-semibold p-1 w-full text-wrap hover:bg-accent"
+                >
+                  {itemName}
+                </div>
+              )}
+            </DialogTitle>
             <DialogDescription>
-              Make changes to your profile here.
+              Provide your detail information to help create you desire prompt
             </DialogDescription>
           </DialogHeader>
-          {values.map((value, index) => (
-            <Card
-              key={`Card-${itemId}-${valueIndex}-${labels[index]}`}
-              className="border border-slate-500"
-            >
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">
-                  {labels[index]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  placeholder={labels[index]}
-                  className="min-h-[200px] border border-slate-500"
-                  value={value}
-                  onChange={(e) => {
-                    handleTextareaChange(itemId, index, e.target.value);
-                  }}
-                />
-              </CardContent>
-            </Card>
-          ))}
+
+          <ScrollArea className="h-full w-full">
+            {values.length ? (
+              <div className="flex flex-col gap-6 p-2">
+                {values.map((value, index) => (
+                  <div
+                    key={`Card-${itemId}-${labels[index]}`}
+                    className="w-full flex flex-row justify-start items-center"
+                  >
+                    <div className="text-xl font-semibold basis-1/5">
+                      {labels[index][0].toUpperCase()}
+                      {labels[index].slice(1)}:
+                    </div>
+                    <Textarea
+                      placeholder={labels[index]}
+                      className="min-h-[100px] basis-4/5 border border-slate-500"
+                      value={value}
+                      onChange={(e) => {
+                        handleTextareaChange(itemId, index, e.target.value);
+                      }}
+                    ></Textarea>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col mt-2 items-center">
+                This config has no keys
+              </div>
+            )}
+          </ScrollArea>
+
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <div className="flex w-full justify-start">
+              <ConfirmDialog
+                variant="outline"
+                className="text-red-500 border-red-500 hover:text-red-400 focus:text-red-400"
+                action={() => {
+                  handleDeleteItem(itemIdNumber.toString());
+                }}
+                description="This action will delete this item"
+              >
+                Delete
+              </ConfirmDialog>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -163,6 +226,17 @@ export function ArrayConfig({
     });
   };
 
+  const handleDeleteItem = (itemId: string) => {
+    setArrayValues((prevState) => {
+      const newArray = prevState[id].filter((item) => item.id !== itemId);
+
+      return {
+        ...prevState,
+        [id]: newArray,
+      };
+    });
+  };
+
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!active || !over) return;
@@ -194,22 +268,27 @@ export function ArrayConfig({
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-2">
-            {sortableItems.length
-              ? sortableItems.map((item) => (
-                  <SortableItem
-                    key={item.id}
-                    itemId={item.id}
-                    labels={labels}
-                    values={item.data}
-                    handleTextareaChange={handleTextareaChange}
-                  ></SortableItem>
-                ))
-              : "Empty"}
+            {sortableItems.length ? (
+              sortableItems.map((item) => (
+                <SortableItem
+                  key={item.id}
+                  itemId={item.id}
+                  labels={labels}
+                  values={item.data}
+                  handleTextareaChange={handleTextareaChange}
+                  handleDeleteItem={handleDeleteItem}
+                ></SortableItem>
+              ))
+            ) : (
+              <div className="text-center my-2 text-muted-foreground">
+                Empty
+              </div>
+            )}
           </div>
         </SortableContext>
       </DndContext>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mr-2">
         <Button variant="ghost" onClick={handleAddItems}>
           <Plus></Plus>
         </Button>
