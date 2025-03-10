@@ -18,7 +18,7 @@ export async function getPrompts({
   pageParam: string;
   filter?: PromptFilter;
 }): Promise<Paginated<PromptCard>> {
-  const { tagId, search, creatorId } = filter || {};
+  const { tagId, search, creatorId, sort } = filter || {};
   const response = await axiosInstance.get("/prompts", {
     params: {
       limit: PAGE_LIMIT,
@@ -26,6 +26,7 @@ export async function getPrompts({
       tagId: tagId ? tagId : undefined,
       search,
       creatorId: creatorId ? creatorId : undefined,
+      sort,
     },
   });
   return response.data;

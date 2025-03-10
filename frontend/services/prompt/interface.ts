@@ -109,4 +109,5 @@ export interface PromptFilter {
   search?: string;
   tagId?: string;
   creatorId?: string;
+  sort?: "newest" | "oldest" | "most-starred";
 }

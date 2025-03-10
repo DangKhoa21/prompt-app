@@ -64,6 +64,7 @@ export class PromptService {
       id: config.id,
       label: config.label,
       type: config.type,
+      info: config.info,
       promptId: prompt.id,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -104,6 +105,7 @@ export class PromptService {
         promptIds: promptIdsByTagId,
         creatorId: filter.creatorId,
         search: filter.search,
+        sort: filter.sort,
       },
     );
 
@@ -187,6 +189,7 @@ export class PromptService {
         id: config.id,
         label: config.label,
         type: config.type,
+        info: config.info,
         updatedAt: new Date(),
       }));
 
@@ -201,6 +204,7 @@ export class PromptService {
         id: config.id,
         label: config.label,
         type: config.type,
+        info: config.info,
         promptId: id,
         createdAt: new Date(),
         updatedAt: new Date(),

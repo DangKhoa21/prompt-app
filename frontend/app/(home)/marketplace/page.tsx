@@ -11,12 +11,14 @@ export default async function Page(props: {
   searchParams?: Promise<{
     tagId?: string;
     search?: string;
+    sort?: "newest" | "oldest" | "most-starred";
   }>;
 }) {
   const searchParams = await props.searchParams;
   const tagId = searchParams?.tagId || "";
   const search = searchParams?.search || "";
-  const filter = { tagId, search };
+  const sort = searchParams?.sort || "newest";
+  const filter = { tagId, search, sort };
 
   return (
     <div className="flex-1 bg-background">
