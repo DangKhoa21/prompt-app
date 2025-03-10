@@ -28,7 +28,7 @@ export function TemplatesConfigTextarea({
   return (
     <Card className="border border-slate-500">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">{label}</CardTitle>
+        <CardTitle className="text-xl font-medium">{label}</CardTitle>
       </CardHeader>
       <CardContent>
         <Textarea

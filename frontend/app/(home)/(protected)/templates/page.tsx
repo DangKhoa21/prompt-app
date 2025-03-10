@@ -24,7 +24,7 @@ export default async function Page(props: {
   const tab = searchParams?.tab || "";
 
   return (
-    <main className="flex-1 bg-background">
+    <div className="flex-1 bg-background">
       <TemplatesHeader />
 
       <div className="max-w-6xl mx-auto">
@@ -38,6 +38,6 @@ export default async function Page(props: {
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
       </div>
-    </main>
+    </div>
   );
 }

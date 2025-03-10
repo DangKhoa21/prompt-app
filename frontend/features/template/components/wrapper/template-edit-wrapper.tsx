@@ -45,7 +45,7 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     return (
       <>
         <div className="flex justify-center items-center">
-          Error in loading prompt templates or it tags. Please try again!.
+          Error in loading prompt template or its tags. Please try again!.
         </div>
       </>
     );

@@ -9,7 +9,6 @@ import {
   TemplateEditTextField,
   TemplatesConfigTextarea,
   TemplatesConfigVariable,
-  useDeletePromptTemplate,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
@@ -20,7 +19,6 @@ import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -32,22 +30,8 @@ export function TemplateEditSection({
 }) {
   const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
   const { mutateAsync: mutateUpdateTag } = useUpdateTag();
-  const { mutateAsync: mutateDeleteTemplate } = useDeletePromptTemplate();
 
   const isMobile = useIsMobile();
-
-  const handleDeleteTemplate = () => {
-    const deletePromptTemplate = mutateDeleteTemplate(initialPrompt.id);
-
-    toast.promise(deletePromptTemplate, {
-      loading: "Deleting prompt template...",
-      success: "Deleting prompt template successfully",
-      error: (e) => {
-        console.error(e);
-        return "Failed to delete prompt template";
-      },
-    });
-  };
 
   let savingPrompt = initialPrompt;
   const [promptData, setPromptData] =
@@ -59,16 +43,15 @@ export function TemplateEditSection({
     const promptTemplate = promptData.stringTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
-          [],
-      ),
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
+      )
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[],
+      values: ConfigValue[]
     ): TemplateConfig => ({
       id: id,
       label,
@@ -87,7 +70,7 @@ export function TemplateEditSection({
                 generateUUID().toString(),
                 name,
                 ConfigType.TEXTAREA,
-                [],
+                []
               )
             );
           })
@@ -119,7 +102,9 @@ export function TemplateEditSection({
 
     if (errorConfigs.length) {
       toast.error(
-        `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs.map((config) => config).join(", ")}`,
+        `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
+          .map((config) => config)
+          .join(", ")}`
       );
       return;
     }
@@ -153,24 +138,13 @@ export function TemplateEditSection({
 
   return (
     <>
-      <div className="flex justify-end items-center">
-        <ConfirmDialog
-          description=""
-          variant="destructive"
-          type="icon"
-          className="mr-4"
-          action={handleDeleteTemplate}
-        >
-          <Trash2 className="h-8 w-8" />
-        </ConfirmDialog>
-      </div>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col">
+        <div className="flex flex-col px-5">
           <TemplateEditTextField
             text={promptData.title}
             label="title"
             setPromptData={setPromptData}
-            className="text-2xl font-semibold"
+            className="text-2xl"
           />
 
           <TemplateEditTextField
@@ -189,10 +163,10 @@ export function TemplateEditSection({
         <div
           className={cn(
             "grid gap-6 h-fit lg:grid-cols-2",
-            open ? "md:grid-cols-1" : "md:grid-cols-2",
+            open ? "md:grid-cols-1" : "md:grid-cols-2"
           )}
         >
-          <div className="space-y-4 h-fit">
+          <div className="h-fit pt-11">
             {/* <TemplatesConfigTextarea */}
             {/*   id="systemInstruction" */}
             {/*   label="System Instruction" */}
@@ -212,7 +186,7 @@ export function TemplateEditSection({
             {isMobile && (
               <div className="flex justify-end">
                 <ConfirmDialog
-                  description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
+                  description="This action will convert your variables into prompt configs. Any undeclared variables will be deleted!"
                   variant="secondary"
                   action={handleParseTemplate}
                   className="mr-3"
@@ -224,9 +198,9 @@ export function TemplateEditSection({
           </div>
 
           <div className="h-full">
-            <div className="text-xl font-semibold p-2">List of Configs</div>
+            <div className="text-xl font-semibold p-2">Configs</div>
 
-            <ScrollArea className="h-[576px] border rounded-md p-4 lg:ml-12">
+            <ScrollArea className="h-[576px] border rounded-md p-4">
               <div className="space-y-4">
                 {promptData.configs.map((config, i) => (
                   <TemplatesConfigVariable
@@ -246,7 +220,7 @@ export function TemplateEditSection({
           {!isMobile && (
             <div className="flex justify-end">
               <ConfirmDialog
-                description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
+                description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
                 variant="secondary"
                 action={handleParseTemplate}
                 className="mr-3"
@@ -257,9 +231,7 @@ export function TemplateEditSection({
           )}
           <div className="flex gap-6 justify-end">
             <ConfirmDialog
-              description={
-                "This action can't be undone, the newst changes will be deleted!"
-              }
+              description="This action can't be undone. Newest changes will be deleted!"
               variant="secondary"
               action={handleReset}
               className=""
@@ -268,9 +240,7 @@ export function TemplateEditSection({
             </ConfirmDialog>
 
             <ConfirmDialog
-              description={
-                "This will save your templates, the older values will permanently be deleted!"
-              }
+              description="This will save your template. Older configurations will be deleted permanently!"
               variant="default"
               action={handleSave}
               className={"border-primary hover:border-primary"}

@@ -1,8 +1,6 @@
 import { LoadingSpinner } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { TemplatesIdHeader } from "@/components/templates/templ-id-header";
 import { TemplateEditWrapper } from "@/features/template";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function Page({
@@ -12,23 +10,14 @@ export default async function Page({
 }) {
   const { id } = await params;
   return (
-    <>
-      <div className="min-h-screen">
-        <div className="p-4">
-          <div className="flex items-center gap-4 mb-2">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/templates">
-                <ChevronLeft className="h-4 w-4" />
-              </Link>
-            </Button>
-            <h1 className="text-sm font-medium">Templates</h1>
-          </div>
+    <div className="flex-1 bg-background">
+      <TemplatesIdHeader id={id} />
 
-          <Suspense fallback={<LoadingSpinner />}>
-            <TemplateEditWrapper id={id} />
-          </Suspense>
-        </div>
+      <div className="p-4">
+        <Suspense fallback={<LoadingSpinner />}>
+          <TemplateEditWrapper id={id} />
+        </Suspense>
       </div>
-    </>
+    </div>
   );
 }
