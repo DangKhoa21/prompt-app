@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -11,19 +9,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft } from "lucide-react";
 import {
-  SidebarHeader,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { getPrompt } from "@/services/prompt";
-import { useSearchParams } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
+import { ArrayConfig } from "@/features/prompt-generator";
+import { getPrompt } from "@/services/prompt";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronLeft, FileQuestion } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { PromptSearch } from "./prompt-search";
 
 export function PromptGeneratorSidebar() {
@@ -34,6 +35,9 @@ export function PromptGeneratorSidebar() {
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
     {},
   );
+  const [arrayValues, setArrayValues] = useState<
+    Record<string, { id: string; values: string[] }[]>
+  >({});
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
@@ -92,10 +96,26 @@ export function PromptGeneratorSidebar() {
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
         }
+      } else if (config.type === "array") {
+        const replaceValue = arrayValues[config.label]
+          ? arrayValues[config.label]
+              .map((item, index) =>
+                item.values
+                  .map(
+                    (value, labelIndex) =>
+                      `\n\t${config.values[labelIndex].value} ${index + 1}: ${value}`,
+                  )
+                  .join(""),
+              )
+              .join("\n")
+          : "";
+
+        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
       }
     });
 
-    prompt = prompt.replace(/\s{2,}/g, " ");
+    // Remove only excessive spaces, not newlines "\n"
+    prompt = prompt.replace(/ {2,}/g, " ");
     prompt = prompt.replace(/\\n/g, "\n");
     setPrompt(prompt);
   };
@@ -135,8 +155,11 @@ export function PromptGeneratorSidebar() {
 
         {data.configs?.map((config) => (
           <SidebarGroup key={config.label}>
-            <SidebarGroupLabel>
+            <SidebarGroupLabel className="flex justify-between">
               <Label htmlFor={config.label.toLowerCase()}>{config.label}</Label>
+              <Button variant="ghost" className="h-8 w-8 mr-2">
+                <FileQuestion></FileQuestion>
+              </Button>
             </SidebarGroupLabel>
 
             <SidebarGroupContent className="px-2">
@@ -170,6 +193,17 @@ export function PromptGeneratorSidebar() {
                   }
                   // className={config.className}
                 />
+              ) : config.type === "array" ? (
+                <>
+                  <ArrayConfig
+                    id={config.label}
+                    labels={config.values.map((value) => {
+                      return value.value;
+                    })}
+                    values={arrayValues[config.label]}
+                    setArrayValues={setArrayValues}
+                  ></ArrayConfig>
+                </>
               ) : null}
             </SidebarGroupContent>
           </SidebarGroup>

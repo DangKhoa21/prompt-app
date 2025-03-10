@@ -6,7 +6,11 @@ import {
   updatePromptTemplate,
   updateTag,
 } from "@/services/prompt";
-import { PromptCard, PromptFilter } from "@/services/prompt/interface";
+import {
+  PromptCard,
+  PromptFilter,
+  TemplateTag,
+} from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
 import { starPrompt, unstarPrompt } from "@/services/star";
 import {
@@ -44,8 +48,16 @@ export const useUpdatePromptTemplate = () => {
 };
 
 export const useUpdateTag = () => {
+  const handleUpdateTags = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: TemplateTag[];
+  }) => updateTag(id, data);
+
   return useMutation({
-    mutationFn: updateTag,
+    mutationFn: handleUpdateTags,
     onSuccess: (res: boolean) => {
       console.log("Updating tags status: ", res);
     },
@@ -95,7 +107,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {
@@ -132,7 +144,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {

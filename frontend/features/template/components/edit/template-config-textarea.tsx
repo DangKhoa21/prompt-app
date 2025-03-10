@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { TemplateWithConfigs } from "@/services/prompt/interface";
@@ -28,7 +26,7 @@ export function TemplatesConfigTextarea({
   };
 
   return (
-    <Card className="bg-background-primary border border-slate-500">
+    <Card className="border border-slate-500">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">{label}</CardTitle>
       </CardHeader>

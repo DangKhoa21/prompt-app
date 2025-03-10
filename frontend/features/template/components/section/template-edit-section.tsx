@@ -5,19 +5,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   ConfigType,
-  EditTextField,
   TemplateEditTag,
+  TemplateEditTextField,
   TemplatesConfigTextarea,
   TemplatesConfigVariable,
+  useDeletePromptTemplate,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, generateUUID } from "@/lib/utils";
 import {
   ConfigValue,
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -27,8 +30,24 @@ export function TemplateEditSection({
 }: {
   initialPrompt: TemplateWithConfigs;
 }) {
-  const { mutateAsync } = useUpdatePromptTemplate();
-  const { mutateAsync: mutateAsyncTag } = useUpdateTag();
+  const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
+  const { mutateAsync: mutateUpdateTag } = useUpdateTag();
+  const { mutateAsync: mutateDeleteTemplate } = useDeletePromptTemplate();
+
+  const isMobile = useIsMobile();
+
+  const handleDeleteTemplate = () => {
+    const deletePromptTemplate = mutateDeleteTemplate(initialPrompt.id);
+
+    toast.promise(deletePromptTemplate, {
+      loading: "Deleting prompt template...",
+      success: "Deleting prompt template successfully",
+      error: (e) => {
+        console.error(e);
+        return "Failed to delete prompt template";
+      },
+    });
+  };
 
   let savingPrompt = initialPrompt;
   const [promptData, setPromptData] =
@@ -67,7 +86,7 @@ export function TemplateEditSection({
               createConfig(
                 generateUUID().toString(),
                 name,
-                ConfigType.Textarea,
+                ConfigType.TEXTAREA,
                 [],
               )
             );
@@ -85,8 +104,28 @@ export function TemplateEditSection({
   };
 
   const handleSave = () => {
+    let errorConfigs: string[] = [];
+
+    promptData.configs.map((config) => {
+      if (
+        config.type === ConfigType.DROPDOWN ||
+        config.type === ConfigType.ARRAY
+      ) {
+        if (config.values.length < 2) {
+          errorConfigs = [...errorConfigs, config.label];
+        }
+      }
+    });
+
+    if (errorConfigs.length) {
+      toast.error(
+        `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs.map((config) => config).join(", ")}`,
+      );
+      return;
+    }
+
     savingPrompt = promptData;
-    const updatePromptTemplatePromise = mutateAsync(savingPrompt);
+    const updatePromptTemplatePromise = mutateUpdateTemplate(savingPrompt);
 
     toast.promise(updatePromptTemplatePromise, {
       loading: "Updating prompt template...",
@@ -97,7 +136,10 @@ export function TemplateEditSection({
       },
     });
 
-    const updateTagPromise = mutateAsyncTag(savingPrompt);
+    const updateTagPromise = mutateUpdateTag({
+      id: savingPrompt.id,
+      data: savingPrompt.tags,
+    });
 
     toast.promise(updateTagPromise, {
       loading: "Updating tags...",
@@ -111,25 +153,32 @@ export function TemplateEditSection({
 
   return (
     <>
+      <div className="flex justify-end items-center">
+        <ConfirmDialog
+          description=""
+          variant="destructive"
+          type="icon"
+          className="mr-4"
+          action={handleDeleteTemplate}
+        >
+          <Trash2 className="h-8 w-8" />
+        </ConfirmDialog>
+      </div>
       <div className="max-w-5xl mx-auto space-y-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <EditTextField
-              text={promptData.title}
-              label="title"
-              setPromptData={setPromptData}
-              className="text-2xl font-semibold"
-            ></EditTextField>
-          </div>
+        <div className="flex flex-col">
+          <TemplateEditTextField
+            text={promptData.title}
+            label="title"
+            setPromptData={setPromptData}
+            className="text-2xl font-semibold"
+          />
 
-          <div className="flex items-center gap-2 mb-4">
-            <EditTextField
-              text={promptData.description}
-              label="description"
-              setPromptData={setPromptData}
-              className="text-muted-foreground text-lg"
-            ></EditTextField>
-          </div>
+          <TemplateEditTextField
+            text={promptData.description}
+            label="description"
+            setPromptData={setPromptData}
+            className="text-muted-foreground text-lg"
+          />
 
           <TemplateEditTag
             tags={promptData.tags}
@@ -159,6 +208,19 @@ export function TemplateEditSection({
               value={promptData.stringTemplate}
               setPromptData={setPromptData}
             />
+
+            {isMobile && (
+              <div className="flex justify-end">
+                <ConfirmDialog
+                  description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
+                  variant="secondary"
+                  action={handleParseTemplate}
+                  className="mr-3"
+                >
+                  Parse
+                </ConfirmDialog>
+              </div>
+            )}
           </div>
 
           <div className="h-full">
@@ -181,24 +243,26 @@ export function TemplateEditSection({
         </div>
 
         <div className="grid w-full items-center justify-end md:grid-cols-2">
-          <div className="flex justify-end">
-            <ConfirmDialog
-              description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
-              variant="ghost"
-              action={handleParseTemplate}
-              className="mr-3 border-slate-500"
-            >
-              Parse
-            </ConfirmDialog>
-          </div>
+          {!isMobile && (
+            <div className="flex justify-end">
+              <ConfirmDialog
+                description="This action will make your variable into prompt configs. Variable not declared will be deleted!"
+                variant="secondary"
+                action={handleParseTemplate}
+                className="mr-3"
+              >
+                Parse
+              </ConfirmDialog>
+            </div>
+          )}
           <div className="flex gap-6 justify-end">
             <ConfirmDialog
               description={
                 "This action can't be undone, the newst changes will be deleted!"
               }
-              variant={"outline"}
+              variant="secondary"
               action={handleReset}
-              className={"border-slate-500"}
+              className=""
             >
               Reset
             </ConfirmDialog>
@@ -207,7 +271,7 @@ export function TemplateEditSection({
               description={
                 "This will save your templates, the older values will permanently be deleted!"
               }
-              variant={"default"}
+              variant="default"
               action={handleSave}
               className={"border-primary hover:border-primary"}
             >

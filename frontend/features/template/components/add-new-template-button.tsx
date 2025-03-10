@@ -31,13 +31,13 @@ export function AddNewTemplateButton() {
       {
         id: generateUUID(),
         label: "Role",
-        type: ConfigType.Dropdown.toString(),
+        type: ConfigType.DROPDOWN,
         values: values,
       },
       {
         id: generateUUID(),
         label: "Detail",
-        type: ConfigType.Textarea.toString(),
+        type: ConfigType.TEXTAREA,
         values: [],
       },
     ];
@@ -62,8 +62,6 @@ export function AddNewTemplateButton() {
         return "Failed to create new prompt template";
       },
     });
-
-    // const tags = ["Writing", "Project", "Creative"];
   };
 
   return (

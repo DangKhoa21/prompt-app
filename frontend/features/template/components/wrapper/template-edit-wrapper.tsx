@@ -1,9 +1,9 @@
 "use client";
 
+import { LoadingSpinner } from "@/components/icons";
+import { TemplateEditSection } from "@/features/template";
 import { getPromptTemplate, getTagsForTemplate } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import { TemplateEditSection } from "@/features/template";
-import { LoadingSpinner } from "@/components/icons";
 
 export function TemplateEditWrapper({ id }: { id: string }) {
   const {
@@ -29,8 +29,8 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   if (isPromptTemplateLoading || isTagsLoading) {
     return (
       <>
-        <div className="flex justify-center items-center">
-          <LoadingSpinner />
+        <div className="flex justify-center items-center h-full">
+          <LoadingSpinner className="w-16 h-16" />
         </div>
       </>
     );

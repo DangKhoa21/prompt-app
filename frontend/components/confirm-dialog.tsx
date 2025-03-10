@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 interface ConfirmDialogProps {
   description: string;
   type?: "icon";
-  variant: "default" | "secondary" | "outline" | "ghost";
+  variant: "default" | "secondary" | "outline" | "ghost" | "destructive";
   action: () => void;
   className?: string;
   children: React.ReactNode;
