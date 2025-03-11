@@ -3,13 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -18,22 +11,24 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import { LoadingSpinner } from "@/components/icons";
+import { PromptSearch } from "@/components/prompt/prompt-search";
+import { CreatableCombobox } from "@/components/creatable-combobox";
 import { usePrompt } from "@/context/prompt-context";
 import { ArrayConfig } from "@/features/prompt-generator";
 import { getPrompt } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, FileQuestion } from "lucide-react";
+import { ChevronLeft, FileQuestion, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { PromptSearch } from "./prompt-search";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
@@ -42,23 +37,46 @@ export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
     queryFn: () => getPrompt(promptId),
   });
 
   if (isPending) {
-    return <span>Loading...</span>;
+    return (
+      <div className="flex justify-center items-center mt-4">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (isError) {
-    return <span>Error: {error.message}</span>;
+    return (
+      <div className="flex flex-col gap-2 justify-center text-center items-center mt-4">
+        <p className="text-sm">Please try again! {error.message}</p>
+        <Button variant="ghost" className="h-8" onClick={() => refetch()}>
+          <RotateCcw />
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
       ...prevState,
       [configLabel]: value,
+    }));
+  };
+
+  const handleCreateOption = (configLabel: string, inputValue: string) => {
+    const newOption = {
+      value: inputValue,
+    };
+
+    setSelectedValues((prevState) => ({
+      ...prevState,
+      [configLabel]: newOption.value,
     }));
   };
 
@@ -69,7 +87,7 @@ export function PromptGeneratorSidebar() {
     }));
   };
 
-  const generatePrompt = () => {
+  const handlePrompt = (isSending: boolean) => {
     const template = data.stringTemplate;
     let prompt = template;
 
@@ -82,7 +100,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label],
+            selectedValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -91,7 +109,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label],
+            textareaValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -103,9 +121,11 @@ export function PromptGeneratorSidebar() {
                 item.values
                   .map(
                     (value, labelIndex) =>
-                      `\n\t${config.values[labelIndex].value} ${index + 1}: ${value}`,
+                      `\n\t${config.values[labelIndex].value} ${
+                        index + 1
+                      }: ${value}`
                   )
-                  .join(""),
+                  .join("")
               )
               .join("\n")
           : "";
@@ -117,7 +137,7 @@ export function PromptGeneratorSidebar() {
     // Remove only excessive spaces, not newlines "\n"
     prompt = prompt.replace(/ {2,}/g, " ");
     prompt = prompt.replace(/\\n/g, "\n");
-    setPrompt(prompt);
+    setPrompt({ value: prompt, isSending });
   };
 
   return (
@@ -164,25 +184,15 @@ export function PromptGeneratorSidebar() {
 
             <SidebarGroupContent className="px-2">
               {config.type === "dropdown" ? (
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(config.label, value)
+                <CreatableCombobox
+                  options={config.values}
+                  value={selectedValues[config.label]}
+                  onChange={(value) => handleSelectChange(config.label, value)}
+                  placeholder={`Select a ${config.label.toLowerCase()}`}
+                  onCreateOption={(inputValue) =>
+                    handleCreateOption(config.label, inputValue)
                   }
-                >
-                  <SelectTrigger id={config.label}>
-                    <SelectValue
-                      placeholder={`Select a ${config.label.toLowerCase()}`}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None</SelectItem>
-                    {config.values.map((value) => (
-                      <SelectItem key={value.id} value={value.value}>
-                        {value.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               ) : config.type === "textarea" ? (
                 <Textarea
                   id={config.label}
@@ -213,10 +223,12 @@ export function PromptGeneratorSidebar() {
       {data.id !== "1" && (
         <SidebarFooter>
           <div className="flex justify-around gap-4 p-2">
-            <Button className="w-1/2" onClick={() => generatePrompt()}>
+            <Button className="w-1/2" onClick={() => handlePrompt(false)}>
               Generate
             </Button>
-            <Button className="w-1/2">Send</Button>
+            <Button className="w-1/2" onClick={() => handlePrompt(true)}>
+              Send
+            </Button>
           </div>
         </SidebarFooter>
       )}

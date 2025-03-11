@@ -97,23 +97,6 @@ export function MultimodalInput({
     }
   };
 
-  const { prompt, setPrompt } = usePrompt();
-
-  useEffect(() => {
-    if (prompt) {
-      setInput(prompt);
-      setPrompt("");
-    }
-  }, [prompt, setInput, setPrompt]);
-
-  const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(event.target.value);
-    adjustHeight();
-  };
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
-
   const submitForm = useCallback(() => {
     handleSubmit(undefined, {
       experimental_attachments: attachments,
@@ -126,6 +109,42 @@ export function MultimodalInput({
       textareaRef.current?.focus();
     }
   }, [handleSubmit, attachments, setAttachments, width]);
+
+  const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(event.target.value);
+    adjustHeight();
+  };
+
+  const { prompt, setPrompt } = usePrompt();
+  const [shouldSubmit, setShouldSubmit] = useState(false);
+
+  // first effect handles setting the input
+  useEffect(() => {
+    const { value, isSending } = prompt;
+    if (value.length) {
+      setInput(value);
+      if (isSending) {
+        // calling submitForm() here will send the current input
+        setShouldSubmit(true);
+      }
+      setPrompt({ value: "", isSending: false });
+    }
+  }, [prompt, setInput, setPrompt]);
+
+  // second effect handles submitting after input has been updated
+  useEffect(() => {
+    if (shouldSubmit && input.length) {
+      if (isLoading) {
+        toast.error("Please wait for the model to finish its response!");
+      } else {
+        submitForm();
+      }
+      setShouldSubmit(false);
+    }
+  }, [input, isLoading, shouldSubmit, submitForm]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
