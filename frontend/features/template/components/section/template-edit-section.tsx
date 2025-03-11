@@ -34,8 +34,6 @@ export function TemplateEditSection({
   const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
   const { mutateAsync: mutateUpdateTag } = useUpdateTag();
 
-  const isMobile = useIsMobile();
-
   let savingPrompt = initialPrompt;
 
   const { template, setTemplate } = useTemplate();
@@ -52,15 +50,16 @@ export function TemplateEditSection({
     const promptTemplate = template.stringTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
-      )
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
+          [],
+      ),
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[]
+      values: ConfigValue[],
     ): TemplateConfig => ({
       id: id,
       label,
@@ -79,7 +78,7 @@ export function TemplateEditSection({
                 generateUUID().toString(),
                 name,
                 ConfigType.TEXTAREA,
-                []
+                [],
               )
             );
           })
@@ -128,7 +127,7 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`
+          .join(", ")}`,
       );
       return;
     }
@@ -182,7 +181,7 @@ export function TemplateEditSection({
         <div
           className={cn(
             "grid gap-6 h-fit lg:grid-cols-2",
-            open ? "md:grid-cols-1" : "md:grid-cols-2"
+            open ? "md:grid-cols-1" : "md:grid-cols-2",
           )}
         >
           <div className="h-fit pt-11">
