@@ -1,4 +1,5 @@
 import ConfirmDialog from "@/components/confirm-dialog";
+import SortableItem from "@/components/dnd/drag-and-drop-item";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,15 +17,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { v7 } from "uuid";
 
-function SortableItem({
+function ArrayItem({
   itemId,
   itemGivenName,
   labels,
@@ -39,14 +38,6 @@ function SortableItem({
   handleTextareaChange: (id: string, label: number, value: string) => void;
   handleDeleteItem: (itemId: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: itemId });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
 
   const [isEditName, setIsEditName] = useState(false);
@@ -56,17 +47,10 @@ function SortableItem({
   const itemIdNumber = itemId.split("-").slice(1).join("-");
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="bg-card text-card-foreground rounded-md shadow-md cursor-pointer flex items-center justify-between"
-    >
-      <Button {...attributes} {...listeners} variant="ghost" size="icon">
-        <GripVertical className="w-4 h-4 shrink-0 focus:outline-none "></GripVertical>
-      </Button>
+    <SortableItem itemId={itemId}>
       <Dialog>
         <DialogTrigger asChild>
-          <div className="flex w-full h-10 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
+          <div className="flex w-full h-8 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
             <div className="truncate">{itemName}</div>
             <Badge className="mr-1">View</Badge>
           </div>
@@ -158,7 +142,7 @@ function SortableItem({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </SortableItem>
   );
 }
 
@@ -270,14 +254,14 @@ export function ArrayConfig({
           <div className="space-y-2">
             {sortableItems.length ? (
               sortableItems.map((item) => (
-                <SortableItem
+                <ArrayItem
                   key={item.id}
                   itemId={item.id}
                   labels={labels}
                   values={item.data}
                   handleTextareaChange={handleTextareaChange}
                   handleDeleteItem={handleDeleteItem}
-                ></SortableItem>
+                ></ArrayItem>
               ))
             ) : (
               <div className="text-center my-2 text-muted-foreground">
