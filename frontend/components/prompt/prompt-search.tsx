@@ -107,6 +107,7 @@ export function PromptSearch() {
               {filteredPrompts.map((prompt) => (
                 <CommandItem
                   key={prompt.id}
+                  value={prompt.id}
                   onSelect={() => handlePromptChange(prompt.id)}
                 >
                   <PencilRuler className="mr-2 h-4 w-4" />

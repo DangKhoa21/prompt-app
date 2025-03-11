@@ -12,17 +12,19 @@ export default async function Page(props: {
     tagId?: string;
     search?: string;
     tab?: string;
+    sort?: "newest" | "oldest" | "most-starred";
   }>;
 }) {
   const searchParams = await props.searchParams;
   const tagId = searchParams?.tagId || "";
   const search = searchParams?.search || "";
-  const filter = { tagId, search };
+  const sort = searchParams?.sort || "newest";
+  const filter = { tagId, search, sort };
 
   const tab = searchParams?.tab || "";
 
   return (
-    <main className="flex-1 bg-background">
+    <div className="flex-1 bg-background">
       <TemplatesHeader />
 
       <div className="max-w-6xl mx-auto">
@@ -36,6 +38,6 @@ export default async function Page(props: {
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
       </div>
-    </main>
+    </div>
   );
 }

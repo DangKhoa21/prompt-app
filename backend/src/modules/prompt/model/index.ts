@@ -48,12 +48,14 @@ export type PromptCondDTO = {
   title?: string;
   promptIds?: string[];
   creatorId?: string;
+  sort?: 'newest' | 'oldest' | 'most-starred';
 };
 
 export const promptConfigSchema = z.object({
   id: z.string().uuid(),
   label: z.string(),
   type: z.string(),
+  info: z.unknown().optional(),
   promptId: z.string().uuid(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
@@ -81,6 +83,7 @@ export type PromptConfigUpdateDTO = {
   id: string;
   label: string;
   type: string;
+  info?: unknown;
   updatedAt: Date;
 };
 

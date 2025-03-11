@@ -91,7 +91,7 @@ export class PromptRepository {
     cond: PromptCondDTO,
   ): Promise<Paginated<PromptCardRepo>> {
     const { cursor, limit } = paging;
-    const { promptIds, creatorId, search } = cond;
+    const { promptIds, creatorId, search, sort } = cond;
 
     let where = {};
     if (promptIds) {
@@ -104,13 +104,17 @@ export class PromptRepository {
       where = { ...where, title: { contains: search, mode: 'insensitive' } };
     }
 
+    let orderBy = {};
+    orderBy = { id: sort === 'oldest' ? 'asc' : 'desc' };
+    if (sort === 'most-starred') {
+      orderBy = { stars: { _count: 'desc' } };
+    }
+
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
-      orderBy: {
-        id: 'desc',
-      },
+      orderBy,
       where,
       include: {
         creator: {

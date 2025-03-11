@@ -37,9 +37,9 @@ export function EditTextField({
 
   return (
     <div className="w-full flex flex-row justify-start items-center m-1">
-      <div className={cn("text-xl font-semibold basis-1/5", className)}>
+      <div className={cn("text-xl font-se basis-1/5", className)}>
         {label[0].toUpperCase()}
-        {label.slice(1)}:
+        {label.slice(1)}
       </div>
       {isEditing ? (
         <Input
@@ -54,9 +54,9 @@ export function EditTextField({
         <div
           onClick={handleEdit}
           className={cn(
-            "basis-4/5 text-2xl font-semibold p-1 w-full text-wrap",
+            "basis-4/5 text-2xl font-semibold p-2 w-full text-wrap rounded-md",
             editable ? " hover:bg-accent" : "",
-            className,
+            className
           )}
         >
           {text}

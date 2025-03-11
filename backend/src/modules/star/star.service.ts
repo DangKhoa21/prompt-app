@@ -71,6 +71,7 @@ export class StarService {
       {
         promptIds,
         search: filter.search,
+        sort: filter.sort,
       },
     );
 

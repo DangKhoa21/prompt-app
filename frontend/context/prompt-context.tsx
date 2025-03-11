@@ -1,9 +1,21 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
+
+type Prompt = {
+  value: string;
+  isSending: boolean;
+};
 
 interface PromptContextType {
-  prompt: string;
-  setPrompt: (message: string) => void;
+  prompt: Prompt;
+  setPrompt: Dispatch<SetStateAction<Prompt>>;
 }
 
 const PromptContext = createContext<PromptContextType | undefined>(undefined);
@@ -17,7 +29,7 @@ export const usePrompt = () => {
 };
 
 export const PromptProvider = ({ children }: { children: ReactNode }) => {
-  const [prompt, setPrompt] = useState<string>("");
+  const [prompt, setPrompt] = useState<Prompt>({ value: "", isSending: false });
 
   return (
     <PromptContext.Provider value={{ prompt, setPrompt }}>

@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/processors/database/prisma.service';
 import { PromptConfig, PromptConfigUpdateDTO } from './model';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PromptConfigRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async insertMany(configs: PromptConfig[]): Promise<void> {
+    const configsToDB = configs.map((config) => ({
+      ...config,
+      info: config.info ? (config.info as Prisma.JsonArray) : Prisma.JsonNull,
+    }));
+
     await this.prisma.promptConfig.createMany({
-      data: configs,
+      data: configsToDB,
     });
   }
 
@@ -18,7 +24,12 @@ export class PromptConfigRepository {
       configs.map((config) =>
         this.prisma.promptConfig.update({
           where: { id: config.id },
-          data: config,
+          data: {
+            ...config,
+            info: config.info
+              ? (config.info as Prisma.JsonArray)
+              : Prisma.JsonNull,
+          },
         }),
       ),
     );

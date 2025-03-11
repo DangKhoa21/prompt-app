@@ -79,13 +79,13 @@ export function TemplateEditTag({ tags }: TemplateEditTagProps) {
   const remainingTags: TemplateTag[] = !tags
     ? tagsData
     : tagsData.filter(
-        (tag) => !tags.some((existedTag) => tag.id === existedTag.id),
+        (tag) => !tags.some((existedTag) => tag.id === existedTag.id)
       );
 
   return (
     <>
       <div className="flex items-center m-1 gap-2">
-        <div className="basis-1/5 text-base font-semibold">Tags: </div>
+        <div className="basis-1/5 text-base font-semibold">Tags</div>
         <div className="basis-4/5 flex flex-wrap gap-2">
           {tags?.map((tag, i) => (
             <Badge

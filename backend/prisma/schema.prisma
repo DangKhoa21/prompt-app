@@ -104,6 +104,7 @@ model PromptConfig {
   id        String   @id @default(uuid(7))
   label     String
   type      String
+  info      Json? // nullable
   prompt    Prompt   @relation(fields: [promptId], references: [id])
   promptId  String
   createdAt DateTime @default(now())
