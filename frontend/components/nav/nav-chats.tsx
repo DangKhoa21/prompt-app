@@ -221,14 +221,16 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
         lastWeek: [],
         lastMonth: [],
         older: [],
-      } as GroupedChats,
+      } as GroupedChats
     );
   };
 
   return (
     <>
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel className="font-bold">History</SidebarGroupLabel>
+        {history && (
+          <SidebarGroupLabel className="font-bold">History</SidebarGroupLabel>
+        )}
         <SidebarGroupContent>
           <SidebarMenu>
             {history &&

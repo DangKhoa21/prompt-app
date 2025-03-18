@@ -15,6 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
+import { LoadingSpinner } from "../icons";
 
 // This is sample data.
 const data = {
@@ -22,23 +23,6 @@ const data = {
     name: "Prompts App",
     logo: BotMessageSquare,
   },
-  prompts: [
-    {
-      name: "Write For Me",
-      url: "#",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    {
-      name: "Translator",
-      url: "#",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    {
-      name: "Summarizer",
-      url: "#",
-      avatar: "/avatars/shadcn.jpg",
-    },
-  ],
 };
 
 export function SidebarLeft({
@@ -51,15 +35,15 @@ export function SidebarLeft({
       <SidebarHeader>
         <Logo logoInfo={data.logoInfo} />
       </SidebarHeader>
-      <SidebarContent>
-        <NavPrompts prompts={data.prompts} />
-        <NavChats isAuthenticated={isAuthenticated} />
-      </SidebarContent>
-      {isAuthenticated && (
-        <SidebarFooter>
-          <NavUser />
-        </SidebarFooter>
-      )}
+      <React.Suspense fallback={<LoadingSpinner />}>
+        <SidebarContent>
+          <NavPrompts isAuthenticated={isAuthenticated} />
+          <NavChats isAuthenticated={isAuthenticated} />
+        </SidebarContent>
+      </React.Suspense>
+      <SidebarFooter>
+        <NavUser isAuthenticated={isAuthenticated} />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

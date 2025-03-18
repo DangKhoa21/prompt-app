@@ -1,24 +1,13 @@
-"use client"
+"use client";
 
-import {
-  Folder,
-  Forward,
-  MoreHorizontal,
-  Trash2
-} from "lucide-react"
+import { MoreHorizontal, PencilRuler, PinOff } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -27,37 +16,74 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { LoadingSpinner } from "@/components/icons";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PromptPinItem } from "@/services/prompt-pin/interface";
+import { getPinnedPrompts } from "@/services/prompt-pin";
+import { useUnpinPrompt } from "@/features/template";
 
-export function NavPrompts({
-  prompts,
-}: {
-  prompts: {
-    name: string
-    url: string,
-    avatar: string,
-  }[]
-}) {
-  const { isMobile } = useSidebar()
+export function NavPrompts({ isAuthenticated }: { isAuthenticated: boolean }) {
+  const { isMobile } = useSidebar();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const {
+    data: pinnedPrompts,
+    isPending,
+    isError,
+  } = useQuery<Array<PromptPinItem>>({
+    queryKey: ["users", "pinned-prompts"],
+    queryFn: getPinnedPrompts,
+    enabled: isAuthenticated,
+  });
+
+  const handlePromptChange = (promptId: string) => {
+    if (pathname === "/" || pathname.includes("/chat")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("promptId", promptId);
+      window.history.replaceState(null, "", `?${params.toString()}`);
+    } else {
+      router.push(`/?promptId=${promptId}`);
+    }
+  };
+
+  const unpinPromptMutation = useUnpinPrompt();
+
+  if (!isAuthenticated || isError) return null;
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center mt-4">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recently Used</SidebarGroupLabel>
+      <SidebarGroupLabel>Pinned Prompts</SidebarGroupLabel>
       <SidebarMenu>
-        {prompts.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url} className="py-5">
-                <Avatar className="h-7 w-7 rounded-lg">
-                  <AvatarImage src={item.avatar} alt={item.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <span>{item.name}</span>
-              </a>
+        {pinnedPrompts.map((item) => (
+          <SidebarMenuItem key={item.id}>
+            <SidebarMenuButton
+              className="h-12"
+              onClick={() => handlePromptChange(item.id)}
+            >
+              <PencilRuler className="mr-2 h-4 w-4" />
+              <div>
+                <div className="line-clamp-1">{item.title}</div>
+                <div className="text-xs line-clamp-1">{item.description}</div>
+              </div>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover className="w-7">
+                <SidebarMenuAction
+                  showOnHover
+                  className="w-7 peer-data-[size=default]/menu-button:top-3"
+                >
                   <MoreHorizontal />
                   <span className="sr-only">More</span>
                 </SidebarMenuAction>
@@ -67,18 +93,11 @@ export function NavPrompts({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                <DropdownMenuItem
+                  onSelect={() => unpinPromptMutation.mutate(item.id)}
+                >
+                  <PinOff className="text-muted-foreground" />
+                  <span>Unpin</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -86,5 +105,5 @@ export function NavPrompts({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

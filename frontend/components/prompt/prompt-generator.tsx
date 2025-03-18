@@ -14,13 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoadingSpinner } from "@/components/icons";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { CreatableCombobox } from "@/components/creatable-combobox";
-import { usePrompt } from "@/context/prompt-context";
 import { ArrayConfig } from "@/features/prompt-generator";
 import { getPrompt } from "@/services/prompt";
+import { ChevronLeft, FileQuestion, RotateCcw, Pin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, FileQuestion, RotateCcw } from "lucide-react";
+import { usePrompt } from "@/context/prompt-context";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { usePinPrompt } from "@/features/template";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
@@ -42,6 +43,8 @@ export function PromptGeneratorSidebar() {
     queryFn: () => getPrompt(promptId),
   });
 
+  const pinPromptMutation = usePinPrompt();
+
   if (isPending) {
     return (
       <div className="flex justify-center items-center mt-4">
@@ -61,6 +64,12 @@ export function PromptGeneratorSidebar() {
       </div>
     );
   }
+
+  // const handlePinPrompt = () => {
+  //   if (data) {
+  //     pinPromptMutation.mutate(data.id);
+  //   }
+  // };
 
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
@@ -154,6 +163,13 @@ export function PromptGeneratorSidebar() {
           <div className="text-base leading-tight ml-2">
             <span className="font-semibold">{data.title}</span>
           </div>
+          <Button
+            variant="ghost"
+            className="h-8 w-8 ml-auto"
+            onClick={() => pinPromptMutation.mutate(data.id)}
+          >
+            <Pin />
+          </Button>
         </div>
       </SidebarHeader>
 

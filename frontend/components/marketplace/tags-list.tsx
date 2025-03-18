@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
@@ -70,6 +71,25 @@ export default function TagsList() {
     [updateParams]
   );
 
+  const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
+  const [scrollProgress, setScrollProgress] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!carouselApi) return;
+
+    const onScroll = () => {
+      const progress = carouselApi.scrollProgress();
+      setScrollProgress(progress);
+    };
+
+    carouselApi.on("scroll", onScroll);
+    onScroll();
+
+    return () => {
+      carouselApi.off("scroll", onScroll);
+    };
+  }, [carouselApi]);
+
   const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
@@ -114,6 +134,7 @@ export default function TagsList() {
           <Carousel
             className="w-full"
             opts={{ align: "start", dragFree: true, dragThreshold: 3 }}
+            setApi={setCarouselApi}
           >
             <CarouselContent className="-ml-2">
               {tagsData.map((tag) => (
@@ -135,6 +156,13 @@ export default function TagsList() {
               ))}
             </CarouselContent>
           </Carousel>
+
+          <div className="w-full h-0.5 bg-muted mt-1 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full"
+              style={{ width: `${scrollProgress * 100}%` }}
+            ></div>
+          </div>
 
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
         </div>
