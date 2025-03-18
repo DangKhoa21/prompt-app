@@ -20,9 +20,7 @@ import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 // TODO: Handle UI for difference errors
@@ -50,16 +48,15 @@ export function TemplateEditSection({
     const promptTemplate = template.stringTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
-          [],
-      ),
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
+      )
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[],
+      values: ConfigValue[]
     ): TemplateConfig => ({
       id: id,
       label,
@@ -78,7 +75,7 @@ export function TemplateEditSection({
                 generateUUID().toString(),
                 name,
                 ConfigType.TEXTAREA,
-                [],
+                []
               )
             );
           })
@@ -90,19 +87,6 @@ export function TemplateEditSection({
     };
 
     setTemplate(newTemplate);
-  };
-
-  const handleDeleteTemplate = () => {
-    const deletePromptTemplate = mutateDeleteTemplate(initialPrompt.id);
-
-    toast.promise(deletePromptTemplate, {
-      loading: "Deleting prompt template...",
-      success: "Deleting prompt template successfully",
-      error: (e) => {
-        console.error(e);
-        return "Failed to delete prompt template";
-      },
-    });
   };
 
   const handleReset = () => {
@@ -127,7 +111,7 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`,
+          .join(", ")}`
       );
       return;
     }
@@ -181,7 +165,7 @@ export function TemplateEditSection({
         <div
           className={cn(
             "grid gap-6 h-fit lg:grid-cols-2",
-            open ? "md:grid-cols-1" : "md:grid-cols-2",
+            open ? "md:grid-cols-1" : "md:grid-cols-2"
           )}
         >
           <div className="h-fit pt-11">
