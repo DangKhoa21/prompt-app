@@ -1,14 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { TemplateWithConfigs } from "@/services/prompt/interface";
-import { Dispatch, SetStateAction } from "react";
+import { useTemplate } from "@/context/template-context";
 
 interface configTextareaProp {
   id: string;
   label: string;
   placeholder: string;
   value: string;
-  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
 }
 
 export function TemplatesConfigTextarea({
@@ -16,13 +14,16 @@ export function TemplatesConfigTextarea({
   label,
   placeholder,
   value,
-  setPromptData,
 }: configTextareaProp) {
-  const handleTextareaChange = (textLabel: string, value: string) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      [textLabel]: value,
-    }));
+  const { template, setTemplate } = useTemplate();
+
+  const handleTextareaChange = (texting: string) => {
+    const newTemplate = {
+      ...template,
+      [id]: texting,
+    };
+
+    setTemplate(newTemplate);
   };
 
   return (
@@ -36,7 +37,7 @@ export function TemplatesConfigTextarea({
           className="min-h-[200px] border border-slate-500"
           value={value}
           onChange={(e) => {
-            handleTextareaChange(id, e.target.value);
+            handleTextareaChange(e.target.value);
           }}
         />
       </CardContent>

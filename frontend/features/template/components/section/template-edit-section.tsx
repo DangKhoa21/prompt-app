@@ -3,6 +3,7 @@
 import ConfirmDialog from "@/components/confirm-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useTemplate } from "@/context/template-context";
 import {
   ConfigType,
   TemplateEditTag,
@@ -19,6 +20,8 @@ import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { Trash2 } from "lucide-react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -31,65 +34,85 @@ export function TemplateEditSection({
   const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
   const { mutateAsync: mutateUpdateTag } = useUpdateTag();
 
-  const isMobile = useIsMobile();
-
   let savingPrompt = initialPrompt;
-  const [promptData, setPromptData] =
-    useState<TemplateWithConfigs>(initialPrompt);
+
+  const { template, setTemplate } = useTemplate();
+
+  useEffect(() => {
+    setTemplate(initialPrompt);
+  }, []);
 
   const { open } = useSidebar();
 
+  const isMobile = useIsMobile();
+
   const handleParseTemplate = () => {
-    const promptTemplate = promptData.stringTemplate;
+    const promptTemplate = template.stringTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
-      )
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
+          [],
+      ),
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[]
+      values: ConfigValue[],
     ): TemplateConfig => ({
       id: id,
       label,
       type,
-      promptId: promptData.id,
+      promptId: template.id,
       values,
     });
 
     const result =
       matches.length !== 0
         ? matches.map((name) => {
-            const res = promptData.configs.find((c) => c.label === name);
+            const res = template.configs.find((c) => c.label === name);
             return (
               res ??
               createConfig(
                 generateUUID().toString(),
                 name,
                 ConfigType.TEXTAREA,
-                []
+                [],
               )
             );
           })
         : [];
 
-    setPromptData((prevState) => ({
-      ...prevState,
+    const newTemplate = {
+      ...template,
       configs: result,
-    }));
+    };
+
+    setTemplate(newTemplate);
+  };
+
+  const handleDeleteTemplate = () => {
+    const deletePromptTemplate = mutateDeleteTemplate(initialPrompt.id);
+
+    toast.promise(deletePromptTemplate, {
+      loading: "Deleting prompt template...",
+      success: "Deleting prompt template successfully",
+      error: (e) => {
+        console.error(e);
+        return "Failed to delete prompt template";
+      },
+    });
   };
 
   const handleReset = () => {
-    setPromptData(savingPrompt);
+    setTemplate(savingPrompt);
   };
 
   const handleSave = () => {
     let errorConfigs: string[] = [];
 
-    promptData.configs.map((config) => {
+    template.configs.map((config) => {
       if (
         config.type === ConfigType.DROPDOWN ||
         config.type === ConfigType.ARRAY
@@ -104,12 +127,12 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`
+          .join(", ")}`,
       );
       return;
     }
 
-    savingPrompt = promptData;
+    savingPrompt = template;
     const updatePromptTemplatePromise = mutateUpdateTemplate(savingPrompt);
 
     toast.promise(updatePromptTemplatePromise, {
@@ -141,29 +164,24 @@ export function TemplateEditSection({
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col px-5">
           <TemplateEditTextField
-            text={promptData.title}
             label="title"
-            setPromptData={setPromptData}
-            className="text-2xl"
+            text={template.title}
+            className="text-2xl font-semibold"
           />
 
           <TemplateEditTextField
-            text={promptData.description}
             label="description"
-            setPromptData={setPromptData}
+            text={template.description}
             className="text-muted-foreground text-lg"
           />
 
-          <TemplateEditTag
-            tags={promptData.tags}
-            setPromptData={setPromptData}
-          />
+          <TemplateEditTag tags={template.tags}></TemplateEditTag>
         </div>
 
         <div
           className={cn(
             "grid gap-6 h-fit lg:grid-cols-2",
-            open ? "md:grid-cols-1" : "md:grid-cols-2"
+            open ? "md:grid-cols-1" : "md:grid-cols-2",
           )}
         >
           <div className="h-fit pt-11">
@@ -179,8 +197,7 @@ export function TemplateEditSection({
               id="stringTemplate"
               label="Prompt Template"
               placeholder="Enter your Prompt Template..."
-              value={promptData.stringTemplate}
-              setPromptData={setPromptData}
+              value={template.stringTemplate}
             />
 
             {isMobile && (
@@ -202,12 +219,11 @@ export function TemplateEditSection({
 
             <ScrollArea className="h-[576px] border rounded-md p-4">
               <div className="space-y-4">
-                {promptData.configs.map((config, i) => (
+                {template.configs.map((config, i) => (
                   <TemplatesConfigVariable
                     key={config.id}
                     index={i}
                     {...config}
-                    setPromptData={setPromptData}
                     isSidebarOpen={open}
                   />
                 ))}

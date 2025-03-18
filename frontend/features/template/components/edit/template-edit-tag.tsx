@@ -15,18 +15,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTemplate } from "@/context/template-context";
 import { getTags } from "@/services/prompt";
-import { TemplateTag, TemplateWithConfigs } from "@/services/prompt/interface";
+import { TemplateTag } from "@/services/prompt/interface";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 interface TemplateEditTagProps {
   tags: TemplateTag[];
-  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
 }
 
-export function TemplateEditTag({ tags, setPromptData }: TemplateEditTagProps) {
+export function TemplateEditTag({ tags }: TemplateEditTagProps) {
   const [open, setOpen] = useState(false);
 
   const {
@@ -38,6 +38,8 @@ export function TemplateEditTag({ tags, setPromptData }: TemplateEditTagProps) {
     queryKey: ["tags"],
     queryFn: () => getTags(),
   });
+
+  const { template, setTemplate } = useTemplate();
 
   if (isTagsLoading) {
     return null;
@@ -56,17 +58,22 @@ export function TemplateEditTag({ tags, setPromptData }: TemplateEditTagProps) {
       id: tagId,
       name: tagName,
     };
-    setPromptData((prevState) => ({
-      ...prevState,
-      tags: [...(prevState.tags || []), addedTag],
-    }));
+
+    const newTemplate = {
+      ...template,
+      tags: [...(template.tags || []), addedTag],
+    };
+
+    setTemplate(newTemplate);
   };
 
   const handleDeleteTag = (tagId: string) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      tags: prevState.tags.filter((tag) => tag.id !== tagId),
-    }));
+    const newTemplate = {
+      ...template,
+      tags: template.tags.filter((tag) => tag.id !== tagId),
+    };
+
+    setTemplate(newTemplate);
   };
 
   const remainingTags: TemplateTag[] = !tags

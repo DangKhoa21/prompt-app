@@ -33,19 +33,17 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { useTemplate } from "@/context/template-context";
 import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
-import {
-  TemplateConfig,
-  TemplateWithConfigs,
-} from "@/services/prompt/interface";
-import { List, Plus, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { TemplateConfig } from "@/services/prompt/interface";
+import { List, Plus } from "lucide-react";
+import { useState } from "react";
 import { v7 } from "uuid";
+import ConfigDnD from "./config-vairable/config-item";
 
 interface ConfigVariableProps extends TemplateConfig {
   index: number;
-  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   isSidebarOpen?: boolean;
 }
 
@@ -55,17 +53,18 @@ export function TemplatesConfigVariable({
   label,
   type,
   values,
-  setPromptData,
   isSidebarOpen,
 }: ConfigVariableProps) {
   const [newConfigValue, setNewConfigValue] = useState("");
   const [latestAdded, setLatestAdded] = useState("");
   const [addingError, setAddingError] = useState("");
 
+  const { template, setTemplate } = useTemplate();
+
   const handleSelectChange = (configId: string, type: ConfigType) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      configs: prevState.configs.map((config) =>
+    const newTemplate = {
+      ...template,
+      configs: template.configs.map((config) =>
         config.id === configId
           ? {
               ...config,
@@ -73,7 +72,9 @@ export function TemplatesConfigVariable({
             }
           : config,
       ),
-    }));
+    };
+
+    setTemplate(newTemplate);
   };
 
   const handleAddConfigValue = (
@@ -93,9 +94,10 @@ export function TemplatesConfigVariable({
       setAddingError(`Already have config name: "${value}"`);
       return;
     }
-    setPromptData((prevState) => ({
-      ...prevState,
-      configs: prevState.configs.map((config) =>
+
+    const newTemplate = {
+      ...template,
+      configs: template.configs.map((config) =>
         config.id === configId
           ? {
               ...config,
@@ -106,26 +108,12 @@ export function TemplatesConfigVariable({
             }
           : config,
       ),
-    }));
+    };
+
+    setTemplate(newTemplate);
 
     setLatestAdded(value);
     setNewConfigValue("");
-  };
-
-  const handleDeleteConfigValue = (configId: string, configValueId: string) => {
-    setPromptData((prevState) => ({
-      ...prevState,
-      configs: prevState.configs.map((config) =>
-        config.id === configId
-          ? {
-              ...config,
-              values: (config.values ?? []).filter(
-                (value) => value.id !== configValueId,
-              ),
-            }
-          : config,
-      ),
-    }));
   };
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)
@@ -186,7 +174,9 @@ export function TemplatesConfigVariable({
                 </SelectContent>
               </Select>
 
-              {type === ConfigType.DROPDOWN || type === ConfigType.ARRAY ? (
+              {type === ConfigType.TEXTAREA ? (
+                <></>
+              ) : type === ConfigType.DROPDOWN || type === ConfigType.ARRAY ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -261,34 +251,14 @@ export function TemplatesConfigVariable({
                       </Dialog>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {values.length === 0 ? (
-                      <div className="mx-auto my-2 flex items-center justify-center">
-                        Currently empty
-                      </div>
-                    ) : (
-                      values.map((value) => (
-                        <div
-                          key={value.id}
-                          className="group flex justify-between h-10 text-sm items-center px-2 py-1 hover:bg-accent"
-                        >
-                          {typeof value.value === "string" ? value.value : ""}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="opacity-0 -translate-x-2 transition ease-in-out delay-150 duration-300 group-hover:opacity-100 group-hover:translate-x-2"
-                            onClick={() =>
-                              handleDeleteConfigValue(id, value.id)
-                            }
-                          >
-                            <X />
-                          </Button>
-                        </div>
-                      ))
-                    )}
+
+                    <ConfigDnD key={id} id={id} values={values}></ConfigDnD>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <></>
+                <>
+                  <div>Error on data type</div>
+                </>
               )}
             </SidebarGroupContent>
           </SidebarGroup>

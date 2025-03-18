@@ -1,27 +1,25 @@
-"use client";
-
 import { EditTextField } from "@/components/edit-text-field";
-import { TemplateWithConfigs } from "@/services/prompt/interface";
-import { Dispatch, SetStateAction } from "react";
+import { useTemplate } from "@/context/template-context";
 
 interface EditTextFieldProps {
   text: string;
   label: string;
-  setPromptData: Dispatch<SetStateAction<TemplateWithConfigs>>;
   className?: string;
 }
 
 export function TemplateEditTextField({
   text,
   label,
-  setPromptData,
   className,
 }: EditTextFieldProps) {
+  const { template, setTemplate } = useTemplate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPromptData((prevState) => ({
-      ...prevState,
+    const newTemplate = {
+      ...template,
       [label]: e.target.value,
-    }));
+    };
+
+    setTemplate(newTemplate);
   };
 
   return (
