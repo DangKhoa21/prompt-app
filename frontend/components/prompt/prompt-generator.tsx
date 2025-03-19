@@ -11,6 +11,13 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { LoadingSpinner } from "@/components/icons";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { CreatableCombobox } from "@/components/creatable-combobox";
@@ -65,12 +72,6 @@ export function PromptGeneratorSidebar() {
     );
   }
 
-  // const handlePinPrompt = () => {
-  //   if (data) {
-  //     pinPromptMutation.mutate(data.id);
-  //   }
-  // };
-
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
       ...prevState,
@@ -102,7 +103,7 @@ export function PromptGeneratorSidebar() {
 
     data.configs.forEach((config) => {
       prompt = prompt.replace("$", "");
-      if (config.type === "dropdown") {
+      if (config.type === "dropdown" || config.type === "combobox") {
         if (
           selectedValues[config.label] &&
           selectedValues[config.label] !== "None"
@@ -199,7 +200,7 @@ export function PromptGeneratorSidebar() {
             </SidebarGroupLabel>
 
             <SidebarGroupContent className="px-2">
-              {config.type === "dropdown" ? (
+              {config.type === "combobox" ? (
                 <CreatableCombobox
                   options={config.values}
                   value={selectedValues[config.label]}
@@ -209,6 +210,26 @@ export function PromptGeneratorSidebar() {
                     handleCreateOption(config.label, inputValue)
                   }
                 />
+              ) : config.type === "dropdown" ? (
+                <Select
+                  onValueChange={(value) =>
+                    handleSelectChange(config.label, value)
+                  }
+                >
+                  <SelectTrigger id={config.label}>
+                    <SelectValue
+                      placeholder={`Select a ${config.label.toLowerCase()}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="None">None</SelectItem>
+                    {config.values.map((value) => (
+                      <SelectItem key={value.id} value={value.value}>
+                        {value.value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : config.type === "textarea" ? (
                 <Textarea
                   id={config.label}

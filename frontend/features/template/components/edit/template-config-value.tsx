@@ -70,7 +70,7 @@ export function TemplatesConfigVariable({
               ...config,
               type: ConfigType[type.toUpperCase() as keyof typeof ConfigType],
             }
-          : config,
+          : config
       ),
     };
 
@@ -79,7 +79,7 @@ export function TemplatesConfigVariable({
 
   const handleAddConfigValue = (
     event: React.FormEvent | React.KeyboardEvent,
-    configId: string,
+    configId: string
   ) => {
     event.preventDefault();
 
@@ -106,7 +106,7 @@ export function TemplatesConfigVariable({
                 { id: v7(), value: value, promptConfigId: id },
               ],
             }
-          : config,
+          : config
       ),
     };
 
@@ -176,7 +176,9 @@ export function TemplatesConfigVariable({
 
               {type === ConfigType.TEXTAREA ? (
                 <></>
-              ) : type === ConfigType.DROPDOWN || type === ConfigType.ARRAY ? (
+              ) : type === ConfigType.DROPDOWN ||
+                type === ConfigType.ARRAY ||
+                type === ConfigType.COMBOBOX ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -185,7 +187,7 @@ export function TemplatesConfigVariable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
                     <DropdownMenuLabel className="flex flex-row items-center justify-between">
-                      <div>&apos;{label}&apos; list values</div>
+                      <div>[{label}] values</div>
                       <Dialog>
                         <DialogTrigger asChild>
                           <div className="flex justify-end">
