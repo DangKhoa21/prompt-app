@@ -2,7 +2,7 @@
 
 import { getTagsForTemplate } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import { LoadingSpinner } from "../icons";
+import { LoadingSpinner } from "@/components/icons";
 import PromptCarousel from "./prompt-carousel";
 
 export default function PromptCarousels({ promptId }: { promptId: string }) {
@@ -13,7 +13,7 @@ export default function PromptCarousels({ promptId }: { promptId: string }) {
 
   if (isPending) {
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-4">
         <LoadingSpinner />
       </div>
     );
@@ -31,7 +31,7 @@ export default function PromptCarousels({ promptId }: { promptId: string }) {
         Related prompts
       </h2>
       {relatedTags.map((tag) => (
-        <PromptCarousel key={tag.id} {...tag} />
+        <PromptCarousel key={tag.id} {...tag} promptId={promptId} />
       ))}
     </div>
   );
