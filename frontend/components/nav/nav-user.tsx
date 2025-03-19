@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  Moon,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
-
+import { DarkModeSwitch } from "@/components/nav/darkmode-switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,14 +17,18 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DarkModeSwitch } from "@/components/nav/darkmode-switch";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserProfile } from "@/services/user";
 import { Setting } from "@/features/setting";
 import { getUserProfile } from "@/services/user";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  LogOut,
+  Moon,
+  Sparkles,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {

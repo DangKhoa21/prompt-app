@@ -1,10 +1,6 @@
 "use client";
 
-import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal, PencilRuler, PinOff } from "lucide-react";
-
+import { LoadingSpinner } from "@/components/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,17 +16,50 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUnpinPrompt } from "@/features/template";
+import { getPinnedPrompts } from "@/services/prompt-pin";
+import { PromptPinItem } from "@/services/prompt-pin/interface";
+import { useQuery } from "@tanstack/react-query";
+import { MoreHorizontal, PencilRuler, PinOff } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export function NavPrompts({
-  prompts,
-}: {
-  prompts: {
-    name: string;
-    url: string;
-    avatar: string;
-  }[];
-}) {
+export function NavPrompts({ isAuthenticated }: { isAuthenticated: boolean }) {
   const { isMobile } = useSidebar();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const {
+    data: pinnedPrompts,
+    isPending,
+    isError,
+  } = useQuery<Array<PromptPinItem>>({
+    queryKey: ["users", "pinned-prompts"],
+    queryFn: getPinnedPrompts,
+    enabled: isAuthenticated,
+  });
+
+  const handlePromptChange = (promptId: string) => {
+    if (pathname === "/" || pathname.includes("/chat")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("promptId", promptId);
+      window.history.replaceState(null, "", `?${params.toString()}`);
+    } else {
+      router.push(`/?promptId=${promptId}`);
+    }
+  };
+
+  const unpinPromptMutation = useUnpinPrompt();
+
+  if (!isAuthenticated || isError) return null;
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center mt-4">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">

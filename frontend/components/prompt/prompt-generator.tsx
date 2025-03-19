@@ -6,6 +6,13 @@ import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -15,24 +22,13 @@ import {
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { LoadingSpinner } from "@/components/icons";
-import { PromptSearch } from "@/components/prompt/prompt-search";
-import { CreatableCombobox } from "@/components/creatable-combobox";
 import { ArrayConfig } from "@/features/prompt-generator";
+import { usePinPrompt } from "@/features/template";
 import { getPrompt } from "@/services/prompt";
-import { ChevronLeft, FileQuestion, RotateCcw, Pin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { usePrompt } from "@/context/prompt-context";
+import { ChevronLeft, FileQuestion, Pin, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { usePinPrompt } from "@/features/template";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
