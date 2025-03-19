@@ -1,7 +1,9 @@
-import PromptCarousel from "@/components/details/prompt-carousel";
-import PromptDetail from "@/components/details/prompt-detail";
-import UserDetail from "@/components/details/user-detail";
+import PromptCarousels from "@/components/details/prompt-carousels";
+// import PromptDetail from "@/components/details/prompt-detail";
+// import UserDetail from "@/components/details/user-detail";
+import { LoadingSpinner } from "@/components/icons";
 import { getIdFromDetailURL } from "@/lib/utils";
+import { Suspense } from "react";
 
 export default async function Page({
   params,
@@ -12,13 +14,14 @@ export default async function Page({
   const promptId = getIdFromDetailURL(slug);
 
   return (
-    <h1 className="flex flex-col gap-2 p-4">
-      <div>Accessing prompt with id {promptId}</div>
-      <div className="basis-3/5 flex flex-col">
-        <PromptDetail promptId={promptId} className=""></PromptDetail>
-        <PromptCarousel prompts={[]}></PromptCarousel>
+    <div className="flex-1 bg-background">
+      {/* <PromptDetailHeader /> */}
+
+      <div className="max-w-6xl mx-auto">
+        <Suspense fallback={<LoadingSpinner />}>
+          <PromptCarousels promptId={promptId} />
+        </Suspense>
       </div>
-      <UserDetail userId={""}></UserDetail>
-    </h1>
+    </div>
   );
 }

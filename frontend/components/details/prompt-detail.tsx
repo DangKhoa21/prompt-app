@@ -28,10 +28,10 @@ export default function PromptDetail({
   return (
     <>
       <div>{data.title}</div>
-      <div>{data.description}</div>
+      {/* <div>{data.description}</div>
       <div>{data.stringTemplate}</div>
       <div>{data.createdAt.toString()}</div>
-      <div>{data.updatedAt.toString()}</div>
+      <div>{data.updatedAt.toString()}</div> */}
       <div>{className}</div>
     </>
   );
