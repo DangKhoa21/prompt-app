@@ -146,8 +146,8 @@ export function MarketplacePromptCard({
               </Button>
             </Button>
           </CardFooter>
-        </div>
-      </Card>
-    </Link>
+        </Link>
+      </div>
+    </Card>
   );
 }
