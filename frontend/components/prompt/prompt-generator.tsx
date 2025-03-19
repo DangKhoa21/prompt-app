@@ -15,12 +15,24 @@ import {
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LoadingSpinner } from "@/components/icons";
+import { PromptSearch } from "@/components/prompt/prompt-search";
+import { CreatableCombobox } from "@/components/creatable-combobox";
 import { ArrayConfig } from "@/features/prompt-generator";
 import { getPrompt } from "@/services/prompt";
+import { ChevronLeft, FileQuestion, RotateCcw, Pin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, FileQuestion, RotateCcw } from "lucide-react";
+import { usePrompt } from "@/context/prompt-context";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { usePinPrompt } from "@/features/template";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
@@ -41,6 +53,8 @@ export function PromptGeneratorSidebar() {
     queryKey: ["prompts", promptId],
     queryFn: () => getPrompt(promptId),
   });
+
+  const pinPromptMutation = usePinPrompt();
 
   if (isPending) {
     return (
@@ -93,7 +107,7 @@ export function PromptGeneratorSidebar() {
 
     data.configs.forEach((config) => {
       prompt = prompt.replace("$", "");
-      if (config.type === "dropdown") {
+      if (config.type === "dropdown" || config.type === "combobox") {
         if (
           selectedValues[config.label] &&
           selectedValues[config.label] !== "None"
@@ -154,6 +168,13 @@ export function PromptGeneratorSidebar() {
           <div className="text-base leading-tight ml-2">
             <span className="font-semibold">{data.title}</span>
           </div>
+          <Button
+            variant="ghost"
+            className="h-8 w-8 ml-auto"
+            onClick={() => pinPromptMutation.mutate(data.id)}
+          >
+            <Pin />
+          </Button>
         </div>
       </SidebarHeader>
 
@@ -183,7 +204,7 @@ export function PromptGeneratorSidebar() {
             </SidebarGroupLabel>
 
             <SidebarGroupContent className="px-2">
-              {config.type === "dropdown" ? (
+              {config.type === "combobox" ? (
                 <CreatableCombobox
                   options={config.values}
                   value={selectedValues[config.label]}
@@ -193,6 +214,26 @@ export function PromptGeneratorSidebar() {
                     handleCreateOption(config.label, inputValue)
                   }
                 />
+              ) : config.type === "dropdown" ? (
+                <Select
+                  onValueChange={(value) =>
+                    handleSelectChange(config.label, value)
+                  }
+                >
+                  <SelectTrigger id={config.label}>
+                    <SelectValue
+                      placeholder={`Select a ${config.label.toLowerCase()}`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="None">None</SelectItem>
+                    {config.values.map((value) => (
+                      <SelectItem key={value.id} value={value.value}>
+                        {value.value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : config.type === "textarea" ? (
                 <Textarea
                   id={config.label}

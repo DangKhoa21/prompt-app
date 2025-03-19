@@ -15,6 +15,7 @@ import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 export function MarketplacePromptCard({
   id,
@@ -31,6 +32,7 @@ export function MarketplacePromptCard({
   const detailURL = createPromptDetailURL(id, title, creator.id);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
+  const router = useRouter();
 
   const handleStar = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -114,27 +116,38 @@ export function MarketplacePromptCard({
             orientation="horizontal"
             className="w-auto mx-4 my-1 bg-neutral-800"
           />
-        </Link>
-        <CardFooter className="justify-between pt-2 pb-4 items-center">
-          <div className="flex flex-row gap-2 t-2 items-center">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <div className="text-xs text-foreground-accent">
-              by {creator["username"]}
+          <CardFooter className="justify-between pt-2 pb-4 items-center">
+            <div className="flex flex-row gap-2 t-2 items-center">
+              <Avatar className="w-8 h-8">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="text-xs text-foreground-accent">
+                by {creator["username"]}
+              </div>
             </div>
-          </div>
-
-          <Button
-            variant="secondary"
-            className="t-2 text-xs text-foreground rounded-2xl"
-            asChild
-          >
-            <Link href={`/?promptId=${id}`}>Try it now</Link>
-          </Button>
-        </CardFooter>
-      </div>
-    </Card>
+            <Button
+              variant="secondary"
+              className="t-2 text-xs text-foreground rounded-2xl"
+              asChild
+            >
+              <Button
+                variant="link"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  router.push(`/?promptId=${id}`);
+                }}
+              >
+                Try it now
+              </Button>
+            </Button>
+          </CardFooter>
+        </div>
+      </Card>
+    </Link>
   );
 }

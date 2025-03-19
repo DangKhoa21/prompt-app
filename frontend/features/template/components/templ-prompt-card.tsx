@@ -15,6 +15,7 @@ import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 export function PromptTemplateCard({
   id,
@@ -29,6 +30,7 @@ export function PromptTemplateCard({
   const detailURL = createPromptDetailURL(id, title, creator.id);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
+  const router = useRouter();
 
   const handleStar = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -84,7 +86,6 @@ export function PromptTemplateCard({
             <div className="text-xs text-foreground-accent">
               by {creator["username"]}
             </div>
-          </div>
 
           <Button
             variant="secondary"

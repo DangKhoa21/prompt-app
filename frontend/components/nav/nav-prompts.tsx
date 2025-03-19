@@ -3,11 +3,12 @@
 import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MoreHorizontal, PencilRuler, PinOff } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -33,22 +34,26 @@ export function NavPrompts({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recently Used</SidebarGroupLabel>
+      <SidebarGroupLabel>Pinned Prompts</SidebarGroupLabel>
       <SidebarMenu>
-        {prompts.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url} className="py-5">
-                <Avatar className="h-7 w-7 rounded-lg">
-                  <AvatarImage src={item.avatar} alt={item.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <span>{item.name}</span>
-              </a>
+        {pinnedPrompts.map((item) => (
+          <SidebarMenuItem key={item.id}>
+            <SidebarMenuButton
+              className="h-12"
+              onClick={() => handlePromptChange(item.id)}
+            >
+              <PencilRuler className="mr-2 h-4 w-4" />
+              <div>
+                <div className="line-clamp-1">{item.title}</div>
+                <div className="text-xs line-clamp-1">{item.description}</div>
+              </div>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover className="w-7">
+                <SidebarMenuAction
+                  showOnHover
+                  className="w-7 peer-data-[size=default]/menu-button:top-3"
+                >
                   <MoreHorizontal />
                   <span className="sr-only">More</span>
                 </SidebarMenuAction>
@@ -58,18 +63,11 @@ export function NavPrompts({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                <DropdownMenuItem
+                  onSelect={() => unpinPromptMutation.mutate(item.id)}
+                >
+                  <PinOff className="text-muted-foreground" />
+                  <span>Unpin</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

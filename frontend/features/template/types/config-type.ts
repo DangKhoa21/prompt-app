@@ -3,4 +3,5 @@ export enum ConfigType {
   DROPDOWN = "dropdown",
   COMBOBOX = "combobox",
   ARRAY = "array",
+  COMBOBOX = "combobox",
 }

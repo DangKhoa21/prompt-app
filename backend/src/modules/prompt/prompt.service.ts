@@ -31,6 +31,7 @@ import {
   PromptFilterDTO,
   promptFilterDTOSchema,
 } from 'src/shared';
+import { PromptPinService } from '../prompt-pin/prompt-pin.service';
 
 @Injectable()
 export class PromptService {
@@ -42,6 +43,8 @@ export class PromptService {
     private readonly tagService: TagService,
     @Inject(forwardRef(() => StarService))
     private readonly starService: StarService,
+    @Inject(forwardRef(() => PromptPinService))
+    private readonly promptPinService: PromptPinService,
   ) {}
 
   async create(
@@ -293,6 +296,11 @@ export class PromptService {
     await this.tagService.updateTagsOfPrompt(id, { tagIds: [] }, creatorId);
     try {
       await this.starService.unstar(id, creatorId);
+    } catch (error) {
+      console.log(error); // really not
+    }
+    try {
+      await this.promptPinService.unpin(id, creatorId);
     } catch (error) {
       console.log(error); // really not
     }
