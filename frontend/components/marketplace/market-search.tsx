@@ -1,9 +1,7 @@
 "use client";
 
-import * as React from "react";
-
-import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounceCallback } from "usehooks-ts";

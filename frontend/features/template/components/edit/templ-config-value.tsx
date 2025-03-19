@@ -40,7 +40,7 @@ import { TemplateConfig } from "@/services/prompt/interface";
 import { List, Plus } from "lucide-react";
 import { useState } from "react";
 import { v7 } from "uuid";
-import ConfigDnD from "./config-vairable/config-item";
+import ConfigDnD from "./config-variable/config-item";
 
 interface ConfigVariableProps extends TemplateConfig {
   index: number;
@@ -70,7 +70,7 @@ export function TemplatesConfigVariable({
               ...config,
               type: ConfigType[type.toUpperCase() as keyof typeof ConfigType],
             }
-          : config,
+          : config
       ),
     };
 
@@ -79,7 +79,7 @@ export function TemplatesConfigVariable({
 
   const handleAddConfigValue = (
     event: React.FormEvent | React.KeyboardEvent,
-    configId: string,
+    configId: string
   ) => {
     event.preventDefault();
 
@@ -106,7 +106,7 @@ export function TemplatesConfigVariable({
                 { id: v7(), value: value, promptConfigId: id },
               ],
             }
-          : config,
+          : config
       ),
     };
 

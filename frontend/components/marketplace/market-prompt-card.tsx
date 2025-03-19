@@ -1,6 +1,6 @@
-import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,14 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
-import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { Star } from "lucide-react";
 import Link from "next/link";
+import React from "react";
 
-export function PromptMarketplaceCard({
+export function MarketplacePromptCard({
   id,
   variant,
   filter,
@@ -28,7 +28,7 @@ export function PromptMarketplaceCard({
   starCount,
 }: PromptCard & { variant?: "default" | "hover"; filter?: PromptFilter }) {
   const rating = formatRating(starCount);
-  const detailURL = createPromptDetailURL(title, id);
+  const detailURL = createPromptDetailURL(id, title, creator.id);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
 
@@ -81,14 +81,16 @@ export function PromptMarketplaceCard({
   }
 
   return (
-    <Card className="bg-card rounded-3xl h-52 flex flex-col">
-      <Link href={detailURL}>
-        <CardHeader className="space-y-1 px-4 pt-2 pb-1">
-          <CardTitle className="flex items-start justify-between mt-2 text-xl">
-            <div className="pl-1">{title}</div>
+    <Card className="bg-card rounded-3xl h-56 flex flex-col">
+      <Link href={detailURL} className="h-full">
+        <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
+          <CardTitle className="flex relative h-full w-full mt-2 text-xl">
+            <div className="flex h-full w-full text-center justify-center items-center">
+              {title}
+            </div>
             <Badge
               variant="secondary"
-              className="flex border-2 items-center gap-1 ml-2"
+              className="absolute right-0 top-0 flex border-2 items-center gap-1 ml-2 opacity-25 hover:opacity-100"
               onClick={(event) => handleStar(event)}
             >
               <Star
@@ -101,7 +103,7 @@ export function PromptMarketplaceCard({
           </CardTitle>
         </CardHeader>
       </Link>
-      <div className="mt-auto">
+      <div>
         <Link href={detailURL}>
           <CardContent className="px-5 py-2">
             <div className="text-sm text-foreground line-clamp-2">

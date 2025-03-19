@@ -131,8 +131,6 @@ interface ConfigItemProps {
 export default function ConfigDnD({ id, values }: ConfigItemProps) {
   const { template, setTemplate } = useTemplate();
 
-  // const [arrayItems, setArrayItems] = useState(template);
-
   const sortableItems = values
     ? values.map((pack) => ({
         id: pack.id,

@@ -20,9 +20,7 @@ import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 // TODO: Handle UI for difference errors
@@ -90,19 +88,6 @@ export function TemplateEditSection({
     };
 
     setTemplate(newTemplate);
-  };
-
-  const handleDeleteTemplate = () => {
-    const deletePromptTemplate = mutateDeleteTemplate(initialPrompt.id);
-
-    toast.promise(deletePromptTemplate, {
-      loading: "Deleting prompt template...",
-      success: "Deleting prompt template successfully",
-      error: (e) => {
-        console.error(e);
-        return "Failed to delete prompt template";
-      },
-    });
   };
 
   const handleReset = () => {

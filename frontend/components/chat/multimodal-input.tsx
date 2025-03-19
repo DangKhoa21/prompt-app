@@ -1,20 +1,20 @@
 "use client";
 
+import useWindowSize from "@/components/use-window-size";
 import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
 import cx from "classnames";
 import { motion } from "framer-motion";
 import type React from "react";
 import {
-  useRef,
-  useEffect,
-  useState,
   useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
   type Dispatch,
   type SetStateAction,
-  type ChangeEvent,
 } from "react";
 import { toast } from "sonner";
-import useWindowSize from "@/components/use-window-size";
 
 import { sanitizeUIMessages } from "@/lib/utils";
 
@@ -62,13 +62,13 @@ export function MultimodalInput({
   setMessages: Dispatch<SetStateAction<Array<Message>>>;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions
+    chatRequestOptions?: ChatRequestOptions,
   ) => Promise<string | null | undefined>;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;
     },
-    chatRequestOptions?: ChatRequestOptions
+    chatRequestOptions?: ChatRequestOptions,
   ) => void;
   className?: string;
 }) {
@@ -80,6 +80,11 @@ export function MultimodalInput({
       adjustHeight();
     }
   }, []);
+
+  // Update the textarea height each time the input value get changed
+  useEffect(() => {
+    adjustHeight();
+  }, [input]);
 
   const adjustHeight = () => {
     if (textareaRef.current) {
@@ -112,7 +117,6 @@ export function MultimodalInput({
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
-    adjustHeight();
   };
 
   const { prompt, setPrompt } = usePrompt();
@@ -123,6 +127,7 @@ export function MultimodalInput({
     const { value, isSending } = prompt;
     if (value.length) {
       setInput(value);
+
       if (isSending) {
         // calling submitForm() here will send the current input
         setShouldSubmit(true);
@@ -185,7 +190,7 @@ export function MultimodalInput({
         const uploadPromises = files.map((file) => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined
+          (attachment) => attachment !== undefined,
         );
 
         setAttachments((currentAttachments) => [
@@ -198,7 +203,7 @@ export function MultimodalInput({
         setUploadQueue([]);
       }
     },
-    [setAttachments]
+    [setAttachments],
   );
 
   return (
@@ -272,7 +277,7 @@ export function MultimodalInput({
         onChange={handleInput}
         className={cx(
           "min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-xl !text-base bg-muted",
-          className
+          className,
         )}
         rows={3}
         autoFocus

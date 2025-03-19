@@ -1,16 +1,16 @@
+import { MarketplacePromptCard } from "@/components/marketplace/market-prompt-card";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { PromptMarketplaceCard } from "@/components/prompt/prompt-marketplace-card";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Dispatch, SetStateAction } from "react";
 
-export default function PromptHoverCard(
+export default function MarketplaceHoverCard(
   marketplaceCardProps: PromptCard & { filter?: PromptFilter } & {
     setIsHovered: Dispatch<SetStateAction<boolean>>;
-  }
+  },
 ) {
   return (
     <HoverCard
@@ -20,12 +20,12 @@ export default function PromptHoverCard(
       <HoverCardTrigger asChild>
         {/* Display card */}
         <div className="transition-all hover:scale-105">
-          <PromptMarketplaceCard {...marketplaceCardProps} />
+          <MarketplacePromptCard {...marketplaceCardProps} />
         </div>
       </HoverCardTrigger>
       {/* Hover card */}
       <HoverCardContent sideOffset={-150} className="w-80">
-        <PromptMarketplaceCard {...marketplaceCardProps} variant="hover" />
+        <MarketplacePromptCard {...marketplaceCardProps} variant="hover" />
       </HoverCardContent>
     </HoverCard>
   );

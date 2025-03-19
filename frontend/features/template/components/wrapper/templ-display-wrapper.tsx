@@ -10,7 +10,7 @@ import { getPrompts, getStarredPrompts } from "@/services/prompt";
 import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import PromptTemplateCard from "@/components/prompt/prompt-templates-card";
+import { PromptTemplateCard } from "@/features/template";
 
 export function TemplateGridWrapper({
   filter,
@@ -55,7 +55,7 @@ export function TemplateGridWrapper({
 
   if (status === "pending") {
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex h-full justify-center items-center">
         <LoadingSpinner />
       </div>
     );

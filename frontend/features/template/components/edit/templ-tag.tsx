@@ -79,7 +79,7 @@ export function TemplateEditTag({ tags }: TemplateEditTagProps) {
   const remainingTags: TemplateTag[] = !tags
     ? tagsData
     : tagsData.filter(
-        (tag) => !tags.some((existedTag) => tag.id === existedTag.id)
+        (tag) => !tags.some((existedTag) => tag.id === existedTag.id),
       );
 
   return (

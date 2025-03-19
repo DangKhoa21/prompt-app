@@ -2,11 +2,10 @@
 
 import * as React from "react";
 
-import { Search, PencilRuler } from "lucide-react";
+import { PencilRuler, Search } from "lucide-react";
 
-import { LoadingSpinner } from "../icons";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -15,12 +14,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { LoadingSpinner } from "../icons";
 
 import { getPrompts } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useDebounceCallback } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
 import { useInView } from "react-intersection-observer";
+import { useDebounceCallback } from "usehooks-ts";
 
 export function PromptSearch() {
   const [open, setOpen] = React.useState(false);
@@ -39,8 +39,8 @@ export function PromptSearch() {
 
   const filteredPrompts = data?.pages.flatMap((page) =>
     page.data.filter((prompt) =>
-      prompt.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+      prompt.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
   );
 
   const handlePromptChange = (promptId: string) => {
@@ -97,10 +97,10 @@ export function PromptSearch() {
             {status === "error"
               ? "Failed to search prompts."
               : searchQuery.length === 0 || filteredPrompts?.length === 0
-              ? "No results found."
-              : status === "pending"
-              ? "Loading..."
-              : null}
+                ? "No results found."
+                : status === "pending"
+                  ? "Loading..."
+                  : null}
           </CommandEmpty>
           {filteredPrompts && filteredPrompts?.length > 0 && (
             <CommandGroup heading="Prompts">

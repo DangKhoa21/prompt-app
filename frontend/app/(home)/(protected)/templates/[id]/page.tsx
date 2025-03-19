@@ -1,6 +1,5 @@
 import { LoadingSpinner } from "@/components/icons";
-import { TemplatesIdHeader } from "@/components/templates/templ-id-header";
-import { TemplateEditWrapper } from "@/features/template";
+import { TemplatesIdHeader, TemplateEditWrapper } from "@/features/template";
 import { Suspense } from "react";
 
 export default async function Page({

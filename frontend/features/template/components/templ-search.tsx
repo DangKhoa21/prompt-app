@@ -1,14 +1,12 @@
 "use client";
 
-import * as React from "react";
-
-import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AddNewTemplateButton } from "@/features/template";
+import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounceCallback, useWindowSize } from "usehooks-ts";
-import { AddNewTemplateButton } from "@/features/template";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function TemplatesSearch() {
   const searchParams = useSearchParams();

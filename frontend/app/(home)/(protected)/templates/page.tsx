@@ -1,11 +1,13 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
 import { LoadingSpinner } from "@/components/icons";
 
-import TagsList from "@/components/marketplace/tags-list";
-import { TemplateGridWrapper } from "@/features/template";
-import { TemplatesHeader } from "@/components/templates/templ-header";
-import { TemplatesSearch } from "@/components/templates/templ-search";
+import TagsList from "@/components/tags-list";
+import {
+  TemplatesHeader,
+  TemplatesSearch,
+  TemplateGridWrapper,
+} from "@/features/template";
 
 export default async function Page(props: {
   searchParams?: Promise<{

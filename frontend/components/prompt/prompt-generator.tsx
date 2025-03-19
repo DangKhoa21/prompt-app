@@ -1,5 +1,8 @@
 "use client";
 
+import { LoadingSpinner } from "@/components/icons";
+import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
+import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,9 +14,6 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { LoadingSpinner } from "@/components/icons";
-import { PromptSearch } from "@/components/prompt/prompt-search";
-import { CreatableCombobox } from "@/components/creatable-combobox";
 import { usePrompt } from "@/context/prompt-context";
 import { ArrayConfig } from "@/features/prompt-generator";
 import { getPrompt } from "@/services/prompt";
@@ -25,10 +25,10 @@ import { useState } from "react";
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
@@ -44,7 +44,7 @@ export function PromptGeneratorSidebar() {
 
   if (isPending) {
     return (
-      <div className="flex justify-center items-center mt-4">
+      <div className="flex h-full justify-center items-center mt-4">
         <LoadingSpinner />
       </div>
     );
@@ -80,7 +80,7 @@ export function PromptGeneratorSidebar() {
     }));
   };
 
-  const handleTextareChange = (configLabel: string, value: string) => {
+  const handleTextareaChange = (configLabel: string, value: string) => {
     setTextareaValues((prevState) => ({
       ...prevState,
       [configLabel]: value,
@@ -100,7 +100,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label]
+            selectedValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -109,7 +109,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label]
+            textareaValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -123,9 +123,9 @@ export function PromptGeneratorSidebar() {
                     (value, labelIndex) =>
                       `\n\t${config.values[labelIndex].value} ${
                         index + 1
-                      }: ${value}`
+                      }: ${value}`,
                   )
-                  .join("")
+                  .join(""),
               )
               .join("\n")
           : "";
@@ -199,7 +199,7 @@ export function PromptGeneratorSidebar() {
                   placeholder={`Input your content`}
                   value={textareaValues[config.label]}
                   onChange={(e) =>
-                    handleTextareChange(config.label, e.target.value)
+                    handleTextareaChange(config.label, e.target.value)
                   }
                   // className={config.className}
                 />

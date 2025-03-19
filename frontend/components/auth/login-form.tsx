@@ -1,15 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { login } from "@/services/auth";
 import { useAuth } from "@/context/auth-context";
+import { login } from "@/services/auth";
 import { loginSchema } from "@/services/auth/interface";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export function LoginForm({
   className,
@@ -32,6 +32,24 @@ export function LoginForm({
   const [emailError, setEmailError] = React.useState("");
   const [passwordError, setPasswordError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleEnterPress = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        const active = document.activeElement;
+        // Optional check: if active element is not a button
+        if (active && active.tagName !== "BUTTON") {
+          e.preventDefault(); // prevent double form submission just in case
+          buttonRef.current?.click(); // Trigger login
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleEnterPress);
+    return () => document.removeEventListener("keydown", handleEnterPress);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,15 +123,7 @@ export function LoginForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -125,7 +135,12 @@ export function LoginForm({
                   <p className="text-xs text-red-500">{passwordError}</p>
                 )}
               </div>
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button
+                ref={buttonRef}
+                type="submit"
+                disabled={loading}
+                className="w-full"
+              >
                 {loading ? "Loading..." : "Login"}
               </Button>
               <Button variant="outline" className="w-full">
@@ -137,6 +152,14 @@ export function LoginForm({
               <Link href="/register" className="underline underline-offset-4">
                 Register
               </Link>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              <a
+                href="#"
+                className="inline-block text-sm underline-offset-4 hover:underline"
+              >
+                Forgot your password?
+              </a>
             </div>
           </form>
         </CardContent>

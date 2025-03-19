@@ -2,15 +2,15 @@
 
 import React from "react";
 
-import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
+import { motion } from "framer-motion";
 
+import MarketplaceHoverCard from "@/components/marketplace/market-hover-card";
+import { cn } from "@/lib/utils";
 import { getPrompts } from "@/services/prompt";
 import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import PromptHoverCard from "@/components/prompt/prompt-hover-card";
-import { cn } from "@/lib/utils";
 
 export default function PromptsList({ filter }: { filter: PromptFilter }) {
   const [isHovered, setIsHovered] = React.useState(false);
@@ -37,7 +37,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
 
   if (status === "pending") {
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex h-full justify-center items-center">
         <LoadingSpinner />
       </div>
     );
@@ -59,7 +59,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
       <div
         className={cn(
           "fixed inset-0 bg-background/80 backdrop-blur-[1px] transition-all duration-200 z-10",
-          isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+          isHovered ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
       />
 
@@ -67,7 +67,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.data.map((prompt) => (
-              <PromptHoverCard
+              <MarketplaceHoverCard
                 key={prompt.id}
                 {...prompt}
                 filter={filter}

@@ -1,1 +1,1 @@
-export * from "./components/array-config";
+export * from "../../components/prompt/generator-items/array-config";

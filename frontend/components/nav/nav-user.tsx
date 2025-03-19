@@ -26,10 +26,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfile } from "@/services/user";
 import { Setting } from "@/features/setting";
+import { getUserProfile } from "@/services/user";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

@@ -2,10 +2,10 @@
 
 import { ChevronLeft, Trash2 } from "lucide-react";
 
+import ConfirmDialog from "@/components/confirm-dialog";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import ConfirmDialog from "@/components/confirm-dialog";
 import { useDeletePromptTemplate } from "@/features/template";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

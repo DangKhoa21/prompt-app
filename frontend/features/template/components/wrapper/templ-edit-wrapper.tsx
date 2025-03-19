@@ -29,7 +29,7 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   if (isPromptTemplateLoading || isTagsLoading) {
     return (
       <>
-        <div className="flex justify-center items-center h-full">
+        <div className="flex h-full justify-center items-center">
           <LoadingSpinner className="w-16 h-16" />
         </div>
       </>

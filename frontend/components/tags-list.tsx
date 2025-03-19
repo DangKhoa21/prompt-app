@@ -2,24 +2,24 @@
 
 import React from "react";
 
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { useRouter, useSearchParams } from "next/navigation";
-import { getTags } from "@/services/prompt";
-import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { getTags } from "@/services/prompt";
+import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { SlidersHorizontal } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function TagsList() {
   const searchParams = useSearchParams();
@@ -53,21 +53,21 @@ export default function TagsList() {
       }
       router.push(`?${params.toString()}`);
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
   const updateTagId = React.useCallback(
     (id: string) => {
       updateParams("tagId", id === tagId ? "" : id);
     },
-    [tagId, updateParams]
+    [tagId, updateParams],
   );
 
   const updateSort = React.useCallback(
     (sort: string) => {
       updateParams("sort", sort);
     },
-    [updateParams]
+    [updateParams],
   );
 
   const [scrolled, setScrolled] = React.useState(false);

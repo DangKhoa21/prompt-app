@@ -5,17 +5,17 @@ import { useState } from "react";
 
 import { PreviewMessage, ThinkingMessage } from "@/components/message";
 
-import { useChat } from "ai/react";
 import { ChatHeader } from "@/components/chat/chat-header";
-import { MultimodalInput } from "../multimodal-input";
+import { useChat } from "ai/react";
+import { MultimodalInput } from "@/components/chat/multimodal-input";
 
-import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
+import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 export function Chat({
   id,

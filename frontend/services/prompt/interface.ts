@@ -61,12 +61,6 @@ export interface PromptWithConfigsCreation {
   configs: ConfigsCreation[];
 }
 
-export interface PromptFilter {
-  search?: string;
-  tagId?: string;
-  creatorId?: string;
-}
-
 export interface PromptTemplate {
   id: string;
   title: string;

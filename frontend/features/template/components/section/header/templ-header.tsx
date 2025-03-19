@@ -2,8 +2,8 @@
 
 import { Compass } from "lucide-react";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { useWindowSize } from "usehooks-ts";
 
