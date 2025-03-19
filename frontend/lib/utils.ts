@@ -29,19 +29,29 @@ export const formatRating = (num: number): string => {
   return num.toString();
 };
 
-export function createPromptDetailURL(title: string, id: string): string {
+export function createPromptDetailURL(
+  id: string,
+  title: string,
+  creatorId: string,
+): string {
   const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
-  const detailUrl = `prompts/${formattedTitle}-i${id}`;
+  const detailUrl = `prompts/${formattedTitle}-i${id}-creator${creatorId}`;
   return detailUrl;
 }
 
-export function getIdFromDetailURL(url: string): string {
+export function getIdFromDetailURL(url: string): {
+  promptId: string;
+  creatorId: string;
+} {
   const match = url.split("-i");
-  return match[match.length - 1];
+  const ids = match[match.length - 1].split("-creator");
+  const promptId = ids[0];
+  const creatorId = ids[1];
+  return { promptId, creatorId };
 }
 
 export function sanitizeResponseMessages(
-  messages: Array<CoreToolMessage | CoreAssistantMessage>
+  messages: Array<CoreToolMessage | CoreAssistantMessage>,
 ): Array<CoreToolMessage | CoreAssistantMessage> {
   const toolResultIds: Array<string> = [];
 
@@ -64,8 +74,8 @@ export function sanitizeResponseMessages(
       content.type === "tool-call"
         ? toolResultIds.includes(content.toolCallId)
         : content.type === "text"
-        ? content.text.length > 0
-        : true
+          ? content.text.length > 0
+          : true,
     );
 
     return {
@@ -75,7 +85,7 @@ export function sanitizeResponseMessages(
   });
 
   return messagesBySanitizedContent.filter(
-    (message) => message.content.length > 0
+    (message) => message.content.length > 0,
   );
 }
 
@@ -97,7 +107,7 @@ function addToolMessageToChat({
         ...message,
         toolInvocations: message.toolInvocations.map((toolInvocation) => {
           const toolResult = toolMessage.content.find(
-            (tool) => tool.toolCallId === toolInvocation.toolCallId
+            (tool) => tool.toolCallId === toolInvocation.toolCallId,
           );
 
           if (toolResult) {
@@ -118,7 +128,7 @@ function addToolMessageToChat({
 }
 
 export function convertToUIMessages(
-  messages: Array<DBMessage>
+  messages: Array<DBMessage>,
 ): Array<Message> {
   return messages.reduce((chatMessages: Array<Message>, message) => {
     if (message.role === "tool") {
@@ -176,7 +186,7 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
     const sanitizedToolInvocations = message.toolInvocations.filter(
       (toolInvocation) =>
         toolInvocation.state === "result" ||
-        toolResultIds.includes(toolInvocation.toolCallId)
+        toolResultIds.includes(toolInvocation.toolCallId),
     );
 
     return {
@@ -188,6 +198,6 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   return messagesBySanitizedToolInvocations.filter(
     (message) =>
       message.content.length > 0 ||
-      (message.toolInvocations && message.toolInvocations.length > 0)
+      (message.toolInvocations && message.toolInvocations.length > 0),
   );
 }
