@@ -31,7 +31,7 @@ export default function PromptCarousels({ promptId }: { promptId: string }) {
         Related prompts
       </h2>
       {relatedTags.map((tag) => (
-        <PromptCarousel key={tag.id} {...tag} promptId={promptId} />
+        <PromptCarousel label={""} prompts={[]} key={tag.id} {...tag} />
       ))}
     </div>
   );

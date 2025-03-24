@@ -10,6 +10,7 @@ import {
   TemplateEditTextField,
   TemplatesConfigTextarea,
   TemplatesConfigVariable,
+  TemplateGenerator,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
@@ -199,7 +200,11 @@ export function TemplateEditSection({
           </div>
 
           <div className="h-full">
-            <div className="text-xl font-semibold p-2">Configs</div>
+            <div className="flex justify-between">
+              <div className="text-xl font-semibold p-2">Configs</div>
+
+              <TemplateGenerator />
+            </div>
 
             <ScrollArea className="h-[576px] border rounded-md p-4">
               <div className="space-y-4">

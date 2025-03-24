@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
@@ -18,14 +19,20 @@ import {
   ReqWithRequesterOpt,
 } from 'src/shared';
 import {
+  PromptGenDTO,
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
 import { PromptService } from './prompt.service';
+import { PromptGenService } from './prompt-gen.service';
+import { Response } from 'express';
 
 @Controller('prompts')
 export class PromptController {
-  constructor(private readonly promptService: PromptService) {}
+  constructor(
+    private readonly promptService: PromptService,
+    private readonly promptGenService: PromptGenService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -36,6 +43,12 @@ export class PromptController {
     const { sub: userId } = req.user;
     const data = await this.promptService.create(dto, userId);
     return { data };
+  }
+
+  @Post('generate-template')
+  @UseGuards(JwtAuthGuard)
+  async generateTemplate(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.generateTemplate(dto, res);
   }
 
   @Get()
@@ -54,14 +67,6 @@ export class PromptController {
     );
     return result;
   }
-
-  // @Get('templates')
-  // @UseGuards(JwtAuthGuard)
-  // async findAllByUser(@Request() req: ReqWithRequester) {
-  //   const { sub: userId } = req.user;
-  //   const data = await this.promptService.findByUserWithConfigs(userId);
-  //   return { data };
-  // }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
