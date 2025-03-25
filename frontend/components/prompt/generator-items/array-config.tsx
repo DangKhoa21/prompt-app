@@ -1,17 +1,23 @@
-import ConfirmDialog from "@/components/confirm-dialog";
+// import ConfirmDialog from "@/components/confirm-dialog";
 import SortableItem from "@/components/dnd/drag-and-drop-item";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+// import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
@@ -20,16 +26,140 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+// import { useRef} from "react";
 import { v7 } from "uuid";
 
-function ArrayItem({
+// function ArrayItem({
+//   itemId,
+//   itemGivenName,
+//   labels,
+//   values,
+//   handleTextareaChange,
+//   handleDeleteItem,
+// }: {
+//   itemId: string;
+//   itemGivenName?: string;
+//   labels: string[];
+//   values: string[];
+//   handleTextareaChange: (id: string, label: number, value: string) => void;
+//   handleDeleteItem: (itemId: string) => void;
+// }) {
+//   const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
+//
+//   const [isEditName, setIsEditName] = useState(false);
+//
+//   const itemNameInputRef = useRef<HTMLInputElement>(null);
+//
+//   const itemIdNumber = itemId.split("-").slice(1).join("-");
+//
+//   return (
+//     <SortableItem itemId={itemId}>
+//       <Dialog>
+//         <DialogTrigger asChild>
+//           <div className="flex w-full h-8 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
+//             <div className="truncate">{itemName}</div>
+//             <Badge className="mr-1">View</Badge>
+//           </div>
+//         </DialogTrigger>
+//         <DialogContent
+//           className="w-[800px] max-w-[800px] h-[540px] flex flex-col"
+//           onEscapeKeyDown={(e) => {
+//             if (isEditName) {
+//               e.preventDefault();
+//             }
+//           }}
+//         >
+//           <DialogHeader>
+//             <DialogTitle>
+//               {isEditName ? (
+//                 <Input
+//                   ref={itemNameInputRef}
+//                   value={itemName}
+//                   onChange={(e) => {
+//                     setItemName(e.target.value);
+//                   }}
+//                   onBlur={() => setIsEditName(false)}
+//                   onKeyDown={(e: React.KeyboardEvent) => {
+//                     if (e.key === "Enter" || e.key === "Escape")
+//                       setIsEditName(false);
+//                   }}
+//                   className="basis-4/5"
+//                 />
+//               ) : (
+//                 <div
+//                   onClick={() => {
+//                     setIsEditName(true);
+//                     setTimeout(() => itemNameInputRef.current?.focus(), 0);
+//                   }}
+//                   className="basis-4/5 text-2xl font-semibold p-1 w-full text-wrap hover:bg-accent"
+//                 >
+//                   {itemName}
+//                 </div>
+//               )}
+//             </DialogTitle>
+//             <DialogDescription>
+//               Provide your detail information to help create you desire prompt
+//             </DialogDescription>
+//           </DialogHeader>
+//
+//           <ScrollArea className="h-full w-full">
+//             {values.length ? (
+//               <div className="flex flex-col gap-6 p-2">
+//                 {values.map((value, index) => (
+//                   <div
+//                     key={`Card-${itemId}-${labels[index]}`}
+//                     className="w-full flex flex-row justify-start items-center"
+//                   >
+//                     <div className="text-xl font-semibold basis-1/5">
+//                       {labels[index][0].toUpperCase()}
+//                       {labels[index].slice(1)}:
+//                     </div>
+//                     <Textarea
+//                       placeholder={labels[index]}
+//                       className="min-h-[100px] basis-4/5 border border-slate-500"
+//                       value={value}
+//                       onChange={(e) => {
+//                         handleTextareaChange(itemId, index, e.target.value);
+//                       }}
+//                     ></Textarea>
+//                   </div>
+//                 ))}
+//               </div>
+//             ) : (
+//               <div className="flex flex-col mt-2 items-center">
+//                 This config has no keys
+//               </div>
+//             )}
+//           </ScrollArea>
+//
+//           <DialogFooter>
+//             <div className="flex w-full justify-start">
+//               <ConfirmDialog
+//                 variant="outline"
+//                 className="text-red-500 border-red-500 hover:text-red-400 focus:text-red-400"
+//                 action={() => {
+//                   handleDeleteItem(itemIdNumber.toString());
+//                 }}
+//                 description="This action will delete this item"
+//               >
+//                 Delete
+//               </ConfirmDialog>
+//             </div>
+//           </DialogFooter>
+//         </DialogContent>
+//       </Dialog>
+//     </SortableItem>
+//   );
+// }
+
+function ArrayAccordionItem({
   itemId,
   itemGivenName,
   labels,
   values,
   handleTextareaChange,
-  handleDeleteItem,
+  // handleDeleteItem,
 }: {
   itemId: string;
   itemGivenName?: string;
@@ -40,77 +170,40 @@ function ArrayItem({
 }) {
   const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
 
-  const [isEditName, setIsEditName] = useState(false);
+  console.log(setItemName);
 
-  const itemNameInputRef = useRef<HTMLInputElement>(null);
+  // const [isEditName, setIsEditName] = useState(false);
+  //
+  // const itemNameInputRef = useRef<HTMLInputElement>(null);
 
-  const itemIdNumber = itemId.split("-").slice(1).join("-");
+  // const itemIdNumber = itemId.split("-").slice(1).join("-");
 
   return (
-    <SortableItem itemId={itemId}>
-      <Dialog>
-        <DialogTrigger asChild>
-          <div className="flex w-full h-8 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
-            <div className="truncate">{itemName}</div>
-            <Badge className="mr-1">View</Badge>
-          </div>
-        </DialogTrigger>
-        <DialogContent
-          className="w-[800px] max-w-[800px] h-[540px] flex flex-col"
-          onEscapeKeyDown={(e) => {
-            if (isEditName) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>
-              {isEditName ? (
-                <Input
-                  ref={itemNameInputRef}
-                  value={itemName}
-                  onChange={(e) => {
-                    setItemName(e.target.value);
-                  }}
-                  onBlur={() => setIsEditName(false)}
-                  onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key === "Enter" || e.key === "Escape")
-                      setIsEditName(false);
-                  }}
-                  className="basis-4/5"
-                />
-              ) : (
-                <div
-                  onClick={() => {
-                    setIsEditName(true);
-                    setTimeout(() => itemNameInputRef.current?.focus(), 0);
-                  }}
-                  className="basis-4/5 text-2xl font-semibold p-1 w-full text-wrap hover:bg-accent"
-                >
-                  {itemName}
-                </div>
-              )}
-            </DialogTitle>
-            <DialogDescription>
-              Provide your detail information to help create you desire prompt
-            </DialogDescription>
-          </DialogHeader>
-
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="item-1">
+        <SortableItem itemId={itemId}>
+          <AccordionTrigger className="pr-2">
+            <div className="flex w-full text-wrap h-8 pr-2 gap-2 overflow-hidden justify-between items-center truncate hover:bg-accent">
+              {itemName}
+            </div>
+          </AccordionTrigger>
+        </SortableItem>
+        <AccordionContent>
           <ScrollArea className="h-full w-full">
             {values.length ? (
               <div className="flex flex-col gap-6 p-2">
                 {values.map((value, index) => (
                   <div
                     key={`Card-${itemId}-${labels[index]}`}
-                    className="w-full flex flex-row justify-start items-center"
+                    className="w-full flex flex-col justify-start"
                   >
-                    <div className="text-xl font-semibold basis-1/5">
+                    <div className="text-xl font-semibold">
                       {labels[index][0].toUpperCase()}
                       {labels[index].slice(1)}:
                     </div>
                     <Textarea
                       placeholder={labels[index]}
-                      className="min-h-[100px] basis-4/5 border border-slate-500"
+                      className="w-full border border-slate-500"
                       value={value}
                       onChange={(e) => {
                         handleTextareaChange(itemId, index, e.target.value);
@@ -125,24 +218,9 @@ function ArrayItem({
               </div>
             )}
           </ScrollArea>
-
-          <DialogFooter>
-            <div className="flex w-full justify-start">
-              <ConfirmDialog
-                variant="outline"
-                className="text-red-500 border-red-500 hover:text-red-400 focus:text-red-400"
-                action={() => {
-                  handleDeleteItem(itemIdNumber.toString());
-                }}
-                description="This action will delete this item"
-              >
-                Delete
-              </ConfirmDialog>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </SortableItem>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
@@ -254,14 +332,14 @@ export function ArrayConfig({
           <div className="space-y-2">
             {sortableItems.length ? (
               sortableItems.map((item) => (
-                <ArrayItem
+                <ArrayAccordionItem
                   key={item.id}
                   itemId={item.id}
                   labels={labels}
                   values={item.data}
                   handleTextareaChange={handleTextareaChange}
                   handleDeleteItem={handleDeleteItem}
-                ></ArrayItem>
+                ></ArrayAccordionItem>
               ))
             ) : (
               <div className="text-center my-2 text-muted-foreground">

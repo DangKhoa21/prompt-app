@@ -51,6 +51,14 @@ export function LoginForm({
     return () => document.removeEventListener("keydown", handleEnterPress);
   }, []);
 
+  const emailRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (emailRef.current) {
+      emailRef.current.focus()
+    }
+  }, [])
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -111,6 +119,7 @@ export function LoginForm({
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
+                  ref={emailRef}
                   id="email"
                   type="email"
                   placeholder="m@example.com"

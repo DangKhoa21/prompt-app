@@ -29,25 +29,16 @@ export const formatRating = (num: number): string => {
   return num.toString();
 };
 
-export function createPromptDetailURL(
-  id: string,
-  title: string,
-  creatorId: string,
-): string {
+export function createPromptDetailURL(id: string, title: string): string {
   const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
-  const detailUrl = `prompts/${formattedTitle}-i${id}-creator${creatorId}`;
+  const detailUrl = `prompts/${formattedTitle}-pid${id}`;
   return detailUrl;
 }
 
-export function getIdFromDetailURL(url: string): {
-  promptId: string;
-  creatorId: string;
-} {
-  const match = url.split("-i");
-  const ids = match[match.length - 1].split("-creator");
-  const promptId = ids[0];
-  const creatorId = ids[1];
-  return { promptId, creatorId };
+export function getIdFromDetailURL(url: string): string {
+  const match = url.split("-pid");
+  const promptId = match[1];
+  return promptId;
 }
 
 export function sanitizeResponseMessages(

@@ -14,8 +14,13 @@ import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 import { useRouter } from "next/navigation";
+import React from "react";
+
+interface MarketplacePromptCardProps extends PromptCard {
+  variant?: "default" | "hover" | "carousel";
+  filter?: PromptFilter;
+}
 
 export function MarketplacePromptCard({
   id,
@@ -27,9 +32,9 @@ export function MarketplacePromptCard({
   creator,
   hasStarred,
   starCount,
-}: PromptCard & { variant?: "default" | "hover"; filter?: PromptFilter }) {
+}: MarketplacePromptCardProps) {
   const rating = formatRating(starCount);
-  const detailURL = createPromptDetailURL(id, title, creator.id);
+  const detailURL = createPromptDetailURL(id, title);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
   const router = useRouter();
@@ -79,6 +84,57 @@ export function MarketplacePromptCard({
           </div>
         </Link>
       </div>
+    );
+  } else if (variant === "carousel") {
+    return (
+      <>
+        <div className="p-1">
+          <Card className="bg-card rounded-3xl w-48 h-36 md:w-64 md:h-48 flex flex-col">
+            <Link href={detailURL} className="h-full">
+              <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
+                <CardTitle className="flex relative h-full w-full mt-2 text-xl">
+                  <div className="flex h-full w-full text-center justify-center items-center">
+                    {title}
+                  </div>
+                  <Badge
+                    variant="secondary"
+                    className="absolute right-0 top-0 flex border-2 items-center gap-1 ml-2 opacity-25 hober:opacity-100"
+                  >
+                    <Star
+                      className={cn("h-3 w-3", {
+                        "fill-primary": hasStarred,
+                      })}
+                    />
+                    {formatRating(starCount)}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+            </Link>
+            <div>
+              <Link href={`${title.toLowerCase().replace(" ", "-")}-i${id}`}>
+                <Separator
+                  orientation="horizontal"
+                  className="w-auto mx-4 my-1 bg-neutral-800"
+                />
+              </Link>
+              <CardFooter className="justify-between pt-2 pb-3 items-center">
+                <div className="flex flex-row gap-2 t-2 items-center">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                  <div className="text-xs text-foreground-accent">
+                    by {creator["username"]}
+                  </div>
+                </div>
+              </CardFooter>
+            </div>
+          </Card>
+        </div>
+      </>
     );
   }
 

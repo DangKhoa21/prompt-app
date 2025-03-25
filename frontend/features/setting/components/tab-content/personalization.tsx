@@ -2,36 +2,46 @@ import { useQuery } from "@tanstack/react-query";
 import { SettingEditTextField } from "@/features/setting";
 import { getUserProfile } from "@/services/user";
 import { User } from "@/services/user/interface";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-export function PersonalizationContent() {
+interface PersonalizationContentProps {
+  setUserData: Dispatch<SetStateAction<User | null>>;
+}
+
+export function PersonalizationContent({
+  setUserData,
+}: PersonalizationContentProps) {
   const { data: user } = useQuery({
     queryKey: ["user", "profile"],
     queryFn: getUserProfile,
   });
 
-  const [userData, setUserData] = useState<User>(user!);
+  const [userData, setLocalUserData] = useState<User>(user!);
+
+  useEffect(() => {
+    setUserData(userData);
+  }, [userData, setUserData]);
 
   return (
     <>
       <SettingEditTextField
         text={userData.id}
         label="id"
-        setUserData={setUserData}
+        setUserData={setLocalUserData}
         editable={false}
         className="text-base"
       ></SettingEditTextField>
       <SettingEditTextField
         text={userData.username}
         label="username"
-        setUserData={setUserData}
+        setUserData={setLocalUserData}
         className="text-base"
       ></SettingEditTextField>
       <SettingEditTextField
         text={userData.email}
         label="email"
         editable={false}
-        setUserData={setUserData}
+        setUserData={setLocalUserData}
         className="text-base"
       ></SettingEditTextField>
     </>

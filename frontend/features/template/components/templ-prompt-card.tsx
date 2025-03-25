@@ -26,7 +26,7 @@ export function PromptTemplateCard({
   filter,
 }: PromptCard & { filter?: PromptFilter }) {
   const rating = formatRating(starCount);
-  const detailURL = createPromptDetailURL(id, title, creator.id);
+  const detailURL = createPromptDetailURL(id, title);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
 

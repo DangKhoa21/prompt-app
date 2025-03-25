@@ -26,13 +26,10 @@ export default function PromptCarousels({ promptId }: { promptId: string }) {
   const relatedTags = data.slice(0, 3); // takes 3 related tags
 
   return (
-    <div className="mx-auto max-w-4xl ">
-      <h2 className="text-xl font-semibold tracking-wide mt-6 mb-2 ml-2">
-        Related prompts
-      </h2>
+    <>
       {relatedTags.map((tag) => (
         <PromptCarousel key={tag.id} {...tag} promptId={promptId} />
       ))}
-    </div>
+    </>
   );
 }

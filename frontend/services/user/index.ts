@@ -5,3 +5,8 @@ export async function getUserProfile(): Promise<User> {
   const response = await axiosInstance.get(`/users/profile`);
   return response.data.data;
 }
+
+export async function updateUserProfile(userData: User): Promise<boolean> {
+  const response = await axiosInstance.patch(`/users/${userData.id}`, userData);
+  return response.data.data;
+}
