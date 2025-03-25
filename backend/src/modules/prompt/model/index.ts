@@ -123,3 +123,56 @@ export const promptWithConfigsUpdateDTOSchema =
 export type PromptWithConfigsUpdateDTO = z.infer<
   typeof promptWithConfigsUpdateDTOSchema
 >;
+
+export const promptWithConfigGenSchema = z.object({
+  title: z
+    .string()
+    .describe('The title of the prompt, concise and descriptive'),
+  description: z
+    .string()
+    .describe(
+      'A detailed explanation of what this prompt does and how it should be used',
+    ),
+  stringTemplate: z
+    .string()
+    .describe(
+      'The template string containing variables in ${varName} format that will be replaced with user-provided values. Example: "Help me translate this text ${Text} in ${Source Language} to ${Target Language}',
+    ),
+  configs: z
+    .array(
+      z
+        .object({
+          label: z
+            .string()
+            .describe(
+              'The identifier for this configuration field that matches a variable in stringTemplate. Example: "Input", "Source Language", "Target Language", etc.',
+            ),
+          type: z
+            .enum(['dropdown', 'textarea', 'combobox', 'array'])
+            .describe(
+              'The UI component type to render for this configuration option, dropdown for choosing predefined values, combobox for choosing predefined values and can add new value, textarea for freeform text entry, and array for adding multiple values in a block.',
+            ),
+        })
+        .extend({
+          values: z
+            .array(
+              z.object({
+                value: z
+                  .string()
+                  .describe(
+                    'A possible value for this configuration option, example: "English", "Spanish", "French", etc. but not "None"',
+                  ),
+              }),
+            )
+            .describe('Available options/values for this configuration field'),
+        })
+        .describe('A single configuration field definition'),
+    )
+    .describe('Array of configuration options that users can customize'),
+});
+
+export const promptGenDTOSchema = z.object({
+  prompt: z.string(),
+});
+
+export type PromptGenDTO = z.infer<typeof promptGenDTOSchema>;

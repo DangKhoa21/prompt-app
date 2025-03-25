@@ -3,6 +3,7 @@ export * from "./components/edit/templ-config-textarea";
 export * from "./components/edit/templ-config-value";
 export * from "./components/edit/templ-tag";
 export * from "./components/edit/templ-text";
+export * from "./components/edit/templ-generator";
 
 // section
 export * from "./components/section/header/templ-header";
