@@ -51,13 +51,13 @@ export function LoginForm({
     return () => document.removeEventListener("keydown", handleEnterPress);
   }, []);
 
-  const emailRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (emailRef.current) {
-      emailRef.current.focus()
+      emailRef.current.focus();
     }
-  }, [])
+  }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

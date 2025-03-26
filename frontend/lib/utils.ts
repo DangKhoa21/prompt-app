@@ -31,7 +31,7 @@ export const formatRating = (num: number): string => {
 
 export function createPromptDetailURL(id: string, title: string): string {
   const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
-  const detailUrl = `prompts/${formattedTitle}-pid${id}`;
+  const detailUrl = `/prompts/${formattedTitle}-pid${id}`;
   return detailUrl;
 }
 

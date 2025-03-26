@@ -19,7 +19,7 @@ export default function PromptHeadDetail({
 
   return (
     <>
-      <div className="flex flex-col relative gap-2 p-2 md:p-4">
+      <div className="flex flex-row relative gap-2 p-2 md:p-4">
         <Image
           src={commonBackProps.src}
           alt={commonBackProps.alt}

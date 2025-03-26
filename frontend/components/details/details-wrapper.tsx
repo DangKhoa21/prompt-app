@@ -27,7 +27,7 @@ export default async function DetailsWrapper({
         </div>
       </div>
       <div className="flex flex-col px-auto gap-4">
-        <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-2">
+        <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-2 md:ml-16">
           Related prompts
         </h2>
         <PromptCarousels promptId={promptId}></PromptCarousels>
