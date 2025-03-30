@@ -1,7 +1,5 @@
 export const JWT_SECRET = process.env.JWT_SECRET ?? 'secret-key';
 
-import 'dotenv/config';
-
 const port = process.env.PORT || '3001';
 const apiVersion = process.env.API_VERSION || 'v1';
 
