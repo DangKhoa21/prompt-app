@@ -71,6 +71,7 @@ export class PromptRepository {
           select: {
             id: true,
             username: true,
+            avatarUrl: true,
           },
         },
         stars: {
@@ -121,6 +122,7 @@ export class PromptRepository {
           select: {
             id: true,
             username: true,
+            avatarUrl: true,
           },
         },
         stars: {

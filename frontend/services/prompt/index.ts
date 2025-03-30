@@ -123,3 +123,14 @@ export async function deletePromptTemplate(id: string): Promise<boolean> {
   const response = await axiosInstance.delete(`/prompts/${id}`);
   return response.data.data;
 }
+
+export async function createEnhancePrompt(prompt: string) {
+  const response = await axiosInstance.post("/prompts/enhance", {
+    prompt,
+  });
+
+  const regex = /<improved_prompt>([\s\S]*?)<\/improved_prompt>/;
+  const data = response.data.match(regex);
+
+  return data ? data[1].trim() : null;
+}

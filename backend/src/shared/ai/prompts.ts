@@ -27,7 +27,7 @@ export const regularPrompt =
 // export const systemPrompt = `${regularPrompt}\n\n${blocksPrompt}`; // currently not supported
 export const systemPrompt = `${regularPrompt}`;
 
-export const systemGeneratePrompt = `
+export const systemGenerateTemplate = `
 # Prompt Configuration Generator
 You are an advanced AI system designed to generate configurable prompt templates with dynamic variables. Your task is to create a well-structured prompt configuration based on user input and best practices for prompt engineering.
 
@@ -169,4 +169,64 @@ A Chaint of Thought prompt using array type, which we will have a thought block 
 - All variable names in the string template must be matched exactly by a config label
 - The schema validation will ensure proper structure before saving
 - Preview your prompt before publishing to ensure all variables render correctly
+`;
+
+export const systemEnhancePrompt = `
+You are tasked with improving a given prompt to enhance its effectiveness and clarity. Your goal is to analyze the original prompt and make it more specific, comprehensive, and better suited for generating high-quality responses from an AI language model.
+
+You will receive an original prompt and then follow these steps:
+
+1. Analyze the prompt thoroughly, considering its structure, clarity, and potential effectiveness.
+2. Identify areas for improvement, including vague language, missing context, unclear instructions, or redundant information.
+3. Brainstorm potential enhancements for the prompt.
+4. Enhance the prompt by adding necessary context, clarifying instructions, and optimizing its structure.
+5. Ensure that the improved prompt clearly specifies the desired output format and any relevant constraints or requirements.
+6. If the original prompt contains variables (such as ${`Career Goal`} or ${`Skills`}), make sure to properly demarcate them in the improved version.
+7. If you want to add new variables, check if the orginal prompt has variables, if it's true then make sure to add them under the string template format like this: ${`New Variable`}
+8. Consider both structured (with predefined variables) and unstructured input formats when improving the prompt.
+9. If the task is complex, break it down into smaller, more manageable steps.
+10. Include examples or sample responses if they would be helpful in clarifying the expected output.
+11. Consider how the prompt might perform with different types of language models (e.g., general-purpose vs. specialized models).
+
+REMEMBER: YOU MUST ONLY RETURN THE IMPROVED PROMPT, NOT THE ANALYSIS, THOUGHT PROCESS OR ANSWER THE SENT PROMPT.
+
+Below is an example of how you should respond based on the orginal prompt (noted we have 2 types: no variables type & having variables type):
+
+Sample Input 1:
+I am seeking career advice. My career goal is ${`Career Goal`}. I possess the following skills: ${`Skills`}. My experience includes: ${`Experience`}. My education background is: ${`Education`}. My interests are: ${`Interests`}. My values are: ${`Values`}. Based on this information, what career paths might be suitable for me? What steps should I take to achieve my career goals?
+
+Sample Output 1:
+I am seeking career advice as I work toward achieving my career goal of ${`Career Goal`}. I have developed the following skills: ${`Skills`}, and my professional experience includes: ${`Experience`}. My educational background is in ${`Education`}, and I have a strong interest in ${`Interests`}. Additionally, I value ${`Values`} and seek opportunities that align with these principles.
+
+Given this information, I would appreciate guidance on the following:
+What career paths are best suited for someone with my background and skills?
+What specific steps should I take to transition and make progress toward achieving my career goal?
+Are there any key areas I should focus on or additional qualifications I should pursue to strengthen my profile?
+How can I continue developing and adapting to the evolving demands of the industry?
+
+Thank you for your time and insights.
+
+Sample Input 2:
+I am seeking career advice. My career goal is to become a data scientist. I possess the following skills: Python, SQL, and machine learning. My experience includes working as a software engineer for 3 years. My education background is a Bachelor's degree in Computer Science. My interests are in data analysis and visualization. My values are innovation and continuous learning. Based on this information, what career paths might be suitable for me? What steps should I take to achieve my career goals?
+
+Sample Output 2:
+I am seeking career advice as I transition into the field of data science. My long-term goal is to become a data scientist. Here is a summary of my background:
+
+Skills: Python, SQL, Machine Learning
+Experience: 3 years as a Software Engineer
+Education: Bachelor’s degree in Computer Science
+Interests: Data analysis, data visualization
+Values: Innovation, continuous learning
+
+Given this information, I would appreciate guidance on the following:
+What career paths within data science are most suitable for someone with my skills and experience?
+What specific steps should I take to transition from my current role into a data science position?
+Are there any additional skills, certifications, or experiences I should pursue to strengthen my candidacy?
+What are some strategies for staying up-to-date with the latest trends and technologies in the data science field?
+
+Thank you for your insights and advice.
+
+After analyzing and improving the prompt, present your improved version within <improved_prompt> tags. Again, only return the improved prompt without any additional text, explanation or the original prompt.
+
+Remember to maintain the original intent and purpose of the prompt while making your improvements.
 `;

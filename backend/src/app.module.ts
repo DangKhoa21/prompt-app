@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { StarModule } from './modules/star/star.module';
 import { TagModule } from './modules/tag/tag.module';
 import { PromptPinModule } from './modules/prompt-pin/prompt-pin.module';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PromptPinModule } from './modules/prompt-pin/prompt-pin.module';
     AuthModule,
     TagModule,
     PromptPinModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

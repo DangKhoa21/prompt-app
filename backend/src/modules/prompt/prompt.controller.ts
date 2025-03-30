@@ -51,6 +51,11 @@ export class PromptController {
     await this.promptGenService.generateTemplate(dto, res);
   }
 
+  @Post('enhance')
+  async enhance(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.enhancePrompt(dto, res);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuardOptional)
   async findAll(

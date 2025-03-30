@@ -19,10 +19,14 @@ import { toast } from "sonner";
 import { sanitizeUIMessages } from "@/lib/utils";
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
+import { Sparkle } from "lucide-react";
 // import { PreviewAttachment } from "./preview-attachment";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
+import { createEnhancePrompt } from "@/services/prompt";
+import { useMutation } from "@tanstack/react-query";
 
 const suggestedActions = [
   {
@@ -206,6 +210,27 @@ export function MultimodalInput({
     [setAttachments]
   );
 
+  const enhancePromptMutation = useMutation({
+    mutationFn: createEnhancePrompt,
+    onSuccess: (enhancedPrompt) => {
+      if (enhancedPrompt) {
+        setInput(enhancedPrompt);
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+        toast.success("Prompt enhanced successfully!");
+      }
+    },
+    onError: (e) => {
+      try {
+        const err = JSON.parse(e.message);
+        toast.error(err.message);
+      } catch {
+        toast.error("Something went wrong, please try again!");
+      }
+    },
+  });
+
   return (
     <div className="relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
@@ -329,6 +354,22 @@ export function MultimodalInput({
       >
         <PaperclipIcon size={14} />
       </Button>
+
+      <BetterTooltip content="Enhance">
+        <Button
+          className="rounded-full p-1.5 h-fit absolute bottom-2 right-20 m-0.5 dark:border-zinc-700"
+          onClick={(event) => {
+            event.preventDefault();
+            enhancePromptMutation.mutate(input);
+          }}
+          variant="outline"
+          disabled={
+            isLoading || enhancePromptMutation.isPending || input.length === 0
+          }
+        >
+          <Sparkle size={14} />
+        </Button>
+      </BetterTooltip>
     </div>
   );
 }
