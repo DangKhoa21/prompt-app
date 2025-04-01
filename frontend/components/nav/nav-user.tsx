@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
-import { Setting } from "@/features/setting";
+import { Settings } from "@/features/setting";
 import { getUserProfile } from "@/services/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -111,7 +111,7 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
 
               {isAuthenticated && (
                 <>
-                  <Setting />
+                  <Settings />
 
                   <DropdownMenuItem disabled>
                     <BadgeCheck />

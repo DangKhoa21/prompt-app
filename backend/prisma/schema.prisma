@@ -16,6 +16,7 @@ datasource db {
 // db model
 model User {
   id        String   @id @default(uuid(7))
+  avatarUrl String? // nullable
   username  String
   email     String   @unique
   password  String

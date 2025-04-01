@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { ZodError } from 'zod';
 
@@ -92,6 +93,12 @@ export const responseErr = (err: Error, res: Response) => {
       appErr.withDetail(issue.path.join('.'), issue.message);
     });
 
+    res.status(appErr.getStatusCode()).json(appErr.toJSON(isProduction));
+    return;
+  }
+
+  if (err instanceof BadRequestException) {
+    const appErr = ErrInvalidRequest.wrap(err).withMessage(err.message);
     res.status(appErr.getStatusCode()).json(appErr.toJSON(isProduction));
     return;
   }

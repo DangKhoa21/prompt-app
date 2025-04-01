@@ -94,8 +94,8 @@ export function TemplateGenerator() {
         <DialogHeader>
           <DialogTitle>Generate Template</DialogTitle>
           <DialogDescription>
-            Type what kind of prompt configurations you want to generate. Click
-            Generate when you&apos;re done.
+            Type what kind of prompt configurations you want to generate. At
+            least 20 characters. Click Generate when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Textarea
@@ -120,14 +120,17 @@ export function TemplateGenerator() {
         />
         <DialogFooter>
           {isLoading ? (
-            <Button className="w-24" onClick={() => stop()}>
+            <Button
+              className="w-24 bg-muted-foreground hover:bg-muted-foreground"
+              onClick={() => stop()}
+            >
               Stop
             </Button>
           ) : (
             <Button
               className="w-24"
               onClick={() => submit({ prompt: input })}
-              disabled={input.length === 0}
+              disabled={input.trim().length < 20}
             >
               Generate
             </Button>

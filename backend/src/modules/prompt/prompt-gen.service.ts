@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { streamObject } from 'ai';
-import { customModel, systemGeneratePrompt } from 'src/shared/ai';
+import { streamObject, streamText } from 'ai';
+import {
+  customModel,
+  systemEnhancePrompt,
+  systemGenerateTemplate,
+} from 'src/shared/ai';
 import {
   PromptGenDTO,
   promptGenDTOSchema,
@@ -18,8 +22,22 @@ export class PromptGenService {
 
     const result = streamObject({
       model: customModel('gemini-1.5-flash-002'),
-      system: systemGeneratePrompt,
+      system: systemGenerateTemplate,
       schema: promptWithConfigGenSchema,
+      prompt,
+      onError: (error) => console.error(error),
+    });
+
+    return result.pipeTextStreamToResponse(res);
+  }
+
+  async enhancePrompt(dto: PromptGenDTO, res: Response) {
+    const data = promptGenDTOSchema.parse(dto);
+    const { prompt } = data;
+
+    const result = await streamText({
+      model: customModel('gemini-1.5-flash-002'),
+      system: systemEnhancePrompt,
       prompt,
       onError: (error) => console.error(error),
     });
