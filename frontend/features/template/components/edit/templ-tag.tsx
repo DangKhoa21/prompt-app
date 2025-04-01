@@ -16,42 +16,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTemplate } from "@/context/template-context";
-import { getTags } from "@/services/prompt";
-import { TemplateTag } from "@/services/prompt/interface";
-import { useQuery } from "@tanstack/react-query";
+import { Tag, TemplateTag } from "@/services/prompt/interface";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
 interface TemplateEditTagProps {
   tags: TemplateTag[];
+  allTags: Tag[];
 }
 
-export function TemplateEditTag({ tags }: TemplateEditTagProps) {
+export function TemplateEditTag({ tags, allTags }: TemplateEditTagProps) {
   const [open, setOpen] = useState(false);
 
-  const {
-    isPending: isTagsLoading,
-    isError: isTagsError,
-    data: tagsData,
-    error: tagsError,
-  } = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => getTags(),
-  });
-
   const { template, setTemplate } = useTemplate();
-
-  if (isTagsLoading) {
-    return null;
-  }
-
-  if (isTagsError) {
-    return <span>Error: {tagsError.message}</span>;
-  }
-
-  if (!tagsData) {
-    return <span>No tag found.</span>;
-  }
 
   const handleAddTag = (tagId: string, tagName: string) => {
     const addedTag: TemplateTag = {
@@ -77,8 +54,8 @@ export function TemplateEditTag({ tags }: TemplateEditTagProps) {
   };
 
   const remainingTags: TemplateTag[] = !tags
-    ? tagsData
-    : tagsData.filter(
+    ? allTags
+    : allTags.filter(
         (tag) => !tags.some((existedTag) => tag.id === existedTag.id),
       );
 
@@ -91,13 +68,14 @@ export function TemplateEditTag({ tags }: TemplateEditTagProps) {
             <Badge
               key={i}
               variant="secondary"
-              className="group relative transition-all ease-in-out duration-300 hover:pr-[2.05rem]"
+              className="h-6 px-1 items-center group"
             >
-              {tag.name}
+              <div className="translate-x-3 group-hover:translate-x-1 transition-all ease-in-out duration-300">
+                {tag.name}
+              </div>
               <Button
                 variant="ghost"
-                className="absolute right-[0.525rem] h-4 w-4 opacity-0 transition-all ease-in-out group-hover:opacity-100 duration-300"
-                size="icon"
+                className="h-6 w-6 p-auto pr-0 opacity-0 -translate-x-3 group-hover:-translate-x-1 transition-all ease-in-out group-hover:opacity-100 duration-300"
                 onClick={() => {
                   handleDeleteTag(tag.id);
                 }}
@@ -111,8 +89,7 @@ export function TemplateEditTag({ tags }: TemplateEditTagProps) {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                size="icon"
-                className="h-8 w-8"
+                className="w-6 h-6"
                 aria-expanded={open}
               >
                 <Plus className="h-4 w-4" />

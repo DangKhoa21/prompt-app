@@ -108,7 +108,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {
@@ -145,7 +145,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { LoadingSpinner } from "@/components/icons";
+// import { LoadingSpinner } from "@/components/icons";
 
 import TagsList from "@/components/tags-list";
 import {
@@ -26,20 +26,20 @@ export default async function Page(props: {
   const tab = searchParams?.tab || "";
 
   return (
-    <div className="flex-1 bg-background">
+    <>
       <TemplatesHeader />
 
       <div className="max-w-6xl mx-auto">
         <TemplatesSearch />
 
-        <Suspense fallback={<LoadingSpinner />}>
+        <Suspense fallback={<div>Hello from the other side</div>}>
           <TagsList />
         </Suspense>
 
-        <Suspense fallback={<LoadingSpinner />}>
+        <Suspense fallback={<div>Hello from the inner side</div>}>
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
       </div>
-    </div>
+    </>
   );
 }

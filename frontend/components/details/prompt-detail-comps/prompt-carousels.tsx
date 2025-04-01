@@ -1,35 +1,85 @@
 "use client";
 
-import { getTagsForTemplate } from "@/services/prompt";
-import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/components/icons";
+import { getPrompts } from "@/services/prompt";
+import { TemplateTag } from "@/services/prompt/interface";
+import { useQuery } from "@tanstack/react-query";
 import PromptCarousel from "./prompt-carousel";
 
-export default function PromptCarousels({ promptId }: { promptId: string }) {
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ["prompts", promptId, "tags"],
-    queryFn: () => getTagsForTemplate(promptId),
+interface PromptCarouselsProps {
+  promptId: string;
+  creatorId: string;
+  tagsData: TemplateTag[];
+}
+
+export default function PromptCarousels({
+  promptId,
+  creatorId,
+  tagsData,
+}: PromptCarouselsProps) {
+  const relatedTags = tagsData.slice(0, 3); // Take 3 related tags
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["relatedPrompts", promptId],
+    queryFn: async () => {
+      const results = await Promise.all([
+        ...relatedTags.map((tag) =>
+          getPrompts({
+            pageParam: "",
+            filter: { tagId: tag.id },
+          }),
+        ),
+        getPrompts({
+          pageParam: "",
+          filter: { creatorId: creatorId },
+        }),
+      ]);
+      return {
+        relatedPrompts: results.slice(0, relatedTags.length),
+        creatorPrompts: results[relatedTags.length],
+      };
+    },
   });
 
-  if (isPending) {
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center mt-4">
+      <div className="flex justify-center items-center">
         <LoadingSpinner />
       </div>
     );
   }
 
-  if (isError) {
-    return <span>Error: {error.message}</span>;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-red-500">Failed to load related prompts.</p>
+      </div>
+    );
   }
 
-  const relatedTags = data.slice(0, 3); // takes 3 related tags
+  if (!data) {
+    return <div></div>;
+  }
 
   return (
-    <div className="w-fit mx-auto">
-      {relatedTags.map((tag) => (
-        <PromptCarousel promptId={promptId} key={tag.id} {...tag} />
+    <div className="w-max mx-auto">
+      {data.relatedPrompts.map((promptsData, index) => (
+        <PromptCarousel
+          key={relatedTags[index].id}
+          label={`Prompts with same tag: ${relatedTags[index].name}`}
+          promptId={promptId}
+          carouselPrompts={promptsData}
+          filter={{ tagId: relatedTags[index].id }}
+        />
       ))}
+
+      <PromptCarousel
+        key="creator-prompts"
+        label="More from this creator"
+        promptId={promptId}
+        carouselPrompts={data.creatorPrompts}
+        filter={{ creatorId }}
+      />
     </div>
   );
 }

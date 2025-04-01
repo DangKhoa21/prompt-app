@@ -145,9 +145,12 @@ export default function TagsList() {
                   <Button
                     variant={tag.id === tagId ? "secondary" : "ghost"}
                     size="sm"
-                    className={cn("rounded-2xl px-4 whitespace-nowrap h-9", {
-                      "text-muted-foreground": tag.id !== tagId,
-                    })}
+                    className={cn(
+                      "rounded-2xl px-4 whitespace-nowrap h-9 outline-none",
+                      {
+                        "text-muted-foreground": tag.id !== tagId,
+                      },
+                    )}
                     onClick={() => updateTagId(tag.id)}
                   >
                     {tag.name}

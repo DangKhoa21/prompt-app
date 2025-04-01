@@ -8,9 +8,9 @@ import {
   ConfigType,
   TemplateEditTag,
   TemplateEditTextField,
+  TemplateGenerator,
   TemplatesConfigTextarea,
   TemplatesConfigVariable,
-  TemplateGenerator,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, generateUUID } from "@/lib/utils";
 import {
   ConfigValue,
+  Tag,
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
@@ -27,8 +28,10 @@ import { toast } from "sonner";
 // TODO: Handle UI for difference errors
 export function TemplateEditSection({
   initialPrompt,
+  allTags,
 }: {
   initialPrompt: TemplateWithConfigs;
+  allTags: Tag[];
 }) {
   const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
   const { mutateAsync: mutateUpdateTag } = useUpdateTag();
@@ -39,6 +42,7 @@ export function TemplateEditSection({
 
   useEffect(() => {
     setTemplate(initialPrompt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { open } = useSidebar();
@@ -147,7 +151,7 @@ export function TemplateEditSection({
 
   return (
     <>
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="w-full max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col px-5">
           <TemplateEditTextField
             label="title"
@@ -161,7 +165,10 @@ export function TemplateEditSection({
             className="text-muted-foreground text-lg"
           />
 
-          <TemplateEditTag tags={template.tags}></TemplateEditTag>
+          <TemplateEditTag
+            tags={template.tags}
+            allTags={allTags}
+          ></TemplateEditTag>
         </div>
 
         <div
@@ -222,7 +229,7 @@ export function TemplateEditSection({
           </div>
         </div>
 
-        <div className="grid w-full items-center justify-end md:grid-cols-2">
+        <div className="grid sticky bottom-0 p-2 bg-background w-full items-center justify-end md:grid-cols-2">
           {!isMobile && (
             <div className="flex justify-end">
               <ConfirmDialog

@@ -1,9 +1,9 @@
-import { MarketHeader } from "@/components/marketplace/market-header";
+import { DetailsHeader } from "@/components/details/details-header";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <MarketHeader></MarketHeader>
+      <DetailsHeader pageName={"Prompt detail"}></DetailsHeader>
       {children}
     </>
   );

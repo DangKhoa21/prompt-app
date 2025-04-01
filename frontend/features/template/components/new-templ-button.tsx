@@ -7,8 +7,8 @@ import {
   PromptWithConfigsCreation,
 } from "@/services/prompt/interface";
 import { Plus } from "lucide-react";
-import { useWindowSize } from "usehooks-ts";
 import { toast } from "sonner";
+import { useWindowSize } from "usehooks-ts";
 
 export function AddNewTemplateButton() {
   const { mutateAsync } = useCreatePromptTemplate();

@@ -1,5 +1,6 @@
 import { ConfigType } from "@/features/template";
 
+// Prompt
 export interface Prompt {
   id: string;
   title: string;
@@ -41,6 +42,7 @@ export interface PromptCard extends Prompt {
   starCount: number;
 }
 
+// Creation
 export interface ConfigsValueCreation {
   id: string;
   value: string;
@@ -61,6 +63,7 @@ export interface PromptWithConfigsCreation {
   configs: ConfigsCreation[];
 }
 
+// Template
 export interface PromptTemplate {
   id: string;
   title: string;
@@ -88,6 +91,7 @@ export interface TemplateWithConfigs extends PromptTemplate {
   configs: TemplateConfig[];
 }
 
+// Tag
 export interface Tag {
   id: string;
   name: string;
@@ -100,6 +104,7 @@ export interface TemplateTag {
   name: string;
 }
 
+// Filter
 export interface PromptFilter {
   search?: string;
   tagId?: string;

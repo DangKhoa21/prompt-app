@@ -6,19 +6,25 @@ import { MarketHeader } from "@/components/marketplace/market-header";
 import { MarketSearch } from "@/components/marketplace/market-search";
 import PromptsList from "@/components/marketplace/prompts-list";
 import TagsList from "@/components/tags-list";
+import { getPromptsServer } from "@/services/prompt/action";
 
 export default async function Page(props: {
-  searchParams?: Promise<{
+  searchParams?: {
     tagId?: string;
     search?: string;
     sort?: "newest" | "oldest" | "most-starred";
-  }>;
+  };
 }) {
-  const searchParams = await props.searchParams;
+  const searchParams = props.searchParams;
   const tagId = searchParams?.tagId || "";
   const search = searchParams?.search || "";
   const sort = searchParams?.sort || "newest";
   const filter = { tagId, search, sort };
+
+  const initialPrompt = await getPromptsServer({
+    pageParam: "",
+    filter: filter,
+  });
 
   return (
     <div className="flex-1 bg-background">
@@ -31,9 +37,7 @@ export default async function Page(props: {
           <TagsList />
         </Suspense>
 
-        <Suspense fallback={<LoadingSpinner />}>
-          <PromptsList filter={filter} />
-        </Suspense>
+        <PromptsList initialPrompt={initialPrompt} filter={filter} />
       </div>
     </div>
   );

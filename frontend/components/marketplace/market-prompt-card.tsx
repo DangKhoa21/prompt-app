@@ -139,7 +139,7 @@ export function MarketplacePromptCard({
   }
 
   return (
-    <Card className="bg-card rounded-3xl h-56 flex flex-col">
+    <Card className="bg-card rounded-3xl w-[17.5rem] h-[14rem] flex flex-col">
       <Link href={detailURL} className="h-full">
         <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
           <CardTitle className="flex relative h-full w-full mt-2 text-xl">
