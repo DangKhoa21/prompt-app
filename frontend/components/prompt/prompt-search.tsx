@@ -39,8 +39,8 @@ export function PromptSearch() {
 
   const filteredPrompts = data?.pages.flatMap((page) =>
     page.data.filter((prompt) =>
-      prompt.title.toLowerCase().includes(searchQuery.toLowerCase()),
-    ),
+      prompt.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   const handlePromptChange = (promptId: string) => {
@@ -74,6 +74,7 @@ export function PromptSearch() {
   return (
     <>
       <Button
+        id="prompt-search"
         variant="outline"
         className="w-full justify-start text-muted-foreground"
         onClick={() => setOpen(true)}
@@ -97,10 +98,10 @@ export function PromptSearch() {
             {status === "error"
               ? "Failed to search prompts."
               : searchQuery.length === 0 || filteredPrompts?.length === 0
-                ? "No results found."
-                : status === "pending"
-                  ? "Loading..."
-                  : null}
+              ? "No results found."
+              : status === "pending"
+              ? "Loading..."
+              : null}
           </CommandEmpty>
           {filteredPrompts && filteredPrompts?.length > 0 && (
             <CommandGroup heading="Prompts">

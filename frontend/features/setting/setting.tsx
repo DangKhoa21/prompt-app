@@ -32,7 +32,11 @@ export function Setting() {
       return;
     }
 
-    const updateUserProfilePromise = mutateUserProfile(userData!);
+    //const updateUserProfilePromise = mutateUserProfile(userData!);
+    const updateUserProfilePromise = mutateUserProfile({
+      id: userData.id,
+      data: userData,
+    });
 
     toast.promise(updateUserProfilePromise, {
       loading: "Updating user profile ...",

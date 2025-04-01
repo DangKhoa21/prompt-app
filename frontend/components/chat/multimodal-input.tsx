@@ -296,6 +296,7 @@ export function MultimodalInput({
       )} */}
 
       <Textarea
+        id="chat-input"
         ref={textareaRef}
         placeholder="Send a message..."
         value={input}

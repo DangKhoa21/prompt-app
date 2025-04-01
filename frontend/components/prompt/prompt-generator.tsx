@@ -33,10 +33,10 @@ import { useState } from "react";
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
@@ -110,7 +110,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label],
+            selectedValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -119,7 +119,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label],
+            textareaValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -133,9 +133,9 @@ export function PromptGeneratorSidebar() {
                     (value, labelIndex) =>
                       `\n\t${config.values[labelIndex].value} ${
                         index + 1
-                      }: ${value}`,
+                      }: ${value}`
                   )
-                  .join(""),
+                  .join("")
               )
               .join("\n")
           : "";
@@ -164,13 +164,15 @@ export function PromptGeneratorSidebar() {
           <div className="text-base leading-tight ml-2">
             <span className="font-semibold">{data.title}</span>
           </div>
-          <Button
-            variant="ghost"
-            className="h-8 w-8 ml-auto"
-            onClick={() => pinPromptMutation.mutate(data.id)}
-          >
-            <Pin />
-          </Button>
+          {data.id !== "1" && (
+            <Button
+              variant="ghost"
+              className="h-8 w-8 ml-auto"
+              onClick={() => pinPromptMutation.mutate(data.id)}
+            >
+              <Pin />
+            </Button>
+          )}
         </div>
       </SidebarHeader>
 
@@ -183,7 +185,7 @@ export function PromptGeneratorSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel>
-            <Label>Search for another prompt</Label>
+            <Label htmlFor="prompt-search">Search for another prompt</Label>
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2">
             <PromptSearch />

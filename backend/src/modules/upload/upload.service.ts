@@ -16,7 +16,6 @@ import {
 export class UploadService {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
-  private readonly region: string;
 
   constructor() {
     this.s3Client = new S3Client({
@@ -27,7 +26,6 @@ export class UploadService {
       },
     });
     this.bucketName = config.aws.s3.bucketName;
-    this.region = config.aws.s3.region;
   }
 
   async uploadAvatar(
@@ -56,7 +54,7 @@ export class UploadService {
 
   async deleteAvatar(fileUrl: string): Promise<void> {
     const key = fileUrl.split(
-      `https://${this.bucketName}.s3.${this.region}.amazonaws.com/`,
+      `https://${this.bucketName}.s3.amazonaws.com/`,
     )[1];
 
     if (!key) {
