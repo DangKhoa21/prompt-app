@@ -181,19 +181,18 @@ export function TemplateEditSection({
           )}
         >
           <div className="h-fit pt-11">
-            {/* <TemplatesConfigTextarea */}
-            {/*   id="systemInstruction" */}
-            {/*   label="System Instruction" */}
-            {/*   placeholder="Enter your System Instruction ..." */}
-            {/*   value={promptData.systemInstruction} */}
-            {/*   setPromptData={setPromptData} */}
-            {/* /> */}
-
             <TemplatesConfigTextarea
               id="stringTemplate"
               label="Prompt Template"
               placeholder="Enter your Prompt Template..."
               value={template.stringTemplate}
+            />
+
+            <TemplatesConfigTextarea
+              id="systemInstruction"
+              label="System Instruction"
+              placeholder="Enter your System Instruction ..."
+              value={template.systemInstruction ?? ""}
             />
 
             {isMobile && (

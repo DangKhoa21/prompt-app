@@ -6,6 +6,7 @@ export interface Prompt {
   title: string;
   description: string;
   stringTemplate: string;
+  systemInstruction: string | null;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -69,6 +70,7 @@ export interface PromptTemplate {
   title: string;
   description: string;
   stringTemplate: string;
+  systemInstruction?: string | null;
   creatorId: string;
 }
 

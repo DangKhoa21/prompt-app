@@ -10,7 +10,7 @@ import { Dispatch, SetStateAction } from "react";
 export default function MarketplaceHoverCard(
   marketplaceCardProps: PromptCard & { filter?: PromptFilter } & {
     setIsHovered: Dispatch<SetStateAction<boolean>>;
-  },
+  }
 ) {
   return (
     <HoverCard
@@ -19,7 +19,7 @@ export default function MarketplaceHoverCard(
     >
       <HoverCardTrigger asChild>
         {/* Display card */}
-        <div className="transition-all hover:scale-105">
+        <div>
           <MarketplacePromptCard {...marketplaceCardProps} />
         </div>
       </HoverCardTrigger>

@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
-import { Star } from "lucide-react";
+import { Star, ChartColumn } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -139,30 +139,34 @@ export function MarketplacePromptCard({
   }
 
   return (
-    <Card className="bg-card rounded-3xl w-[17.5rem] h-[14rem] flex flex-col">
-      <Link href={detailURL} className="h-full">
-        <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
-          <CardTitle className="flex relative h-full w-full mt-2 text-xl">
-            <div className="flex h-full w-full text-center justify-center items-center">
-              {title}
+    <Link href={detailURL}>
+      <Card className="bg-card rounded-3xl h-56 flex flex-col transition-all hover:scale-105">
+        <CardHeader className="space-y-1 px-4 pt-2 pb-1">
+          <CardTitle className="flex items-start justify-between mt-2 text-xl">
+            <div className="pl-1 line-clamp-2">{title}</div>
+            <div className="flex flex-col gap-1 items-center">
+              <Badge
+                variant="secondary"
+                className="flex border-2 items-center gap-1 ml-2 group"
+                onClick={(event) => handleStar(event)}
+              >
+                <Star
+                  className={cn("h-3 w-3 group-hover:fill-primary", {
+                    "fill-primary": hasStarred,
+                  })}
+                />
+                {rating}
+              </Badge>
+              <Badge
+                variant="secondary"
+                className="flex border-2 items-center gap-1 ml-2 bg-transparent hover:bg-transparent text-muted-foreground"
+              >
+                <ChartColumn className="h-3 w-3" />0
+              </Badge>
             </div>
-            <Badge
-              variant="secondary"
-              className="absolute right-0 top-0 flex border-2 items-center gap-1 ml-2 opacity-25 hover:opacity-100"
-              onClick={(event) => handleStar(event)}
-            >
-              <Star
-                className={cn("h-3 w-3", {
-                  "fill-primary": hasStarred,
-                })}
-              />
-              {rating}
-            </Badge>
           </CardTitle>
         </CardHeader>
-      </Link>
-      <div>
-        <Link href={detailURL}>
+        <div className="mt-auto">
           <CardContent className="px-5 py-2">
             <div className="text-sm text-foreground line-clamp-2">
               {description}
@@ -181,7 +185,7 @@ export function MarketplacePromptCard({
                 />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div className="text-xs text-foreground-accent">
+              <div className="text-xs text-foreground-accent line-clamp-2">
                 by {creator["username"]}
               </div>
             </div>
@@ -202,8 +206,8 @@ export function MarketplacePromptCard({
               </Button>
             </Button>
           </CardFooter>
-        </Link>
-      </div>
-    </Card>
+        </div>
+      </Card>
+    </Link>
   );
 }

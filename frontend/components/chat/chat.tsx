@@ -16,6 +16,7 @@ import { useAuth } from "@/context/auth-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { usePrompt } from "@/context/prompt-context";
 
 export function Chat({
   id,
@@ -30,6 +31,7 @@ export function Chat({
   const router = useRouter();
   const { token, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
+  const { systemInstruction } = usePrompt();
 
   const {
     messages,
@@ -44,7 +46,11 @@ export function Chat({
   } = useChat({
     api: `${SERVER_URL}/${VERSION_PREFIX}/chat`,
     id,
-    body: { id, modelId: selectedModelId },
+    body: {
+      id,
+      modelId: selectedModelId,
+      systemInstruction,
+    },
     initialMessages,
     headers: { Authorization: "Bearer " + token },
     onFinish: () => {

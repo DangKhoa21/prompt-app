@@ -28,10 +28,10 @@ import { getPrompt } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, FileQuestion, Pin, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function PromptGeneratorSidebar() {
-  const { setPrompt } = usePrompt();
+  const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {}
   );
@@ -49,6 +49,12 @@ export function PromptGeneratorSidebar() {
     queryKey: ["prompts", promptId],
     queryFn: () => getPrompt(promptId),
   });
+
+  useEffect(() => {
+    if (data && data.systemInstruction !== systemInstruction) {
+      setSystemInstruction(data.systemInstruction as string | null);
+    }
+  }, [data, systemInstruction, setSystemInstruction]);
 
   const pinPromptMutation = usePinPrompt();
 
@@ -147,7 +153,10 @@ export function PromptGeneratorSidebar() {
     // Remove only excessive spaces, not newlines "\n"
     prompt = prompt.replace(/ {2,}/g, " ");
     prompt = prompt.replace(/\\n/g, "\n");
-    setPrompt({ value: prompt, isSending });
+    setPrompt({
+      value: prompt,
+      isSending,
+    });
   };
 
   return (

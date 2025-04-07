@@ -16,6 +16,8 @@ type Prompt = {
 interface PromptContextType {
   prompt: Prompt;
   setPrompt: Dispatch<SetStateAction<Prompt>>;
+  systemInstruction: string | null;
+  setSystemInstruction: Dispatch<SetStateAction<string | null>>;
 }
 
 const PromptContext = createContext<PromptContextType | undefined>(undefined);
@@ -29,10 +31,19 @@ export const usePrompt = () => {
 };
 
 export const PromptProvider = ({ children }: { children: ReactNode }) => {
-  const [prompt, setPrompt] = useState<Prompt>({ value: "", isSending: false });
+  const [prompt, setPrompt] = useState<Prompt>({
+    value: "",
+    isSending: false,
+  });
+
+  const [systemInstruction, setSystemInstruction] = useState<string | null>(
+    null
+  );
 
   return (
-    <PromptContext.Provider value={{ prompt, setPrompt }}>
+    <PromptContext.Provider
+      value={{ prompt, setPrompt, systemInstruction, setSystemInstruction }}
+    >
       {children}
     </PromptContext.Provider>
   );

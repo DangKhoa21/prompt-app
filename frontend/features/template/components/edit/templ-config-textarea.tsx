@@ -56,19 +56,17 @@ export function TemplatesConfigTextarea({
   });
 
   return (
-    <Card className="">
-      <CardHeader>
+    <Card className="mb-4">
+      <CardHeader className="flex flex-row justify-between items-center">
         <CardTitle className="text-xl font-medium">{label}</CardTitle>
         <Button
           variant="ghost"
           className={cn("h-8 p-2 text-base font-semibold mr-2 mt-1", {
             "text-muted-foreground": enhancePromptMutation.isPending,
           })}
-          disabled={enhancePromptMutation.isPending}
+          disabled={enhancePromptMutation.isPending || value.length === 0}
           onClick={() => {
-            if (!enhancePromptMutation.isPending) {
-              enhancePromptMutation.mutate(value);
-            }
+            enhancePromptMutation.mutate(value);
           }}
         >
           <Sparkles />

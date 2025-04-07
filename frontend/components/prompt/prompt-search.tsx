@@ -113,7 +113,7 @@ export function PromptSearch() {
                 >
                   <PencilRuler className="mr-2 h-4 w-4" />
                   <div>
-                    <div>{prompt.title}</div>
+                    <div className="line-clamp-2">{prompt.title}</div>
                     <div className="text-xs line-clamp-2">
                       {prompt.description}
                     </div>

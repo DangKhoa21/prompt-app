@@ -29,7 +29,7 @@ export function ChatWrapper({
   useEffect(() => {
     if (messagesError) {
       toast.error(
-        `Failed to load messages for chat ${id} (${messagesError?.message})`,
+        `Failed to load messages for chat ${id} (${messagesError?.message})`
       );
       router.replace("/");
       toast.dismiss();
