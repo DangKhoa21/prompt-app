@@ -89,6 +89,8 @@ export function PromptGeneratorSidebar() {
     setTextareaValues(newTextarea);
     setArrayValues(newArray);
   }, [data, searchParams]);
+
+  useEffect(() => {
     if (data && data.systemInstruction !== systemInstruction) {
       setSystemInstruction(data.systemInstruction as string | null);
     }
