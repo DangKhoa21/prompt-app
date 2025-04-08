@@ -22,7 +22,7 @@ export default function MarketplaceHoverCard(
     >
       <HoverCardTrigger asChild>
         {/* Display card */}
-        <div className="transition-all hover:scale-105">
+        <div>
           <MarketplacePromptCard {...marketplaceCardProps} />
         </div>
       </HoverCardTrigger>

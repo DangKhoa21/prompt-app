@@ -40,6 +40,7 @@ export function TemplateGenerator() {
           title: object.title,
           description: object.description,
           stringTemplate: object.stringTemplate,
+          systemInstruction: object.systemInstruction,
           configs: object.configs.map((config) => {
             const configId = v7();
 
@@ -66,7 +67,9 @@ export function TemplateGenerator() {
       setOpen(false);
 
       // error, undefined if schema validation succeeds:
-      console.log("Schema validation error:", error);
+      if (error) {
+        console.error("Schema validation error:", error);
+      }
     },
     onError: (e) => {
       try {

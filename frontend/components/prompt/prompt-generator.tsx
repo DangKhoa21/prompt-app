@@ -38,7 +38,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function PromptGeneratorSidebar() {
-  const { setPrompt } = usePrompt();
+  const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {},
   );
@@ -89,6 +89,10 @@ export function PromptGeneratorSidebar() {
     setTextareaValues(newTextarea);
     setArrayValues(newArray);
   }, [data, searchParams]);
+    if (data && data.systemInstruction !== systemInstruction) {
+      setSystemInstruction(data.systemInstruction as string | null);
+    }
+  }, [data, systemInstruction, setSystemInstruction]);
 
   const pinPromptMutation = usePinPrompt();
 
@@ -187,7 +191,10 @@ export function PromptGeneratorSidebar() {
     // Remove only excessive spaces, not newlines "\n"
     prompt = prompt.replace(/ {2,}/g, " ");
     prompt = prompt.replace(/\\n/g, "\n");
-    setPrompt({ value: prompt, isSending });
+    setPrompt({
+      value: prompt,
+      isSending,
+    });
   };
 
   const handleShare = () => {

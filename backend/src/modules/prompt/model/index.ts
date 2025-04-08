@@ -8,6 +8,7 @@ export const promptSchema = z.object({
   title: z.string(),
   description: z.string(),
   stringTemplate: z.string(),
+  systemInstruction: z.string().nullable().optional(),
   creatorId: z.string().uuid(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
@@ -39,6 +40,7 @@ export const promptUpdateDTOSchema = promptSchema.pick({
   description: true,
   stringTemplate: true,
   updatedAt: true,
+  systemInstruction: true,
 });
 
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
@@ -137,6 +139,11 @@ export const promptWithConfigGenSchema = z.object({
     .string()
     .describe(
       'The template string containing variables in ${varName} format that will be replaced with user-provided values. Example: "Help me translate this text ${Text} in ${Source Language} to ${Target Language}',
+    ),
+  systemInstruction: z
+    .string()
+    .describe(
+      'An system instruction that provides context or guidelines for the AI. Example: "You are a helpful assistant. Keep your responses concise and helpful"',
     ),
   configs: z
     .array(

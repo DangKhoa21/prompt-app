@@ -58,6 +58,7 @@ export class PromptService {
       title: data.title,
       description: data.description,
       stringTemplate: data.stringTemplate,
+      systemInstruction: data.systemInstruction ?? null,
       creatorId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -176,6 +177,7 @@ export class PromptService {
       title: data.title,
       description: data.description,
       stringTemplate: data.stringTemplate,
+      systemInstruction: data.systemInstruction ?? null,
       updatedAt: new Date(),
     };
 

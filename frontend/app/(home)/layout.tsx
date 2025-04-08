@@ -1,11 +1,11 @@
-import { SidebarLeft } from "@/components/sidebar/sidebar-left";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { LoadingSpinner } from "@/components/icons";
+import { ProtectedRoute } from "@/components/protected-route";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <SidebarLeft className="z-20" />
-      <SidebarInset>{children}</SidebarInset>
-    </SidebarProvider>
+    <Suspense fallback={<LoadingSpinner />}>
+      <ProtectedRoute>{children}</ProtectedRoute>
+    </Suspense>
   );
 }

@@ -64,6 +64,7 @@ export async function getPrompt(id: string | null): Promise<PromptWithConfigs> {
       title: "No prompt selected",
       description: "You need to go to the marketplace to select a prompt",
       stringTemplate: "",
+      systemInstruction: null,
       creatorId: "",
       createdAt: new Date(),
       updatedAt: new Date(),
