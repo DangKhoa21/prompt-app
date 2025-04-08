@@ -245,15 +245,15 @@ export function PromptGeneratorSidebar() {
               <span className="font-semibold">{data.title}</span>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              className="h-8 w-8"
-              onClick={() => handleShare()}
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
-            {data.id !== "1" && (
+          {data.id !== "1" && (
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => handleShare()}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
               <Button
                 variant="ghost"
                 className="h-8 w-8"
@@ -261,8 +261,8 @@ export function PromptGeneratorSidebar() {
               >
                 <Pin />
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </SidebarHeader>
 

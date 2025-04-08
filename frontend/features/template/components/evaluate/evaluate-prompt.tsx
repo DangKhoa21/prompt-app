@@ -8,21 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Check, Copy, Play } from "lucide-react";
+import { Check, Copy, FileQuestion, Play } from "lucide-react";
 import { useTemplate } from "@/context/template-context";
-
-interface Config {
-  id: string;
-  label: string;
-  type: string;
-  value: string;
-}
+import { Label } from "@/components/ui/label";
+import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
+import { toast } from "sonner";
 
 interface EvaluationResult {
   id: string;
-  configValues: Record<string, string>;
+  // configValues: Record<string, string>;
+  prompt: string;
   result: string;
   timestamp: string;
   selected?: boolean;
@@ -30,48 +35,139 @@ interface EvaluationResult {
 
 export function EvaluatePrompt() {
   const { template } = useTemplate();
-  // Evaluation states
-  const [evaluationConfigs, setEvaluationConfigs] = useState<Config[]>([]);
+
   const [isEvaluating, setIsEvaluating] = useState(false);
+
+  const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
+    {},
+  );
+  const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
+    {},
+  );
+
+  const [arrayValues, setArrayValues] = useState<
+    Record<string, { id: string; values: string[] }[]>
+  >({});
+
+  const handleSelectChange = (configLabel: string, value: string) => {
+    setSelectedValues((prevState) => ({
+      ...prevState,
+      [configLabel]: value,
+    }));
+  };
+
   const [evaluationResults, setEvaluationResults] = useState<
     EvaluationResult[]
   >([]);
 
-  const handleEvaluationConfigChange = (configId: string, value: string) => {
-    const updatedConfigs = evaluationConfigs.map((config) =>
-      config.id === configId ? { ...config, value } : config,
-    );
-    setEvaluationConfigs(updatedConfigs);
+  const handleCreateOption = (configLabel: string, inputValue: string) => {
+    const newOption = {
+      value: inputValue,
+    };
+
+    setSelectedValues((prevState) => ({
+      ...prevState,
+      [configLabel]: newOption.value,
+    }));
+  };
+
+  const handleTextareaChange = (configLabel: string, value: string) => {
+    setTextareaValues((prevState) => ({
+      ...prevState,
+      [configLabel]: value,
+    }));
   };
 
   const handleRunEvaluation = () => {
     setIsEvaluating(true);
 
-    // Create a config values object
-    const configValues: Record<string, string> = {};
-    evaluationConfigs.forEach((config) => {
-      configValues[config.label] = config.value;
+    const stringTemplate = template.stringTemplate;
+    let prompt = stringTemplate;
+
+    template.configs.forEach((config) => {
+      prompt = prompt.replace("$", "");
+      if (config.type === "dropdown" || config.type === "combobox") {
+        if (
+          selectedValues[config.label] &&
+          selectedValues[config.label] !== "None"
+        ) {
+          prompt = prompt.replace(
+            `{${config.label}}`,
+            selectedValues[config.label],
+          );
+        } else {
+          prompt = prompt.replace(`{${config.label}}`, "");
+        }
+      } else if (config.type === "textarea") {
+        if (textareaValues[config.label]) {
+          prompt = prompt.replace(
+            `{${config.label}}`,
+            textareaValues[config.label],
+          );
+        } else {
+          prompt = prompt.replace(`{${config.label}}`, "");
+        }
+      } else if (config.type === "array") {
+        const replaceValue = arrayValues[config.label]
+          ? arrayValues[config.label]
+              .map((item, index) =>
+                item.values
+                  .map(
+                    (value, labelIndex) =>
+                      `\n\t${config.values[labelIndex].value} ${
+                        index + 1
+                      }: ${value}`,
+                  )
+                  .join(""),
+              )
+              .join("\n")
+          : "";
+
+        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
+      }
     });
 
-    // In a real app, you would call an API to run the prompt with these configs
-    // For now, we'll simulate a response after a delay
-    setTimeout(() => {
-      // Generate a mock result
-      let processedTemplate = template.stringTemplate;
-      Object.entries(configValues).forEach(([key, value]) => {
-        processedTemplate = processedTemplate.replace(`\${${key}}`, value);
-      });
+    // Remove only excessive spaces, not newlines "\n"
+    prompt = prompt.replace(/ {2,}/g, " ");
+    prompt = prompt.replace(/\\n/g, "\n");
 
-      const newResult: EvaluationResult = {
-        id: Date.now().toString(),
-        configValues,
-        result: `Here's a response based on your prompt: "${processedTemplate}"\n\nThis is a simulated AI response that would be generated by running the prompt with the provided configuration values.`,
-        timestamp: new Date().toISOString(),
-      };
+    const newResult: EvaluationResult = {
+      id: Date.now().toString(),
+      // configValues,
+      prompt: prompt,
+      result: `Here's a response based on your prompt:\n\n"${prompt}"\n\nThis is a simulated AI response that would be generated by running the prompt with the provided configuration values.`,
+      timestamp: new Date().toISOString(),
+    };
 
-      setEvaluationResults([...evaluationResults, newResult]);
-      setIsEvaluating(false);
-    }, 1500);
+    setEvaluationResults([...evaluationResults, newResult]);
+    setIsEvaluating(false);
+
+    // // Create a config values object
+    // const configValues: Record<string, string> = {};
+    // template.configs.forEach((config) => {
+    //   configValues[config.label] = config.value;
+    // });
+    //
+    // // In a real app, you would call an API to run the prompt with these configs
+    // // For now, we'll simulate a response after a delay
+    // setTimeout(() => {
+    //   // Generate a mock result
+    //   let processedTemplate = template.stringTemplate;
+    //   Object.entries(configValues).forEach(([key, value]) => {
+    //     processedTemplate = processedTemplate.replace(`\${${key}}`, value);
+    //   });
+    //
+    //   const newResult: EvaluationResult = {
+    //     id: Date.now().toString(),
+    //     configValues,
+    //     prompt: processedTemplate,
+    //     result: `Here's a response based on your prompt: "${processedTemplate}"\n\nThis is a simulated AI response that would be generated by running the prompt with the provided configuration values.`,
+    //     timestamp: new Date().toISOString(),
+    //   };
+    //
+    //   setEvaluationResults([...evaluationResults, newResult]);
+    //   setIsEvaluating(false);
+    // }, 1500);
   };
 
   const handleSelectResult = (resultId: string) => {
@@ -84,7 +180,7 @@ export function EvaluatePrompt() {
 
   const handleCopyResult = (result: string) => {
     navigator.clipboard.writeText(result);
-    alert("Result copied to clipboard");
+    toast.success("Result copied to clipboard");
   };
 
   return (
@@ -98,16 +194,76 @@ export function EvaluatePrompt() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {evaluationConfigs.map((config) => (
-                <div key={config.id} className="space-y-2">
-                  <label className="text-sm font-medium">{config.label}</label>
-                  <Input
-                    value={config.value}
-                    onChange={(e) =>
-                      handleEvaluationConfigChange(config.id, e.target.value)
-                    }
-                    placeholder={`Enter value for ${config.label}...`}
-                  />
+              {template.configs?.map((config) => (
+                <div key={config.label}>
+                  <div className="flex justify-between">
+                    <Label htmlFor={config.label.toLowerCase()}>
+                      {config.label}
+                    </Label>
+                    <Button variant="ghost" className="h-8 w-8 mr-2">
+                      <FileQuestion></FileQuestion>
+                    </Button>
+                  </div>
+
+                  <div className="px-2">
+                    {config.type === "combobox" ? (
+                      <CreatableCombobox
+                        options={config.values}
+                        value={selectedValues[config.label]}
+                        onChange={(value) =>
+                          handleSelectChange(config.label, value)
+                        }
+                        placeholder={`Select a ${config.label.toLowerCase()}`}
+                        onCreateOption={(inputValue) =>
+                          handleCreateOption(config.label, inputValue)
+                        }
+                      />
+                    ) : config.type === "dropdown" ? (
+                      <Select
+                        onValueChange={(value) =>
+                          handleSelectChange(config.label, value)
+                        }
+                      >
+                        <SelectTrigger id={config.label}>
+                          <SelectValue
+                            placeholder={
+                              selectedValues[config.label] ??
+                              `Select a ${config.label.toLowerCase()}`
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="None">None</SelectItem>
+                          {config.values.map((value) => (
+                            <SelectItem key={value.id} value={value.value}>
+                              {value.value}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : config.type === "textarea" ? (
+                      <Textarea
+                        id={config.label}
+                        placeholder={`Input your content`}
+                        value={textareaValues[config.label]}
+                        onChange={(e) =>
+                          handleTextareaChange(config.label, e.target.value)
+                        }
+                        // className={config.className}
+                      />
+                    ) : config.type === "array" ? (
+                      <>
+                        <ArrayConfig
+                          id={config.label}
+                          labels={config.values.map((value) => {
+                            return value.value;
+                          })}
+                          values={arrayValues[config.label]}
+                          setArrayValues={setArrayValues}
+                        ></ArrayConfig>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -178,14 +334,14 @@ export function EvaluatePrompt() {
                       <div className="text-xs space-y-2 mb-2">
                         <p className="font-medium">Configuration:</p>
                         <div className="grid grid-cols-2 gap-1">
-                          {Object.entries(result.configValues).map(
-                            ([key, value]) => (
-                              <div key={key} className="flex">
-                                <span className="font-medium mr-1">{key}:</span>
-                                <span className="truncate">{value}</span>
-                              </div>
-                            ),
-                          )}
+                          {/* {Object.entries(result.configValues).map( */}
+                          {/*   ([key, value]) => ( */}
+                          {/*     <div key={key} className="flex"> */}
+                          {/*       <span className="font-medium mr-1">{key}:</span> */}
+                          {/*       <span className="truncate">{value}</span> */}
+                          {/*     </div> */}
+                          {/*   ), */}
+                          {/* )} */}
                         </div>
                       </div>
                       <div className="border-t pt-2">
