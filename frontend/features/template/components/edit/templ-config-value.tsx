@@ -217,7 +217,7 @@ export function TemplatesConfigVariable({
                       </DialogContent>
                     </Dialog>
                   </div>
-                  <ScrollArea className="h-[300px] border rounded-md p-4">
+                  <ScrollArea className="h-[300px] border rounded-md p-2">
                     <ConfigDnD key={id} id={id} values={values}></ConfigDnD>
                   </ScrollArea>
                 </div>
@@ -235,7 +235,7 @@ export function TemplatesConfigVariable({
             </div>
           ) : (
             !(type === ConfigType.TEXTAREA) && (
-              <ScrollArea className="h-[100px] border rounded-md p-4">
+              <ScrollArea className="h-[100px] border rounded-md p-2">
                 <ConfigDnD key={id} id={id} values={values}></ConfigDnD>
               </ScrollArea>
             )

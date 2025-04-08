@@ -43,14 +43,6 @@ export default function PromptCarousel({
 
   const { open } = useSidebar();
 
-  // if (status === "pending") {
-  //   return (
-  //     <div className="flex justify-center items-center mt-4">
-  //       <LoadingSpinner />
-  //     </div>
-  //   );
-  // }
-
   if (status === "error") {
     return <span>Error: {error.message}</span>;
   }

@@ -1,5 +1,11 @@
+import { LoadingSpinner } from "@/components/icons";
 import { ProtectedRoute } from "@/components/protected-route";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <ProtectedRoute>{children}</ProtectedRoute>
+    </Suspense>
+  );
 }

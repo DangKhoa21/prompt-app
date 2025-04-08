@@ -179,17 +179,15 @@ export default function ConfigDnD({ id, values }: ConfigItemProps) {
           items={sortableItems.map((item) => item.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="space-y-2">
-            {sortableItems.length ? (
-              sortableItems.map((item) => (
-                <ConfigItem key={item.id} value={item.data}></ConfigItem>
-              ))
-            ) : (
-              <div className="mx-auto my-2 flex items-center justify-center">
-                Currently empty
-              </div>
-            )}
-          </div>
+          {sortableItems.length ? (
+            sortableItems.map((item) => (
+              <ConfigItem key={item.id} value={item.data}></ConfigItem>
+            ))
+          ) : (
+            <div className="mx-auto my-2 flex items-center justify-center">
+              Currently empty
+            </div>
+          )}
         </SortableContext>
       </DndContext>
     </>

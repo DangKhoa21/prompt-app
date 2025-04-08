@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
+import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
 import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
@@ -22,21 +23,27 @@ import {
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
-import { ArrayConfig } from "@/features/prompt-generator";
 import { usePinPrompt } from "@/features/template";
 import { getPrompt } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, FileQuestion, Pin, RotateCcw } from "lucide-react";
+import {
+  ChevronLeft,
+  FileQuestion,
+  Pin,
+  RotateCcw,
+  Share2,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function PromptGeneratorSidebar() {
   const { setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
@@ -49,6 +56,39 @@ export function PromptGeneratorSidebar() {
     queryKey: ["prompts", promptId],
     queryFn: () => getPrompt(promptId),
   });
+
+  useEffect(() => {
+    if (!data) return;
+
+    const newSelected: Record<string, string> = {};
+    const newTextarea: Record<string, string> = {};
+    const newArray: Record<string, { id: string; values: string[] }[]> = {};
+
+    data.configs.forEach((config) => {
+      const paramValue = searchParams.get(config.label);
+      if (!paramValue) return;
+
+      if (config.type === "dropdown" || config.type === "combobox") {
+        newSelected[config.label] = paramValue;
+      } else if (config.type === "textarea") {
+        newTextarea[config.label] = paramValue;
+      } else if (config.type === "array") {
+        try {
+          const parsed = JSON.parse(paramValue);
+          if (Array.isArray(parsed)) {
+            newArray[config.label] = parsed;
+          }
+        } catch (e) {
+          console.log(e);
+          console.error("Invalid array param:", paramValue);
+        }
+      }
+    });
+
+    setSelectedValues(newSelected);
+    setTextareaValues(newTextarea);
+    setArrayValues(newArray);
+  }, [data, searchParams]);
 
   const pinPromptMutation = usePinPrompt();
 
@@ -110,7 +150,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label]
+            selectedValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -119,7 +159,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label]
+            textareaValues[config.label],
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -133,9 +173,9 @@ export function PromptGeneratorSidebar() {
                     (value, labelIndex) =>
                       `\n\t${config.values[labelIndex].value} ${
                         index + 1
-                      }: ${value}`
+                      }: ${value}`,
                   )
-                  .join("")
+                  .join(""),
               )
               .join("\n")
           : "";
@@ -150,29 +190,70 @@ export function PromptGeneratorSidebar() {
     setPrompt({ value: prompt, isSending });
   };
 
+  const handleShare = () => {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams();
+
+    params.set("promptId", promptId || "");
+
+    data.configs.forEach((config) => {
+      const key = config.label;
+
+      if (config.type === "dropdown" || config.type === "combobox") {
+        if (selectedValues[key]) {
+          params.set(key, selectedValues[key]);
+        }
+      } else if (config.type === "textarea") {
+        if (textareaValues[key]) {
+          params.set(key, textareaValues[key]);
+        }
+      } else if (config.type === "array") {
+        const arrayData = arrayValues[key];
+        if (arrayData) {
+          params.set(key, JSON.stringify(arrayData));
+        }
+      }
+    });
+
+    url.search = params.toString();
+    navigator.clipboard.writeText(url.toString());
+    toast.success("Shareable URL copied to clipboard!");
+  };
+
   return (
     <>
       <SidebarHeader className="pb-0">
-        <div className="flex items-center p-2">
-          <Button
-            variant="ghost"
-            className="h-8 w-8"
-            onClick={() => window.history.back()}
-          >
-            <ChevronLeft />
-          </Button>
-          <div className="text-base leading-tight ml-2">
-            <span className="font-semibold">{data.title}</span>
-          </div>
-          {data.id !== "1" && (
+        <div className="flex justify-between items-center p-2">
+          <div className="flex items-center">
             <Button
               variant="ghost"
-              className="h-8 w-8 ml-auto"
-              onClick={() => pinPromptMutation.mutate(data.id)}
+              className="h-8 w-8"
+              onClick={() => window.history.back()}
             >
-              <Pin />
+              <ChevronLeft />
             </Button>
-          )}
+            <div className="text-base leading-tight ml-2">
+              <span className="font-semibold">{data.title}</span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={() => handleShare()}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            {data.id !== "1" && (
+              <Button
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => pinPromptMutation.mutate(data.id)}
+              >
+                <Pin />
+              </Button>
+            )}
+          </div>
         </div>
       </SidebarHeader>
 
@@ -220,7 +301,10 @@ export function PromptGeneratorSidebar() {
                 >
                   <SelectTrigger id={config.label}>
                     <SelectValue
-                      placeholder={`Select a ${config.label.toLowerCase()}`}
+                      placeholder={
+                        selectedValues[config.label] ??
+                        `Select a ${config.label.toLowerCase()}`
+                      }
                     />
                   </SelectTrigger>
                   <SelectContent>

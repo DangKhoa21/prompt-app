@@ -57,11 +57,11 @@ export function TemplatesConfigTextarea({
 
   return (
     <Card className="">
-      <CardHeader>
-        <CardTitle className="text-xl font-medium">{label}</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle className="text-lg font-semibold">{label}</CardTitle>
         <Button
           variant="ghost"
-          className={cn("h-8 p-2 text-base font-semibold mr-2 mt-1", {
+          className={cn("h-8 p-2 text-base font-semibold", {
             "text-muted-foreground": enhancePromptMutation.isPending,
           })}
           disabled={enhancePromptMutation.isPending}

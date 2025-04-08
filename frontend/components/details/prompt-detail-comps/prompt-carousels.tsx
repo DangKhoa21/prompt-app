@@ -1,10 +1,10 @@
 "use client";
 
+import PromptCarousel from "@/components/details/prompt-detail-comps/prompt-carousel";
 import { LoadingSpinner } from "@/components/icons";
 import { getPrompts } from "@/services/prompt";
 import { TemplateTag } from "@/services/prompt/interface";
 import { useQuery } from "@tanstack/react-query";
-import PromptCarousel from "./prompt-carousel";
 
 interface PromptCarouselsProps {
   promptId: string;
@@ -17,7 +17,8 @@ export default function PromptCarousels({
   creatorId,
   tagsData,
 }: PromptCarouselsProps) {
-  const relatedTags = tagsData.slice(0, 3); // Take 3 related tags
+  // Take 3 related tags
+  const relatedTags = tagsData.slice(0, 3);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["relatedPrompts", promptId],

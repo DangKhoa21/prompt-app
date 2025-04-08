@@ -1,226 +1,120 @@
-// import ConfirmDialog from "@/components/confirm-dialog";
 import SortableItem from "@/components/dnd/drag-and-drop-item";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
+import { cn } from "@/lib/utils";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-// import { useRef} from "react";
 import { v7 } from "uuid";
-
-// function ArrayItem({
-//   itemId,
-//   itemGivenName,
-//   labels,
-//   values,
-//   handleTextareaChange,
-//   handleDeleteItem,
-// }: {
-//   itemId: string;
-//   itemGivenName?: string;
-//   labels: string[];
-//   values: string[];
-//   handleTextareaChange: (id: string, label: number, value: string) => void;
-//   handleDeleteItem: (itemId: string) => void;
-// }) {
-//   const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
-//
-//   const [isEditName, setIsEditName] = useState(false);
-//
-//   const itemNameInputRef = useRef<HTMLInputElement>(null);
-//
-//   const itemIdNumber = itemId.split("-").slice(1).join("-");
-//
-//   return (
-//     <SortableItem itemId={itemId}>
-//       <Dialog>
-//         <DialogTrigger asChild>
-//           <div className="flex w-full h-8 pr-2 gap-2 overflow-hidden justify-between items-center hover:bg-accent">
-//             <div className="truncate">{itemName}</div>
-//             <Badge className="mr-1">View</Badge>
-//           </div>
-//         </DialogTrigger>
-//         <DialogContent
-//           className="w-[800px] max-w-[800px] h-[540px] flex flex-col"
-//           onEscapeKeyDown={(e) => {
-//             if (isEditName) {
-//               e.preventDefault();
-//             }
-//           }}
-//         >
-//           <DialogHeader>
-//             <DialogTitle>
-//               {isEditName ? (
-//                 <Input
-//                   ref={itemNameInputRef}
-//                   value={itemName}
-//                   onChange={(e) => {
-//                     setItemName(e.target.value);
-//                   }}
-//                   onBlur={() => setIsEditName(false)}
-//                   onKeyDown={(e: React.KeyboardEvent) => {
-//                     if (e.key === "Enter" || e.key === "Escape")
-//                       setIsEditName(false);
-//                   }}
-//                   className="basis-4/5"
-//                 />
-//               ) : (
-//                 <div
-//                   onClick={() => {
-//                     setIsEditName(true);
-//                     setTimeout(() => itemNameInputRef.current?.focus(), 0);
-//                   }}
-//                   className="basis-4/5 text-2xl font-semibold p-1 w-full text-wrap hover:bg-accent"
-//                 >
-//                   {itemName}
-//                 </div>
-//               )}
-//             </DialogTitle>
-//             <DialogDescription>
-//               Provide your detail information to help create you desire prompt
-//             </DialogDescription>
-//           </DialogHeader>
-//
-//           <ScrollArea className="h-full w-full">
-//             {values.length ? (
-//               <div className="flex flex-col gap-6 p-2">
-//                 {values.map((value, index) => (
-//                   <div
-//                     key={`Card-${itemId}-${labels[index]}`}
-//                     className="w-full flex flex-row justify-start items-center"
-//                   >
-//                     <div className="text-xl font-semibold basis-1/5">
-//                       {labels[index][0].toUpperCase()}
-//                       {labels[index].slice(1)}:
-//                     </div>
-//                     <Textarea
-//                       placeholder={labels[index]}
-//                       className="min-h-[100px] basis-4/5 border border-slate-500"
-//                       value={value}
-//                       onChange={(e) => {
-//                         handleTextareaChange(itemId, index, e.target.value);
-//                       }}
-//                     ></Textarea>
-//                   </div>
-//                 ))}
-//               </div>
-//             ) : (
-//               <div className="flex flex-col mt-2 items-center">
-//                 This config has no keys
-//               </div>
-//             )}
-//           </ScrollArea>
-//
-//           <DialogFooter>
-//             <div className="flex w-full justify-start">
-//               <ConfirmDialog
-//                 variant="outline"
-//                 className="text-red-500 border-red-500 hover:text-red-400 focus:text-red-400"
-//                 action={() => {
-//                   handleDeleteItem(itemIdNumber.toString());
-//                 }}
-//                 description="This action will delete this item"
-//               >
-//                 Delete
-//               </ConfirmDialog>
-//             </div>
-//           </DialogFooter>
-//         </DialogContent>
-//       </Dialog>
-//     </SortableItem>
-//   );
-// }
 
 function ArrayAccordionItem({
   itemId,
-  itemGivenName,
   labels,
   values,
+  isDraging,
   handleTextareaChange,
-  // handleDeleteItem,
+  handleDeleteItem,
 }: {
   itemId: string;
   itemGivenName?: string;
   labels: string[];
   values: string[];
+  isDraging: boolean;
   handleTextareaChange: (id: string, label: number, value: string) => void;
   handleDeleteItem: (itemId: string) => void;
 }) {
-  const [itemName, setItemName] = useState(`${itemGivenName ?? itemId}`);
-
-  console.log(setItemName);
-
-  // const [isEditName, setIsEditName] = useState(false);
-  //
-  // const itemNameInputRef = useRef<HTMLInputElement>(null);
-
-  // const itemIdNumber = itemId.split("-").slice(1).join("-");
+  const [localIsOpen, setIsOpen] = useState(false);
+  const isOpen = !isDraging && localIsOpen;
 
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <SortableItem itemId={itemId}>
-          <AccordionTrigger className="pr-2">
-            <div className="flex w-full text-wrap h-8 pr-2 gap-2 overflow-hidden justify-between items-center truncate hover:bg-accent">
-              {itemName}
-            </div>
-          </AccordionTrigger>
-        </SortableItem>
-        <AccordionContent>
-          <ScrollArea className="h-full w-full">
-            {values.length ? (
-              <div className="flex flex-col gap-6 p-2">
-                {values.map((value, index) => (
-                  <div
-                    key={`Card-${itemId}-${labels[index]}`}
-                    className="w-full flex flex-col justify-start"
-                  >
-                    <div className="text-xl font-semibold">
-                      {labels[index][0].toUpperCase()}
-                      {labels[index].slice(1)}:
+    <div className={cn(isOpen && "border-2 rounded-md p-1")}>
+      <SortableItem
+        itemId={itemId}
+        className={cn(!isOpen && "border-2 rounded-md p-1")}
+      >
+        <div className="flex w-full justify-between">
+          <div
+            className="flex w-full h-full min-h-8 text-wrap gap-1 overflow-hidden justify-between items-center truncate hover:bg-accent"
+            onClick={() => setIsOpen(!localIsOpen)}
+          >
+            {!isOpen ? (
+              values.length ? (
+                <div className="flex flex-col gap-1">
+                  {values.map((value, index) => (
+                    <div key={`item-${index}`} className="line-clamp-2">
+                      <span className="text-sm font-semibold">
+                        {labels[index][0].toUpperCase()}
+                        {labels[index].slice(1)}:
+                      </span>{" "}
+                      {value}
                     </div>
-                    <Textarea
-                      placeholder={labels[index]}
-                      className="w-full border border-slate-500"
-                      value={value}
-                      onChange={(e) => {
-                        handleTextareaChange(itemId, index, e.target.value);
-                      }}
-                    ></Textarea>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-destructive-foreground">
+                  This config does not have any values
+                </div>
+              )
             ) : (
-              <div className="flex flex-col mt-2 items-center">
-                This config has no keys
-              </div>
+              <div>Opened</div>
             )}
-          </ScrollArea>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+          </div>
+          {isOpen && (
+            <Button
+              variant="ghost"
+              className="w-8 h-8"
+              onClick={() => {
+                const id = itemId.split("-").slice(1).join("-");
+                handleDeleteItem(id);
+              }}
+            >
+              <X />
+            </Button>
+          )}
+        </div>
+      </SortableItem>
+      {isOpen && (
+        <ScrollArea className="h-full w-full">
+          {values.length ? (
+            <div className="flex flex-col gap-2 p-1">
+              {values.map((value, index) => (
+                <div
+                  key={`Card-${itemId}-${labels[index]}`}
+                  className="w-full flex flex-col justify-between gap-2"
+                >
+                  <div className="text-sm font-semibold">
+                    {labels[index][0].toUpperCase()}
+                    {labels[index].slice(1)}:
+                  </div>
+                  <Textarea
+                    placeholder={labels[index]}
+                    className="min-h-[100px] border border-slate-500"
+                    value={value}
+                    onChange={(e) => {
+                      handleTextareaChange(itemId, index, e.target.value);
+                    }}
+                  ></Textarea>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col mt-2 items-center">
+              This config has no keys
+            </div>
+          )}
+        </ScrollArea>
+      )}
+    </div>
   );
 }
 
@@ -239,6 +133,8 @@ export function ArrayConfig({
   values,
   setArrayValues,
 }: ArrayConfigProps) {
+  const [isDraging, setIsDraging] = useState<boolean>(false);
+
   const handleAddItems = () => {
     setArrayValues((prevState) => ({
       ...prevState,
@@ -299,9 +195,19 @@ export function ArrayConfig({
     });
   };
 
+  const onDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    if (!active) return;
+
+    setIsDraging(true);
+  };
+
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!active || !over) return;
+
+    setIsDraging(false);
+
     if (active.id !== over.id) {
       setArrayValues((prev) => {
         const newOrder = [...prev[id]];
@@ -324,7 +230,11 @@ export function ArrayConfig({
 
   return (
     <>
-      <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
         <SortableContext
           items={sortableItems.map((item) => item.id)}
           strategy={verticalListSortingStrategy}
@@ -337,6 +247,7 @@ export function ArrayConfig({
                   itemId={item.id}
                   labels={labels}
                   values={item.data}
+                  isDraging={isDraging}
                   handleTextareaChange={handleTextareaChange}
                   handleDeleteItem={handleDeleteItem}
                 ></ArrayAccordionItem>
@@ -350,11 +261,10 @@ export function ArrayConfig({
         </SortableContext>
       </DndContext>
 
-      <div className="flex justify-end mr-2">
-        <Button variant="ghost" onClick={handleAddItems}>
-          <Plus></Plus>
-        </Button>
-      </div>
+      <Button className="w-full mt-4" onClick={handleAddItems}>
+        <Plus />
+        Add new item
+      </Button>
     </>
   );
 }

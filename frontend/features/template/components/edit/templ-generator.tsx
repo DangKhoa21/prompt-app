@@ -14,13 +14,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { useTemplate } from "@/context/template-context";
+import { ConfigType } from "@/features/template";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Sparkles } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
-import { ConfigType } from "@/features/template";
 
 export function TemplateGenerator() {
   const [input, setInput] = React.useState("");
@@ -83,7 +83,7 @@ export function TemplateGenerator() {
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className="h-8 p-2 text-base font-semibold mr-2 mt-1"
+          className="h-8 p-2 text-base font-semibold"
           onClick={() => {}}
         >
           <Sparkles />

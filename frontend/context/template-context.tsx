@@ -23,11 +23,17 @@ export const useTemplate = () => {
 export const TemplateProvider = ({ children }: { children: ReactNode }) => {
   const [template, setTemplateState] = useState<TemplateWithConfigs>({
     id: "1",
-    title: "",
-    description: "",
-    stringTemplate: "",
+    title: "Template Name",
+    description:
+      "This template is used for writing, brainstorming new idea for your project, ... etc",
+    stringTemplate:
+      "You are a helpful assistant that specializes in creative writing and brainstorming.",
     creatorId: "",
-    tags: [],
+    tags: [
+      { id: "1", name: "Writing" },
+      { id: "2", name: "Project" },
+      { id: "3", name: "Creative" },
+    ],
     configs: [],
   });
 

@@ -7,10 +7,13 @@ import {
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { Dispatch, SetStateAction } from "react";
 
+interface MarketplaceHoverCardProps extends PromptCard {
+  filter?: PromptFilter;
+  setIsHovered: Dispatch<SetStateAction<boolean>>;
+}
+
 export default function MarketplaceHoverCard(
-  marketplaceCardProps: PromptCard & { filter?: PromptFilter } & {
-    setIsHovered: Dispatch<SetStateAction<boolean>>;
-  },
+  marketplaceCardProps: MarketplaceHoverCardProps,
 ) {
   return (
     <HoverCard

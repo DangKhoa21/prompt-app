@@ -5,6 +5,9 @@ export * from "./components/edit/templ-tag";
 export * from "./components/edit/templ-text";
 export * from "./components/edit/templ-generator";
 
+// evaluate
+export * from "./components/evaluate/evaluate-prompt";
+
 // section
 export * from "./components/section/header/templ-header";
 export * from "./components/section/header/templ-id-header";

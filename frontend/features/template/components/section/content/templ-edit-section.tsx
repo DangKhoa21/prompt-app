@@ -1,11 +1,12 @@
 "use client";
 
 import ConfirmDialog from "@/components/confirm-dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTemplate } from "@/context/template-context";
 import {
   ConfigType,
+  EvaluatePrompt,
   TemplateEditTag,
   TemplateEditTextField,
   TemplateGenerator,
@@ -22,7 +23,7 @@ import {
   TemplateConfig,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 // TODO: Handle UI for difference errors
@@ -53,19 +54,22 @@ export function TemplateEditSection({
 
   const isMobile = useIsMobile();
 
+  const [activeTab, setActiveTab] = useState("edit");
+
   const handleParseTemplate = () => {
     const promptTemplate = template.stringTemplate;
     const matches = Array.from(
       new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) || []
-      )
+        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
+          [],
+      ),
     );
 
     const createConfig = (
       id: string,
       label: string,
       type: ConfigType,
-      values: ConfigValue[]
+      values: ConfigValue[],
     ): TemplateConfig => ({
       id: id,
       label,
@@ -84,7 +88,7 @@ export function TemplateEditSection({
                 generateUUID().toString(),
                 name,
                 ConfigType.TEXTAREA,
-                []
+                [],
               )
             );
           })
@@ -120,7 +124,7 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`
+          .join(", ")}`,
       );
       return;
     }
@@ -174,97 +178,116 @@ export function TemplateEditSection({
           ></TemplateEditTag>
         </div>
 
-        <div
-          className={cn(
-            "grid gap-6 h-fit lg:grid-cols-2",
-            open ? "md:grid-cols-1" : "md:grid-cols-2"
-          )}
+        <Tabs
+          defaultValue="edit"
+          value={activeTab}
+          onValueChange={setActiveTab}
         >
-          <div className="h-fit pt-11">
-            {/* <TemplatesConfigTextarea */}
-            {/*   id="systemInstruction" */}
-            {/*   label="System Instruction" */}
-            {/*   placeholder="Enter your System Instruction ..." */}
-            {/*   value={promptData.systemInstruction} */}
-            {/*   setPromptData={setPromptData} */}
-            {/* /> */}
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="edit">Edit Template</TabsTrigger>
+            <TabsTrigger value="evaluate">Evaluate</TabsTrigger>
+          </TabsList>
 
-            <TemplatesConfigTextarea
-              id="stringTemplate"
-              label="Prompt Template"
-              placeholder="Enter your Prompt Template..."
-              value={template.stringTemplate}
-            />
+          <TabsContent value="edit" className="space-y-6">
+            <div
+              className={cn(
+                "py-2 grid gap-6 h-fit lg:grid-cols-2",
+                open ? "md:grid-cols-1" : "md:grid-cols-2",
+              )}
+            >
+              <div
+                className={cn(
+                  "lg:sticky lg:top-3 h-fit",
+                  open ? "" : "sm:sticky sm:top-3",
+                )}
+              >
+                {/* <TemplatesConfigTextarea */}
+                {/*   id="systemInstruction" */}
+                {/*   label="System Instruction" */}
+                {/*   placeholder="Enter your System Instruction ..." */}
+                {/*   value={promptData.systemInstruction} */}
+                {/*   setPromptData={setPromptData} */}
+                {/* /> */}
 
-            {isMobile && (
-              <div className="flex justify-end">
+                <TemplatesConfigTextarea
+                  id="stringTemplate"
+                  label="Prompt Template"
+                  placeholder="Enter your Prompt Template..."
+                  value={template.stringTemplate}
+                />
+
+                {isMobile && (
+                  <div className="flex my-2 justify-end">
+                    <ConfirmDialog
+                      description="This action will convert your variables into prompt configs. Any undeclared variables will be deleted!"
+                      variant="secondary"
+                      action={handleParseTemplate}
+                      className="mr-3"
+                    >
+                      Parse
+                    </ConfirmDialog>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-full">
+                <div className="flex justify-between items-center">
+                  <div className="text-xl font-semibold p-2">Configs</div>
+
+                  <TemplateGenerator />
+                </div>
+
+                <div className="space-y-4 h-fit border rounded-md p-4">
+                  {template.configs.map((config, i) => (
+                    <TemplatesConfigVariable
+                      key={config.id}
+                      index={i}
+                      {...config}
+                      isSidebarOpen={open}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid sticky bottom-0 p-2 bg-background w-full items-center justify-end md:grid-cols-2">
+              {!isMobile && (
+                <div className="flex justify-end">
+                  <ConfirmDialog
+                    description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
+                    variant="secondary"
+                    action={handleParseTemplate}
+                    className="mr-3"
+                  >
+                    Parse
+                  </ConfirmDialog>
+                </div>
+              )}
+              <div className="flex gap-6 justify-end">
                 <ConfirmDialog
-                  description="This action will convert your variables into prompt configs. Any undeclared variables will be deleted!"
+                  description="This action can't be undone. Newest changes will be deleted!"
                   variant="secondary"
-                  action={handleParseTemplate}
-                  className="mr-3"
+                  action={handleReset}
+                  className=""
                 >
-                  Parse
+                  Reset
+                </ConfirmDialog>
+
+                <ConfirmDialog
+                  description="This will save your template. Older configurations will be deleted permanently!"
+                  variant="default"
+                  action={handleSave}
+                  className={"border-primary hover:border-primary"}
+                >
+                  Save
                 </ConfirmDialog>
               </div>
-            )}
-          </div>
-
-          <div className="h-full">
-            <div className="flex justify-between">
-              <div className="text-xl font-semibold p-2">Configs</div>
-
-              <TemplateGenerator />
             </div>
-
-            <ScrollArea className="h-[576px] border rounded-md p-4">
-              <div className="space-y-4">
-                {template.configs.map((config, i) => (
-                  <TemplatesConfigVariable
-                    key={config.id}
-                    index={i}
-                    {...config}
-                    isSidebarOpen={open}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-        </div>
-
-        <div className="grid sticky bottom-0 p-2 bg-background w-full items-center justify-end md:grid-cols-2">
-          {!isMobile && (
-            <div className="flex justify-end">
-              <ConfirmDialog
-                description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
-                variant="secondary"
-                action={handleParseTemplate}
-                className="mr-3"
-              >
-                Parse
-              </ConfirmDialog>
-            </div>
-          )}
-          <div className="flex gap-6 justify-end">
-            <ConfirmDialog
-              description="This action can't be undone. Newest changes will be deleted!"
-              variant="secondary"
-              action={handleReset}
-              className=""
-            >
-              Reset
-            </ConfirmDialog>
-
-            <ConfirmDialog
-              description="This will save your template. Older configurations will be deleted permanently!"
-              variant="default"
-              action={handleSave}
-              className={"border-primary hover:border-primary"}
-            >
-              Save
-            </ConfirmDialog>
-          </div>
-        </div>
+          </TabsContent>
+          <TabsContent value="evaluate" className="space-y-6">
+            <EvaluatePrompt></EvaluatePrompt>
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

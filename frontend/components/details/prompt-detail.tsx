@@ -1,9 +1,9 @@
 "use client";
 
+import PromptHeadDetail from "@/components/details/prompt-detail-comps/prompt-head-detail";
+import PromptResults from "@/components/details/prompt-detail-comps/prompt-results";
 import { cn } from "@/lib/utils";
 import { Prompt, TemplateTag } from "@/services/prompt/interface";
-import PromptHeadDetail from "./prompt-detail-comps/prompt-head-detail";
-import PromptResults from "./prompt-detail-comps/prompt-results";
 import { motion } from "framer-motion";
 
 interface PromptDetailProps {
