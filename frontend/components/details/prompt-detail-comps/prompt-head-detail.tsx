@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/utils";
 import { Prompt, TemplateTag } from "@/services/prompt/interface";
 import Image from "next/image";
 
@@ -49,11 +50,10 @@ export default function PromptHeadDetail({
           </div>
           <div className="flex flex-col gap-2 text-muted-foreground">
             <div className="italic">
-              Created at: {new Date(promptData.createdAt).toLocaleDateString()}
+              Created at {formatDate(promptData.createdAt)}
             </div>
             <div className="italic">
-              Latest update:{" "}
-              {new Date(promptData.updatedAt).toLocaleDateString()}
+              Updated at {formatDate(promptData.updatedAt)}
             </div>
           </div>
         </div>

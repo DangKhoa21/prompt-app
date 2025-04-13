@@ -135,3 +135,14 @@ export async function createEnhancePrompt(prompt: string) {
 
   return data ? data[1].trim() : null;
 }
+
+export async function getPromptsOfCreator(
+  creatorId: string
+): Promise<Array<PromptCard>> {
+  const response = await axiosInstance.get("/prompts", {
+    params: {
+      creatorId: creatorId,
+    },
+  });
+  return response.data.data;
+}

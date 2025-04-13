@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
-import { Settings } from "@/features/setting";
+import { Settings } from "@/features/settings";
 import { getUserProfile } from "@/services/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {

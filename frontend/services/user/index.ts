@@ -11,7 +11,7 @@ export async function updateUserProfile({
   data,
 }: {
   id: string;
-  data: Partial<Pick<User, "username">>;
+  data: Partial<Pick<User, "username" | "bio">>;
 }): Promise<boolean> {
   const response = await axiosInstance.patch(`/users/${id}`, data);
   return response.data.data;

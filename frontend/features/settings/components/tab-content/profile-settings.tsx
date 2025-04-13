@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { AvatarUpload, SettingsEditTextField } from "@/features/setting";
+import { AvatarUpload, SettingsEditTextField } from "@/features/settings";
 import { getUserProfile } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
 import { useUpdateUserProfile } from "../../hooks";
@@ -26,6 +26,15 @@ export function ProfileSettings() {
       updateUserProfileMutation.mutate({
         id: user.id,
         data: { username: value },
+      });
+    }
+  };
+
+  const setBio = (value: string) => {
+    if (user) {
+      updateUserProfileMutation.mutate({
+        id: user.id,
+        data: { bio: value },
       });
     }
   };
@@ -63,6 +72,12 @@ export function ProfileSettings() {
             value={user.username}
             setValue={setUserName}
             label="Username"
+          />
+
+          <SettingsEditTextField
+            value={user.bio ?? ""}
+            setValue={setBio}
+            label="Bio"
           />
 
           <div className="space-y-2">

@@ -59,7 +59,10 @@ export function AvatarUpload({ user }: { user: User }) {
   };
 
   const handleDeleteAvatar = async () => {
-    deleteAvatarMutation.mutate({ id: user.id, previousUrl: user.avatarUrl });
+    deleteAvatarMutation.mutate({
+      id: user.id,
+      previousUrl: user.avatarUrl as string,
+    });
   };
 
   return (
@@ -74,7 +77,10 @@ export function AvatarUpload({ user }: { user: User }) {
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               )}
-              <AvatarImage src={user.avatarUrl} alt={user.username} />
+              <AvatarImage
+                src={user.avatarUrl ?? undefined}
+                alt={user.username}
+              />
               <AvatarFallback>{user.username.slice(0, 2)}</AvatarFallback>
             </Avatar>
 
@@ -96,7 +102,7 @@ export function AvatarUpload({ user }: { user: User }) {
             onClick={handleDeleteAvatar}
             disabled={
               deleteAvatarMutation.isPending ||
-              user.avatarUrl.length === 0 ||
+              user.avatarUrl?.length === 0 ||
               !user.avatarUrl
             }
             className="text-destructive focus:text-destructive"

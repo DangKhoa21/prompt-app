@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, Settings as SettingsIcon } from "lucide-react";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { GeneralSettings, ProfileSettings } from "@/features/setting";
+import { GeneralSettings, ProfileSettings } from "@/features/settings";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   DropdownMenu,
