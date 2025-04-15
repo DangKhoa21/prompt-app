@@ -155,8 +155,10 @@ export async function evaluatePrompt(prompt: string): Promise<string> {
   const data = response.data.match(regex);
 
   return data ? data[1].trim() : null;
+}
+
 export async function getPromptsOfCreator(
-  creatorId: string
+  creatorId: string,
 ): Promise<Array<PromptCard>> {
   const response = await axiosInstance.get("/prompts", {
     params: {
