@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
+import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,11 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
-import { Check, Copy, FileQuestion, Play } from "lucide-react";
-import { useTemplate } from "@/context/template-context";
 import { Label } from "@/components/ui/label";
-import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import {
   Select,
   SelectContent,
@@ -21,12 +19,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
+import { useTemplate } from "@/context/template-context";
+import { cn } from "@/lib/utils";
+import { evaluatePrompt, generateResult } from "@/services/prompt";
+import { useMutation } from "@tanstack/react-query";
+import { Check, Copy, FileQuestion, Play } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface EvaluationResult {
   id: string;
-  // configValues: Record<string, string>;
+  configValues: Record<string, string>;
   prompt: string;
   result: string;
   timestamp: string;
@@ -36,18 +39,64 @@ interface EvaluationResult {
 export function EvaluatePrompt() {
   const { template } = useTemplate();
 
-  const [isEvaluating, setIsEvaluating] = useState(false);
-
+  const [loadingStates, setLoadingStates] = useState({
+    evaluating: false,
+    suggesting: false,
+  });
+  const [previewPrompt, setPreviewPrompt] = useState("");
+  const [openPreview, setOpenPreview] = useState(false);
+  const [improvementSuggestions, setImprovementSuggestions] = useState("");
+  const [noRemainingConfigs, setNoRemainingConfigs] = useState(0);
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
     {},
   );
-
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
   >({});
+  const [evaluationResults, setEvaluationResults] = useState<
+    EvaluationResult[]
+  >([]);
+  const promptResultsRef = useRef<Record<string, HTMLDivElement | null>>({});
+  const suggestImprovePromptRef = useRef<HTMLDivElement>(null);
+
+  const useGeneratePromptResult = () => {
+    return useMutation({
+      mutationFn: generateResult,
+      onSuccess: () => {
+        console.log("Succesfully generate prompt result");
+      },
+      onError: (error: string) => {
+        console.error("Error generating prompt result:", error);
+      },
+    });
+  };
+
+  const useEvaluatePrompt = () => {
+    return useMutation({
+      mutationFn: evaluatePrompt,
+      onSuccess: (res) => {
+        setImprovementSuggestions(res);
+
+        setTimeout(() => {
+          if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
+            suggestImprovePromptRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }, 300);
+      },
+      onError: (error: string) => {
+        console.error("Error evaluating template:", error);
+      },
+    });
+  };
+
+  const { mutateAsync: mutateGenerateResult } = useGeneratePromptResult();
+  const { mutateAsync: mutateEvaluateTemplate } = useEvaluatePrompt();
 
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
@@ -55,10 +104,6 @@ export function EvaluatePrompt() {
       [configLabel]: value,
     }));
   };
-
-  const [evaluationResults, setEvaluationResults] = useState<
-    EvaluationResult[]
-  >([]);
 
   const handleCreateOption = (configLabel: string, inputValue: string) => {
     const newOption = {
@@ -78,38 +123,36 @@ export function EvaluatePrompt() {
     }));
   };
 
-  const handleRunEvaluation = () => {
-    setIsEvaluating(true);
-
-    const stringTemplate = template.stringTemplate;
-    let prompt = stringTemplate;
-
-    template.configs.forEach((config) => {
-      prompt = prompt.replace("$", "");
-      if (config.type === "dropdown" || config.type === "combobox") {
-        if (
-          selectedValues[config.label] &&
-          selectedValues[config.label] !== "None"
-        ) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            selectedValues[config.label],
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "textarea") {
-        if (textareaValues[config.label]) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            textareaValues[config.label],
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "array") {
-        const replaceValue = arrayValues[config.label]
-          ? arrayValues[config.label]
+  // For update Prompt Preview
+  useEffect(() => {
+    const handlePreviewPrompt = () => {
+      let prompt = template.stringTemplate;
+      let remainingConfigs = 0;
+      template.configs.forEach((config) => {
+        if (config.type === "dropdown" || config.type === "combobox") {
+          if (
+            selectedValues[config.label] &&
+            selectedValues[config.label] !== "None"
+          ) {
+            prompt = prompt.replace(
+              `\${${config.label}}`,
+              selectedValues[config.label],
+            );
+          } else {
+            remainingConfigs += 1;
+          }
+        } else if (config.type === "textarea") {
+          if (textareaValues[config.label]) {
+            prompt = prompt.replace(
+              `\${${config.label}}`,
+              textareaValues[config.label],
+            );
+          } else {
+            remainingConfigs += 1;
+          }
+        } else if (config.type === "array") {
+          if (arrayValues[config.label] && arrayValues[config.label].length) {
+            const replaceValue = arrayValues[config.label]
               .map((item, index) =>
                 item.values
                   .map(
@@ -120,54 +163,73 @@ export function EvaluatePrompt() {
                   )
                   .join(""),
               )
-              .join("\n")
-          : "";
+              .join("\n");
 
-        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
+            prompt = prompt.replace(`\${${config.label}}`, `${replaceValue}`);
+          } else {
+            remainingConfigs += 1;
+          }
+        }
+      });
+
+      // Remove only excessive spaces, not newlines "\n"
+      prompt = prompt.replace(/ {2,}/g, " ");
+      prompt = prompt.replace(/\\n/g, "\n");
+
+      setPreviewPrompt(prompt);
+      setNoRemainingConfigs(remainingConfigs);
+    };
+
+    handlePreviewPrompt();
+  }, [
+    arrayValues,
+    selectedValues,
+    template.configs,
+    template.stringTemplate,
+    textareaValues,
+  ]);
+
+  const handleGenerateResult = async () => {
+    setLoadingStates((prev) => ({ ...prev, evaluating: true }));
+
+    const configValues: Record<string, string> = {};
+    template.configs.forEach((config) => {
+      configValues[config.label] = selectedValues[config.label];
+      if (config.type === "dropdown" || config.type === "combobox") {
+      } else if (config.type === "textarea") {
+        configValues[config.label] = textareaValues[config.label];
+      } else if (config.type === "array") {
+        configValues[config.label] = arrayValues[config.label]
+          .map((item, index) =>
+            item.values
+              .map(
+                (value, labelIndex) =>
+                  `${config.values[labelIndex].value} ${index + 1}: ${value}`,
+              )
+              .join("\n"),
+          )
+          .join("\n\n");
       }
     });
 
-    // Remove only excessive spaces, not newlines "\n"
-    prompt = prompt.replace(/ {2,}/g, " ");
-    prompt = prompt.replace(/\\n/g, "\n");
+    const result = await mutateGenerateResult(previewPrompt);
 
     const newResult: EvaluationResult = {
       id: Date.now().toString(),
-      // configValues,
-      prompt: prompt,
-      result: `Here's a response based on your prompt:\n\n"${prompt}"\n\nThis is a simulated AI response that would be generated by running the prompt with the provided configuration values.`,
+      configValues,
+      prompt: previewPrompt,
+      result,
       timestamp: new Date().toISOString(),
     };
 
     setEvaluationResults([...evaluationResults, newResult]);
-    setIsEvaluating(false);
-
-    // // Create a config values object
-    // const configValues: Record<string, string> = {};
-    // template.configs.forEach((config) => {
-    //   configValues[config.label] = config.value;
-    // });
-    //
-    // // In a real app, you would call an API to run the prompt with these configs
-    // // For now, we'll simulate a response after a delay
-    // setTimeout(() => {
-    //   // Generate a mock result
-    //   let processedTemplate = template.stringTemplate;
-    //   Object.entries(configValues).forEach(([key, value]) => {
-    //     processedTemplate = processedTemplate.replace(`\${${key}}`, value);
-    //   });
-    //
-    //   const newResult: EvaluationResult = {
-    //     id: Date.now().toString(),
-    //     configValues,
-    //     prompt: processedTemplate,
-    //     result: `Here's a response based on your prompt: "${processedTemplate}"\n\nThis is a simulated AI response that would be generated by running the prompt with the provided configuration values.`,
-    //     timestamp: new Date().toISOString(),
-    //   };
-    //
-    //   setEvaluationResults([...evaluationResults, newResult]);
-    //   setIsEvaluating(false);
-    // }, 1500);
+    setLoadingStates((prev) => ({ ...prev, evaluating: false }));
+    setTimeout(() => {
+      promptResultsRef.current[newResult.id]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 300);
   };
 
   const handleSelectResult = (resultId: string) => {
@@ -183,14 +245,30 @@ export function EvaluatePrompt() {
     toast.success("Result copied to clipboard");
   };
 
+  const handleSuggestImprovements = async () => {
+    setLoadingStates((prev) => ({ ...prev, suggesting: true }));
+    setImprovementSuggestions("");
+
+    await mutateEvaluateTemplate(template.stringTemplate);
+
+    setLoadingStates((prev) => ({ ...prev, suggesting: false }));
+  };
+
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid py-2 gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">
-                Configuration Values
+              <CardTitle className="text-md font-semibold flex justify-between">
+                <div>Configuration Values</div>
+                <div
+                  className={cn(
+                    noRemainingConfigs ? "text-red-500" : "text-green-500",
+                  )}
+                >
+                  Remaining configs: {noRemainingConfigs}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -267,13 +345,13 @@ export function EvaluatePrompt() {
                 </div>
               ))}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex w-full gap-2">
               <Button
-                className="w-full"
-                onClick={handleRunEvaluation}
-                disabled={isEvaluating}
+                className="flex-1"
+                onClick={handleGenerateResult}
+                disabled={loadingStates.evaluating || noRemainingConfigs !== 0}
               >
-                {isEvaluating ? (
+                {loadingStates.evaluating ? (
                   <>Running...</>
                 ) : (
                   <>
@@ -282,14 +360,64 @@ export function EvaluatePrompt() {
                   </>
                 )}
               </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleSuggestImprovements}
+                disabled={loadingStates.suggesting}
+              >
+                {loadingStates.suggesting ? (
+                  <>Analyzing...</>
+                ) : (
+                  <>Analyze Prompt</>
+                )}
+              </Button>
             </CardFooter>
           </Card>
+
+          {improvementSuggestions && (
+            <Card ref={suggestImprovePromptRef}>
+              <CardHeader>
+                <CardTitle className="text-md font-semibold">
+                  Improvement Suggestions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 rounded-md border whitespace-pre-wrap">
+                  {improvementSuggestions}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-4">
           <Card>
+            <CardHeader
+              className="group cursor-pointer hover:bg-accent"
+              onClick={() => setOpenPreview(!openPreview)}
+            >
+              <CardTitle className="text-md font-semibold flex justify-between">
+                <div>Preview</div>
+                {!openPreview ? (
+                  <div className="italic text-sm font-thin">Click to view</div>
+                ) : (
+                  <div className="italic text-sm font-thin">Click to hide</div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            {openPreview && (
+              <CardContent>
+                <div className="p-4 rounded-md border whitespace-pre-wrap">
+                  {previewPrompt}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-md font-semibold">
                 Evaluation Results
               </CardTitle>
             </CardHeader>
@@ -303,6 +431,9 @@ export function EvaluatePrompt() {
                 evaluationResults.map((result) => (
                   <Card
                     key={result.id}
+                    ref={(el) => {
+                      promptResultsRef.current[result.id] = el;
+                    }}
                     className={`border ${result.selected ? "border-primary" : ""}`}
                   >
                     <CardHeader className="pb-2">
@@ -334,14 +465,16 @@ export function EvaluatePrompt() {
                       <div className="text-xs space-y-2 mb-2">
                         <p className="font-medium">Configuration:</p>
                         <div className="grid grid-cols-2 gap-1">
-                          {/* {Object.entries(result.configValues).map( */}
-                          {/*   ([key, value]) => ( */}
-                          {/*     <div key={key} className="flex"> */}
-                          {/*       <span className="font-medium mr-1">{key}:</span> */}
-                          {/*       <span className="truncate">{value}</span> */}
-                          {/*     </div> */}
-                          {/*   ), */}
-                          {/* )} */}
+                          {Object.entries(result.configValues).map(
+                            ([key, value]) => (
+                              <div key={key} className="flex">
+                                <span className="font-medium mr-1">{key}:</span>
+                                <span className="overflow-auto whitespace-pre-wrap">
+                                  {value}
+                                </span>
+                              </div>
+                            ),
+                          )}
                         </div>
                       </div>
                       <div className="border-t pt-2">

@@ -39,7 +39,7 @@ export default function Loading() {
         <div>
           <Skeleton className="h-10 w-full" />
 
-          <div className="py-2 grid gap-6 lg:grid-cols-2">
+          <div className="py-4 grid gap-6 lg:grid-cols-2">
             <div className="space-y-4 h-fit border rounded-lg p-6">
               <div className="flex justify-between items-center">
                 <Skeleton className="h-6 w-40" />

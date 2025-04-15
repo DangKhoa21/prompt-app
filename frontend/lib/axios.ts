@@ -15,7 +15,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
@@ -27,9 +27,9 @@ axiosInstance.interceptors.response.use(
       }
     }
     return Promise.reject(
-      error.response ? error.response.data : "Something went wrong"
+      error.response ? error.response.data : "Something went wrong",
     );
-  }
+  },
 );
 
 export default axiosInstance;

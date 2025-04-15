@@ -28,6 +28,7 @@ export const TemplateProvider = ({ children }: { children: ReactNode }) => {
       "This template is used for writing, brainstorming new idea for your project, ... etc",
     stringTemplate:
       "You are a helpful assistant that specializes in creative writing and brainstorming.",
+    systemInstruction: "",
     creatorId: "",
     tags: [
       { id: "1", name: "Writing" },

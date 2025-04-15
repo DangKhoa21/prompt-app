@@ -14,37 +14,46 @@ interface DetailsWrapperProps {
 export default async function DetailsWrapper({
   promptId,
 }: DetailsWrapperProps) {
-  const promptData = await getPromptServer(promptId);
-  const [userData, tagsData] = await Promise.all([
-    getUserServer(promptData.creatorId),
-    getTagsForTemplateServer(promptData.id),
-  ]);
+  try {
+    const promptData = await getPromptServer(promptId);
+    const [userData, tagsData] = await Promise.all([
+      getUserServer(promptData.creatorId),
+      getTagsForTemplateServer(promptData.id),
+    ]);
 
-  return (
-    <>
-      <div className="flex flex-col gap-12 p-1 md:p-4">
-        <div className="flex gap-2 flex-col lg:flex-row">
-          <PromptDetail
-            promptData={promptData}
-            tagsData={tagsData}
-            className="lg:basis-3/5 xl:basis-2/3"
-          ></PromptDetail>
-          <UserDetail
-            userData={userData}
-            className="mt-4 md:mt-0 lg:basis-2/5 xl:basis-1/3"
-          ></UserDetail>
+    return (
+      <>
+        <div className="flex flex-col gap-12 p-1 md:p-4">
+          <div className="flex gap-2 flex-col lg:flex-row">
+            <PromptDetail
+              promptData={promptData}
+              tagsData={tagsData}
+              className="lg:basis-3/5 xl:basis-2/3"
+            ></PromptDetail>
+            <UserDetail
+              userData={userData}
+              className="mt-4 md:mt-0 lg:basis-2/5 xl:basis-1/3"
+            ></UserDetail>
+          </div>
         </div>
+        <div className="flex flex-col px-auto gap-4">
+          <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-2 md:ml-16">
+            Related prompts
+          </h2>
+          <PromptCarousels
+            promptId={promptId}
+            creatorId={promptData.creatorId}
+            tagsData={tagsData}
+          ></PromptCarousels>
+        </div>
+      </>
+    );
+  } catch (error) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center text-red-400">
+        <h2 className="text-xl font-bold">Failed to load template.</h2>
+        <p>{(error as Error).message}</p>
       </div>
-      <div className="flex flex-col px-auto gap-4">
-        <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-2 md:ml-16">
-          Related prompts
-        </h2>
-        <PromptCarousels
-          promptId={promptId}
-          creatorId={promptData.creatorId}
-          tagsData={tagsData}
-        ></PromptCarousels>
-      </div>
-    </>
-  );
+    );
+  }
 }

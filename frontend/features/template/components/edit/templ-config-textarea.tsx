@@ -59,19 +59,23 @@ export function TemplatesConfigTextarea({
     <Card className="mb-4">
       <CardHeader className="flex flex-row justify-between items-center">
         <CardTitle className="text-xl font-medium">{label}</CardTitle>
-        <Button
-          variant="ghost"
-          className={cn("h-8 p-2 text-base font-semibold", {
-            "text-muted-foreground": enhancePromptMutation.isPending,
-          })}
-          disabled={enhancePromptMutation.isPending || value.length === 0}
-          onClick={() => {
-            enhancePromptMutation.mutate(value);
-          }}
-        >
-          <Sparkles />
-          {enhancePromptMutation.isPending ? "Enhancing..." : "Enhance Prompt"}
-        </Button>
+        {id === "stringTemplate" && (
+          <Button
+            variant="ghost"
+            className={cn("h-8 p-2 text-base font-semibold", {
+              "text-muted-foreground": enhancePromptMutation.isPending,
+            })}
+            disabled={enhancePromptMutation.isPending || value.length === 0}
+            onClick={() => {
+              enhancePromptMutation.mutate(value);
+            }}
+          >
+            <Sparkles />
+            {enhancePromptMutation.isPending
+              ? "Enhancing..."
+              : "Enhance Prompt"}
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <Textarea

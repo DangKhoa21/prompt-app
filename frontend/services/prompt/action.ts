@@ -1,4 +1,5 @@
 import { PAGE_LIMIT, SERVER_URL, VERSION_PREFIX } from "@/config";
+import { safeAxiosGet, safeAxiosGetPage } from "@/lib/axios-server";
 import {
   PromptCard,
   PromptFilter,
@@ -8,28 +9,16 @@ import {
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
-import axios from "axios";
 
+// Hmmmm
 export async function getPromptServer(id: string): Promise<PromptWithConfigs> {
-  const res = await fetch(`${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch prompt");
-  const json = await res.json();
-  return json.data;
+  return safeAxiosGet(`${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`);
 }
 
 export async function getPromptTemplateServer(
   id: string,
 ): Promise<TemplateWithConfigs> {
-  const res = await fetch(`${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch prompt");
-  const json = await res.json();
-  return json.data;
+  return safeAxiosGet(`${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`);
 }
 
 export async function getPromptsServer({
@@ -41,7 +30,7 @@ export async function getPromptsServer({
 }): Promise<Paginated<PromptCard>> {
   const { tagId, search, creatorId, sort } = filter || {};
 
-  const response = await axios.get(`${SERVER_URL}/${VERSION_PREFIX}/prompts/`, {
+  return safeAxiosGetPage(`${SERVER_URL}/${VERSION_PREFIX}/prompts/`, {
     params: {
       limit: PAGE_LIMIT,
       cursor: pageParam.length > 0 ? pageParam : undefined,
@@ -51,31 +40,15 @@ export async function getPromptsServer({
       sort,
     },
   });
-
-  return response.data;
 }
 
+// Hmmmm
 export async function getTagsServer(): Promise<Tag[]> {
-  const res = await fetch(`${SERVER_URL}/${VERSION_PREFIX}/tags`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch prompt");
-  const json = await res.json();
-  return json.data;
+  return safeAxiosGet(`${SERVER_URL}/${VERSION_PREFIX}/tags`);
 }
 
 export async function getTagsForTemplateServer(
   id: string,
 ): Promise<TemplateTag[]> {
-  const res = await fetch(
-    `${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}/tags`,
-    {
-      cache: "no-store",
-    },
-  );
-
-  if (!res.ok) throw new Error(`Failed to fetch tags for prompt ${id}`);
-  const json = await res.json();
-  return json.data;
+  return safeAxiosGet(`${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}/tags`);
 }

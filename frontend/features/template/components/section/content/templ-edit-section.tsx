@@ -158,7 +158,7 @@ export function TemplateEditSection({
 
   return (
     <>
-      <div className="w-full max-w-5xl mx-auto space-y-6">
+      <div className="w-full max-w-5xl mx-auto pb-6 space-y-6">
         <div className="flex flex-col px-5">
           <TemplateEditTextField
             label="title"
@@ -201,13 +201,12 @@ export function TemplateEditSection({
                   open ? "" : "sm:sticky sm:top-3",
                 )}
               >
-                {/* <TemplatesConfigTextarea */}
-                {/*   id="systemInstruction" */}
-                {/*   label="System Instruction" */}
-                {/*   placeholder="Enter your System Instruction ..." */}
-                {/*   value={promptData.systemInstruction} */}
-                {/*   setPromptData={setPromptData} */}
-                {/* /> */}
+                <TemplatesConfigTextarea
+                  id="systemInstruction"
+                  label="System Instruction"
+                  placeholder="Enter your System Instruction ..."
+                  value={template.systemInstruction ?? ""}
+                />
 
                 <TemplatesConfigTextarea
                   id="stringTemplate"
