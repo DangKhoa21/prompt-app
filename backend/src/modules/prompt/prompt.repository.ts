@@ -5,18 +5,23 @@ import {
   PromptCardRepo,
   PromptCondDTO,
   PromptUpdateDTO,
+  PromptUpdateResultDTO,
   PromptWithConfigs,
   TemplateCard,
 } from './model';
 import { Paginated, PagingDTO } from 'src/shared';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PromptRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async insert(prompt: Prompt): Promise<void> {
+    // exampleResult won't be saved when insert
+    const { exampleResult, ...data } = prompt;
+
     await this.prisma.prompt.create({
-      data: prompt,
+      data,
     });
   }
 
@@ -142,6 +147,17 @@ export class PromptRepository {
     await this.prisma.prompt.update({
       where: { id },
       data: prompt,
+    });
+  }
+
+  async updateResult(id: string, prompt: PromptUpdateResultDTO): Promise<void> {
+    await this.prisma.prompt.update({
+      where: { id },
+      data: {
+        exampleResult: prompt.exampleResult
+          ? (prompt.exampleResult as Prisma.JsonArray)
+          : undefined,
+      },
     });
   }
 

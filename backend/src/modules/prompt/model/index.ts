@@ -9,6 +9,7 @@ export const promptSchema = z.object({
   description: z.string(),
   stringTemplate: z.string(),
   systemInstruction: z.string().nullable().optional(),
+  exampleResult: z.unknown().nullable().optional(),
   creatorId: z.string().uuid(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),
@@ -44,6 +45,13 @@ export const promptUpdateDTOSchema = promptSchema.pick({
 });
 
 export type PromptUpdateDTO = z.infer<typeof promptUpdateDTOSchema>;
+
+export const promptUpdateResultDTOSchema = promptSchema.pick({
+  exampleResult: true,
+  updatedAt: true,
+});
+
+export type PromptUpdateResultDTO = z.infer<typeof promptUpdateResultDTOSchema>;
 
 export type PromptCondDTO = {
   search?: string;

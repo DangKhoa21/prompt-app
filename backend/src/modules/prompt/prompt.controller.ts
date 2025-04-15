@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -20,6 +21,7 @@ import {
 } from 'src/shared';
 import {
   PromptGenDTO,
+  PromptUpdateResultDTO,
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
@@ -98,6 +100,18 @@ export class PromptController {
   ) {
     const { sub: userId } = req.user;
     await this.promptService.update(id, dto, userId);
+    return { data: true };
+  }
+
+  @Patch(':id/result')
+  @UseGuards(JwtAuthGuard)
+  async updateResult(
+    @Request() req: ReqWithRequester,
+    @Param('id') id: string,
+    @Body() dto: PromptUpdateResultDTO,
+  ) {
+    const { sub: userId } = req.user;
+    await this.promptService.updateResult(id, dto, userId);
     return { data: true };
   }
 

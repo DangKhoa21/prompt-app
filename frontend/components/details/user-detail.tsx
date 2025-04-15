@@ -1,8 +1,10 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { getPromptsOfCreator } from "@/services/prompt";
 import { User } from "@/services/user/interface";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import Image from "next/image";
@@ -19,6 +21,15 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
     alt: "Background image",
     sizes: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
   };
+
+  const {
+    data: userPrompts,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["prompts", "creator", userData.id],
+    queryFn: () => getPromptsOfCreator(userData.id),
+  });
 
   return (
     <motion.div
@@ -53,23 +64,21 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
           <div className="text-sm italic">{userData.email}</div>
         </div>
       </div>
-      <div className="mt-4 mx-1 text-base">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </div>
+      <div className="mt-4 mx-1 text-base">{userData.bio}</div>
       <div className="flex flex-col gap-2 mt-4 text-sm italic">
-        <div>7 Prompts</div>
+        <div>{isPending || isError ? "..." : userPrompts.length} Prompts</div>
         <div className="flex justify-start items-center gap-1">
-          10 <Star size={16}></Star>
+          {isPending || isError
+            ? "..."
+            : userPrompts.reduce(
+                (totalStars, prompt) => totalStars + prompt.starCount,
+                0
+              )}{" "}
+          <Star size={16}></Star>
         </div>
       </div>
       <div className="mt-4 text-sm text-muted-foreground italic">
-        Joined at: {new Date(userData.createdAt).toLocaleDateString()}
+        Joined at {formatDate(userData.createdAt)}
       </div>
     </motion.div>
   );

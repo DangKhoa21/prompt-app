@@ -22,7 +22,7 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
 
   const { tagId, search, sort } = searchParams || {
     tagId: "",
-    serach: "",
+    search: "",
     sort: "newest",
   };
   const creatorId = id;

@@ -10,6 +10,7 @@ import { StarModule } from './modules/star/star.module';
 import { TagModule } from './modules/tag/tag.module';
 import { PromptPinModule } from './modules/prompt-pin/prompt-pin.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { OptionModule } from './modules/option/option.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UploadModule } from './modules/upload/upload.module';
     TagModule,
     PromptPinModule,
     UploadModule,
+    OptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

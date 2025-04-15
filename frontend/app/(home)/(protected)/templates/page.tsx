@@ -8,6 +8,7 @@ import {
   TemplatesSearch,
   TemplateGridWrapper,
 } from "@/features/template";
+import { LoadingSpinner } from "@/components/icons";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -26,20 +27,20 @@ export default async function Page(props: {
   const tab = searchParams?.tab || "";
 
   return (
-    <>
+    <div className="flex-1">
       <TemplatesHeader />
 
       <div className="max-w-6xl mx-auto">
         <TemplatesSearch />
 
-        <Suspense fallback={<div>Hello from the other side</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <TagsList />
         </Suspense>
 
-        <Suspense fallback={<div>Hello from the inner side</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
       </div>
-    </>
+    </div>
   );
 }

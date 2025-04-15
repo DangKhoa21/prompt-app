@@ -18,6 +18,7 @@ export const userUpdateDTOSchema = userSchema
   .pick({
     username: true,
     avatarUrl: true,
+    bio: true,
   })
   .partial();
 
