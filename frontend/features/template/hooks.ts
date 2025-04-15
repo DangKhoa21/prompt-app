@@ -3,6 +3,7 @@
 import {
   createPromptTemplate,
   deletePromptTemplate,
+  updatePromptResult,
   updatePromptTemplate,
   updateTag,
 } from "@/services/prompt";
@@ -181,6 +182,29 @@ export const useUnpinPrompt = () => {
     mutationFn: unpinPrompt,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "pinned-prompts"] });
+    },
+    onError: (e) => {
+      console.error(e);
+      if (e.message) {
+        toast.error(e.message);
+      }
+    },
+  });
+};
+
+export const useUpdatePromptResult = () => {
+  const handleUpdatePromptResult = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: string;
+  }) => updatePromptResult(id, data);
+
+  return useMutation({
+    mutationFn: handleUpdatePromptResult,
+    onSuccess: () => {
+      console.log("Update prompt result successfully");
     },
     onError: (e) => {
       console.error(e);

@@ -21,12 +21,12 @@ export async function safeAxiosGet(
   }
 }
 
-export async function safeAxiosGetPage<T>(
+export async function safeAxiosGetPage(
   url: string,
   config?: AxiosRequestConfig | undefined,
 ) {
   try {
-    const response = await axios.get<T>(url, config);
+    const response = await axios.get(url, config);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

@@ -167,3 +167,11 @@ export async function getPromptsOfCreator(
   });
   return response.data.data;
 }
+
+export async function updatePromptResult(id: string, promptResult: string) {
+  const response = await axiosInstance.patch(`/prompts/${id}/result`, {
+    exampleResult: promptResult,
+  });
+
+  return response.data;
+}

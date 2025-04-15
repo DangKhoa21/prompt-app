@@ -26,6 +26,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Check, Copy, FileQuestion, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useUpdatePromptResult } from "../../hooks";
 
 interface EvaluationResult {
   id: string;
@@ -97,6 +98,7 @@ export function EvaluatePrompt() {
 
   const { mutateAsync: mutateGenerateResult } = useGeneratePromptResult();
   const { mutateAsync: mutateEvaluateTemplate } = useEvaluatePrompt();
+  const { mutateAsync: mutateUpdatePromptResult } = useUpdatePromptResult();
 
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
@@ -241,8 +243,22 @@ export function EvaluatePrompt() {
   };
 
   const handleCopyResult = (result: string) => {
-    navigator.clipboard.writeText(result);
-    toast.success("Result copied to clipboard");
+    // navigator.clipboard.writeText(result);
+    // toast.success("Result copied to clipboard");
+
+    const updatePromptResultPromise = mutateUpdatePromptResult({
+      id: template.id,
+      data: result,
+    });
+
+    toast.promise(updatePromptResultPromise, {
+      loading: "Updating prompt result template...",
+      success: "Updating prompt result template successfully",
+      error: (e) => {
+        console.error(e);
+        return "Failed to update prompt result";
+      },
+    });
   };
 
   const handleSuggestImprovements = async () => {
