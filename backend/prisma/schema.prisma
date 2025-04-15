@@ -76,6 +76,7 @@ model Prompt {
   description       String
   stringTemplate    String
   systemInstruction String? // nullable
+  exampleResult     Json? // nullable
   creator           User     @relation(fields: [creatorId], references: [id])
   creatorId         String
   createdAt         DateTime @default(now())
@@ -143,4 +144,9 @@ model PromptPin {
   promptId String
 
   @@id([userId, promptId])
+}
+
+model Option {
+  id     String @id @default(uuid(7))
+  option String @unique
 }

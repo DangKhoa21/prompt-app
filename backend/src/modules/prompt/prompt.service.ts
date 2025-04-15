@@ -21,6 +21,8 @@ import {
   PromptCondDTO,
   PromptCardRepo,
   TemplateCard,
+  PromptUpdateResultDTO,
+  promptUpdateResultDTOSchema,
 } from './model';
 import {
   AppError,
@@ -271,6 +273,31 @@ export class PromptService {
     });
 
     await this.configRepo.deleteMany(deletedConfigIds);
+  }
+
+  async updateResult(
+    id: string,
+    dto: PromptUpdateResultDTO,
+    creatorId: string,
+  ): Promise<void> {
+    const data = promptUpdateResultDTOSchema.parse(dto);
+
+    const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
+
+    if (!existedPrompt) {
+      throw AppError.from(ErrPromptNotFound, 400);
+    }
+
+    if (existedPrompt.creatorId !== creatorId) {
+      throw AppError.from(ErrForbidden, 403);
+    }
+
+    const prompt: PromptUpdateResultDTO = {
+      exampleResult: data.exampleResult,
+      updatedAt: new Date(),
+    };
+
+    await this.promptRepo.updateResult(id, prompt);
   }
 
   async remove(id: string, creatorId: string): Promise<void> {
