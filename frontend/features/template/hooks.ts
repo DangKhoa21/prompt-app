@@ -3,6 +3,8 @@
 import {
   createPromptTemplate,
   deletePromptTemplate,
+  evaluatePrompt,
+  generateResult,
   updatePromptResult,
   updatePromptTemplate,
   updateTag,
@@ -211,6 +213,30 @@ export const useUpdatePromptResult = () => {
       if (e.message) {
         toast.error(e.message);
       }
+    },
+  });
+};
+
+export const useGeneratePromptResult = () => {
+  return useMutation({
+    mutationFn: generateResult,
+    onSuccess: () => {
+      console.log("Succesfully generate prompt result");
+    },
+    onError: (error: string) => {
+      console.error("Error generating prompt result:", error);
+    },
+  });
+};
+
+export const useEvaluatePrompt = (onSuccess: (improvement: string) => void) => {
+  return useMutation({
+    mutationFn: evaluatePrompt,
+    onSuccess: (res) => {
+      onSuccess(res);
+    },
+    onError: (error: string) => {
+      console.error("Error evaluating template:", error);
     },
   });
 };

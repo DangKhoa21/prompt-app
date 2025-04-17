@@ -1,5 +1,6 @@
 "use client";
 
+import { Markdown } from "@/components/markdown";
 import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
 import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { Button } from "@/components/ui/button";
@@ -20,13 +21,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTemplate } from "@/context/template-context";
+import {
+  useEvaluatePrompt,
+  useGeneratePromptResult,
+  useUpdatePromptResult,
+} from "@/features/template";
 import { cn } from "@/lib/utils";
-import { evaluatePrompt, generateResult } from "@/services/prompt";
-import { useMutation } from "@tanstack/react-query";
 import { Check, Copy, FileQuestion, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useUpdatePromptResult } from "../../hooks";
 
 interface EvaluationResult {
   id: string;
@@ -45,7 +48,7 @@ export function EvaluatePrompt() {
     suggesting: false,
   });
   const [previewPrompt, setPreviewPrompt] = useState("");
-  const [openPreview, setOpenPreview] = useState(false);
+  const [openPreview, setOpenPreview] = useState(true);
   const [improvementSuggestions, setImprovementSuggestions] = useState("");
   const [noRemainingConfigs, setNoRemainingConfigs] = useState(0);
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
@@ -63,41 +66,10 @@ export function EvaluatePrompt() {
   const promptResultsRef = useRef<Record<string, HTMLDivElement | null>>({});
   const suggestImprovePromptRef = useRef<HTMLDivElement>(null);
 
-  const useGeneratePromptResult = () => {
-    return useMutation({
-      mutationFn: generateResult,
-      onSuccess: () => {
-        console.log("Succesfully generate prompt result");
-      },
-      onError: (error: string) => {
-        console.error("Error generating prompt result:", error);
-      },
-    });
-  };
-
-  const useEvaluatePrompt = () => {
-    return useMutation({
-      mutationFn: evaluatePrompt,
-      onSuccess: (res) => {
-        setImprovementSuggestions(res);
-
-        setTimeout(() => {
-          if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
-            suggestImprovePromptRef.current.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        }, 300);
-      },
-      onError: (error: string) => {
-        console.error("Error evaluating template:", error);
-      },
-    });
-  };
-
   const { mutateAsync: mutateGenerateResult } = useGeneratePromptResult();
-  const { mutateAsync: mutateEvaluateTemplate } = useEvaluatePrompt();
+  const { mutateAsync: mutateEvaluateTemplate } = useEvaluatePrompt(
+    setImprovementSuggestions,
+  );
   const { mutateAsync: mutateUpdatePromptResult } = useUpdatePromptResult();
 
   const handleSelectChange = (configLabel: string, value: string) => {
@@ -191,6 +163,18 @@ export function EvaluatePrompt() {
     textareaValues,
   ]);
 
+  // Scroll to the improve suggestion if have
+  useEffect(() => {
+    setTimeout(() => {
+      if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
+        suggestImprovePromptRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 300);
+  });
+
   const handleGenerateResult = async () => {
     setLoadingStates((prev) => ({ ...prev, evaluating: true }));
 
@@ -214,24 +198,30 @@ export function EvaluatePrompt() {
       }
     });
 
-    const result = await mutateGenerateResult(previewPrompt);
+    try {
+      const result = await mutateGenerateResult(previewPrompt);
 
-    const newResult: EvaluationResult = {
-      id: Date.now().toString(),
-      configValues,
-      prompt: previewPrompt,
-      result,
-      timestamp: new Date().toISOString(),
-    };
+      const newResult: EvaluationResult = {
+        id: Date.now().toString(),
+        configValues,
+        prompt: previewPrompt,
+        result,
+        timestamp: new Date().toISOString(),
+      };
 
-    setEvaluationResults([...evaluationResults, newResult]);
-    setLoadingStates((prev) => ({ ...prev, evaluating: false }));
-    setTimeout(() => {
-      promptResultsRef.current[newResult.id]?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 300);
+      setEvaluationResults([...evaluationResults, newResult]);
+      setLoadingStates((prev) => ({ ...prev, evaluating: false }));
+      setTimeout(() => {
+        promptResultsRef.current[newResult.id]?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 300);
+    } catch (e) {
+      toast.error("Failed to generate result");
+      console.error("Generate prompt result error: ", e);
+      setLoadingStates((prev) => ({ ...prev, evaluating: false }));
+    }
   };
 
   const handleSelectResult = (resultId: string) => {
@@ -240,15 +230,12 @@ export function EvaluatePrompt() {
       selected: result.id === resultId,
     }));
     setEvaluationResults(updatedResults);
-  };
-
-  const handleCopyResult = (result: string) => {
-    // navigator.clipboard.writeText(result);
-    // toast.success("Result copied to clipboard");
 
     const updatePromptResultPromise = mutateUpdatePromptResult({
       id: template.id,
-      data: result,
+      data: updatedResults.filter((result) => {
+        return result.id === resultId;
+      })[0].prompt,
     });
 
     toast.promise(updatePromptResultPromise, {
@@ -261,6 +248,11 @@ export function EvaluatePrompt() {
     });
   };
 
+  const handleCopyResult = (result: string) => {
+    navigator.clipboard.writeText(result);
+    toast.success("Result copied to clipboard");
+  };
+
   const handleSuggestImprovements = async () => {
     setLoadingStates((prev) => ({ ...prev, suggesting: true }));
     setImprovementSuggestions("");
@@ -271,8 +263,8 @@ export function EvaluatePrompt() {
   };
 
   return (
-    <>
-      <div className="grid py-2 gap-6 md:grid-cols-2">
+    <div className="flex flex-col w-full gap-2 items-center">
+      <div className="flex-1 w-full grid py-2 gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <Card>
             <CardHeader>
@@ -365,7 +357,8 @@ export function EvaluatePrompt() {
               <Button
                 className="flex-1"
                 onClick={handleGenerateResult}
-                disabled={loadingStates.evaluating || noRemainingConfigs !== 0}
+                // disabled={loadingStates.evaluating || noRemainingConfigs !== 0}
+                disabled={loadingStates.evaluating}
               >
                 {loadingStates.evaluating ? (
                   <>Running...</>
@@ -380,7 +373,8 @@ export function EvaluatePrompt() {
                 variant="outline"
                 className="flex-1"
                 onClick={handleSuggestImprovements}
-                disabled={loadingStates.suggesting}
+                // disabled={loadingStates.suggesting}
+                disabled={true}
               >
                 {loadingStates.suggesting ? (
                   <>Analyzing...</>
@@ -400,7 +394,7 @@ export function EvaluatePrompt() {
               </CardHeader>
               <CardContent>
                 <div className="p-4 rounded-md border whitespace-pre-wrap">
-                  {improvementSuggestions}
+                  <Markdown>{improvementSuggestions}</Markdown>
                 </div>
               </CardContent>
             </Card>
@@ -430,82 +424,79 @@ export function EvaluatePrompt() {
               </CardContent>
             )}
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-md font-semibold">
-                Evaluation Results
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 max-h-[500px] overflow-y-auto">
-              {evaluationResults.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  No evaluations yet. Run the prompt with different
-                  configurations to see results.
-                </p>
-              ) : (
-                evaluationResults.map((result) => (
-                  <Card
-                    key={result.id}
-                    ref={(el) => {
-                      promptResultsRef.current[result.id] = el;
-                    }}
-                    className={`border ${result.selected ? "border-primary" : ""}`}
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(result.timestamp).toLocaleString()}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleCopyResult(result.result)}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant={result.selected ? "default" : "ghost"}
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => handleSelectResult(result.id)}
-                          >
-                            <Check className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-xs space-y-2 mb-2">
-                        <p className="font-medium">Configuration:</p>
-                        <div className="grid grid-cols-2 gap-1">
-                          {Object.entries(result.configValues).map(
-                            ([key, value]) => (
-                              <div key={key} className="flex">
-                                <span className="font-medium mr-1">{key}:</span>
-                                <span className="overflow-auto whitespace-pre-wrap">
-                                  {value}
-                                </span>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                      <div className="border-t pt-2">
-                        <p className="text-sm whitespace-pre-wrap">
-                          {result.result}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </CardContent>
-          </Card>
         </div>
       </div>
-    </>
+      <Card className="flex-1 w-full">
+        <CardHeader>
+          <CardTitle className="text-md font-semibold">
+            Evaluation Results
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 max-h-[500px] overflow-y-auto">
+          {evaluationResults.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              No evaluations yet. Run the prompt with different configurations
+              to see results.
+            </p>
+          ) : (
+            evaluationResults.map((result) => (
+              <Card
+                key={result.id}
+                ref={(el) => {
+                  promptResultsRef.current[result.id] = el;
+                }}
+                className={`border ${result.selected ? "border-primary" : ""}`}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(result.timestamp).toLocaleString()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => handleCopyResult(result.result)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant={result.selected ? "default" : "ghost"}
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => handleSelectResult(result.id)}
+                      >
+                        <Check className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-xs space-y-2 mb-2">
+                    <p className="font-medium">Configuration:</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {Object.entries(result.configValues).map(
+                        ([key, value]) => (
+                          <div key={key} className="flex">
+                            <span className="font-medium mr-1">{key}:</span>
+                            <span className="overflow-auto whitespace-pre-wrap">
+                              {value}
+                            </span>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                  <div className="border-t pt-2">
+                    <Markdown>{result.result}</Markdown>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
