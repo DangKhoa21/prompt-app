@@ -10,6 +10,7 @@ export type SendMessageDTO = {
   messages: Array<AiMessage>;
   modelId: string;
   systemInstruction?: string;
+  promptId?: string;
 };
 
 export const chatSchema = z.object({

@@ -32,8 +32,10 @@ export function MarketplacePromptCard({
   creator,
   hasStarred,
   starCount,
+  usageCount,
 }: MarketplacePromptCardProps) {
   const rating = formatRating(starCount);
+  const usage = formatRating(usageCount);
   const detailURL = createPromptDetailURL(id, title);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
@@ -161,7 +163,8 @@ export function MarketplacePromptCard({
                 variant="secondary"
                 className="flex border-2 items-center gap-1 ml-2 bg-transparent hover:bg-transparent text-muted-foreground"
               >
-                <ChartColumn className="h-3 w-3" />0
+                <ChartColumn className="h-3 w-3" />
+                {usage}
               </Badge>
             </div>
           </CardTitle>

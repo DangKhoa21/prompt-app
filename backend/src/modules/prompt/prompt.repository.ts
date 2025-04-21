@@ -161,6 +161,17 @@ export class PromptRepository {
     });
   }
 
+  async increaseUsageCount(id: string): Promise<void> {
+    await this.prisma.prompt.update({
+      where: { id },
+      data: {
+        usageCount: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.prompt.delete({
       where: { id },
