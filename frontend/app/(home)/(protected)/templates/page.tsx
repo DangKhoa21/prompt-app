@@ -1,28 +1,33 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
+// import { LoadingSpinner } from "@/components/icons";
+
+import TagsList from "@/components/tags-list";
+import {
+  TemplatesHeader,
+  TemplatesSearch,
+  TemplateGridWrapper,
+} from "@/features/template";
 import { LoadingSpinner } from "@/components/icons";
-
-import TagsList from "@/components/marketplace/tags-list";
-import { TemplateGridWrapper } from "@/features/template";
-import { TemplatesHeader } from "@/components/templates/templ-header";
-import { TemplatesSearch } from "@/components/templates/templ-search";
 
 export default async function Page(props: {
   searchParams?: Promise<{
     tagId?: string;
     search?: string;
     tab?: string;
+    sort?: "newest" | "oldest" | "most-starred";
   }>;
 }) {
   const searchParams = await props.searchParams;
   const tagId = searchParams?.tagId || "";
   const search = searchParams?.search || "";
-  const filter = { tagId, search };
+  const sort = searchParams?.sort || "newest";
+  const filter = { tagId, search, sort };
 
   const tab = searchParams?.tab || "";
 
   return (
-    <main className="flex-1 bg-background">
+    <div className="flex-1">
       <TemplatesHeader />
 
       <div className="max-w-6xl mx-auto">
@@ -36,6 +41,6 @@ export default async function Page(props: {
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
       </div>
-    </main>
+    </div>
   );
 }

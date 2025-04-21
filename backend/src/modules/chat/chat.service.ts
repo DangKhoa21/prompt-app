@@ -66,7 +66,7 @@ export class ChatService {
     res: Response,
     userId: string | null,
   ) {
-    const { id, messages, modelId } = dto;
+    const { id, messages, modelId, systemInstruction } = dto;
 
     const model = models.find((model) => model.id === modelId);
 
@@ -119,7 +119,7 @@ export class ChatService {
 
         const result = streamText({
           model: customModel(model.apiIdentifier),
-          system: systemPrompt,
+          system: systemInstruction ?? systemPrompt,
           messages: coreMessages,
           onFinish: async ({ response }) => {
             if (userId) {
@@ -154,7 +154,9 @@ export class ChatService {
           },
         });
 
-        result.mergeIntoDataStream(dataStreamWriter);
+        result.mergeIntoDataStream(dataStreamWriter, {
+          sendReasoning: true,
+        });
       },
       onError: (error) => {
         console.error(error);

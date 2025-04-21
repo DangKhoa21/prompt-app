@@ -16,16 +16,19 @@ datasource db {
 // db model
 model User {
   id        String   @id @default(uuid(7))
+  avatarUrl String? // nullable
+  bio       String? // nullable
   username  String
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chats   Chat[]
-  prompts Prompt[]
-  stars   Star[]
-  roles   UserRole[]
+  chats      Chat[]
+  prompts    Prompt[]
+  stars      Star[]
+  roles      UserRole[]
+  promptPins PromptPin[]
 }
 
 model Role {
@@ -68,18 +71,21 @@ model Message {
 }
 
 model Prompt {
-  id             String   @id @default(uuid(7))
-  title          String
-  description    String
-  stringTemplate String
-  creator        User     @relation(fields: [creatorId], references: [id])
-  creatorId      String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                String   @id @default(uuid(7))
+  title             String
+  description       String
+  stringTemplate    String
+  systemInstruction String? // nullable
+  exampleResult     Json? // nullable
+  creator           User     @relation(fields: [creatorId], references: [id])
+  creatorId         String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  tags    PromptTag[]
-  configs PromptConfig[]
-  stars   Star[]
+  tags       PromptTag[]
+  configs    PromptConfig[]
+  stars      Star[]
+  promptPins PromptPin[]
 }
 
 model PromptTag {
@@ -104,6 +110,7 @@ model PromptConfig {
   id        String   @id @default(uuid(7))
   label     String
   type      String
+  info      Json? // nullable
   prompt    Prompt   @relation(fields: [promptId], references: [id])
   promptId  String
   createdAt DateTime @default(now())
@@ -128,4 +135,18 @@ model Star {
   promptId String
 
   @@id([userId, promptId])
+}
+
+model PromptPin {
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  prompt   Prompt @relation(fields: [promptId], references: [id])
+  promptId String
+
+  @@id([userId, promptId])
+}
+
+model Option {
+  id     String @id @default(uuid(7))
+  option String @unique
 }

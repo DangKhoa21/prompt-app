@@ -17,6 +17,8 @@ export const ErrEmailInvalid = new Error('Email is invalid');
 
 export const userSchema = z.object({
   id: z.string().uuid(),
+  avatarUrl: z.string().nullable().optional(),
+  bio: z.string().nullable().optional(),
   username: z
     .string()
     .min(3, ErrUsernameAtLeast3Chars.message)
@@ -32,6 +34,7 @@ export const promptFilterDTOSchema = z.object({
   search: z.string().optional(),
   tagId: z.string().uuid().optional(),
   creatorId: z.string().uuid().optional(),
+  sort: z.enum(['most-starred', 'newest', 'oldest']).optional(),
 });
 
 export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;

@@ -1,0 +1,47 @@
+import PromptDetail from "@/components/details/prompt-detail";
+import PromptCarousels from "@/components/details/prompt-detail-comps/prompt-carousels";
+import UserDetail from "@/components/details/user-detail";
+import {
+  getPromptServer,
+  getTagsForTemplateServer,
+} from "@/services/prompt/action";
+import { getUserServer } from "@/services/user/action";
+
+interface DetailsWrapperProps {
+  promptId: string;
+}
+
+export default async function DetailsWrapper({
+  promptId,
+}: DetailsWrapperProps) {
+  const promptData = await getPromptServer(promptId);
+  const [userData, tagsData] = await Promise.all([
+    getUserServer(promptData.creatorId),
+    getTagsForTemplateServer(promptData.id),
+  ]);
+
+  return (
+    <>
+      <div className="flex flex-col gap-12 p-1 md:p-4">
+        <div className="flex gap-2 flex-col lg:flex-row">
+          <PromptDetail
+            promptData={promptData}
+            tagsData={tagsData}
+            className="lg:basis-3/5 xl:basis-2/3"
+          ></PromptDetail>
+          <UserDetail
+            userData={userData}
+            className="mt-4 md:mt-0 lg:basis-2/5 xl:basis-1/3"
+          ></UserDetail>
+        </div>
+      </div>
+      <div className="flex flex-col px-auto gap-4">
+        <PromptCarousels
+          promptId={promptId}
+          creatorId={promptData.creatorId}
+          tagsData={tagsData}
+        ></PromptCarousels>
+      </div>
+    </>
+  );
+}

@@ -5,17 +5,18 @@ import { useState } from "react";
 
 import { PreviewMessage, ThinkingMessage } from "@/components/message";
 
-import { useChat } from "ai/react";
 import { ChatHeader } from "@/components/chat/chat-header";
-import { MultimodalInput } from "../multimodal-input";
+import { useChat } from "ai/react";
+import { MultimodalInput } from "@/components/chat/multimodal-input";
 
-import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { Overview } from "@/components/overview";
+import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { usePrompt } from "@/context/prompt-context";
 
 export function Chat({
   id,
@@ -30,6 +31,7 @@ export function Chat({
   const router = useRouter();
   const { token, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
+  const { systemInstruction } = usePrompt();
 
   const {
     messages,
@@ -44,7 +46,11 @@ export function Chat({
   } = useChat({
     api: `${SERVER_URL}/${VERSION_PREFIX}/chat`,
     id,
-    body: { id, modelId: selectedModelId },
+    body: {
+      id,
+      modelId: selectedModelId,
+      systemInstruction,
+    },
     initialMessages,
     headers: { Authorization: "Bearer " + token },
     onFinish: () => {
@@ -82,8 +88,12 @@ export function Chat({
         >
           {messages.length === 0 && <Overview />}
 
-          {messages.map((message) => (
-            <PreviewMessage key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <PreviewMessage
+              key={message.id}
+              message={message}
+              isLoading={isLoading && messages.length - 1 === index}
+            />
           ))}
 
           {isLoading &&

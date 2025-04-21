@@ -21,6 +21,8 @@ import {
   PromptCondDTO,
   PromptCardRepo,
   TemplateCard,
+  PromptUpdateResultDTO,
+  promptUpdateResultDTOSchema,
 } from './model';
 import {
   AppError,
@@ -31,6 +33,7 @@ import {
   PromptFilterDTO,
   promptFilterDTOSchema,
 } from 'src/shared';
+import { PromptPinService } from '../prompt-pin/prompt-pin.service';
 
 @Injectable()
 export class PromptService {
@@ -42,6 +45,8 @@ export class PromptService {
     private readonly tagService: TagService,
     @Inject(forwardRef(() => StarService))
     private readonly starService: StarService,
+    @Inject(forwardRef(() => PromptPinService))
+    private readonly promptPinService: PromptPinService,
   ) {}
 
   async create(
@@ -55,6 +60,7 @@ export class PromptService {
       title: data.title,
       description: data.description,
       stringTemplate: data.stringTemplate,
+      systemInstruction: data.systemInstruction ?? null,
       creatorId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -64,6 +70,7 @@ export class PromptService {
       id: config.id,
       label: config.label,
       type: config.type,
+      info: config.info,
       promptId: prompt.id,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -104,6 +111,7 @@ export class PromptService {
         promptIds: promptIdsByTagId,
         creatorId: filter.creatorId,
         search: filter.search,
+        sort: filter.sort,
       },
     );
 
@@ -171,6 +179,7 @@ export class PromptService {
       title: data.title,
       description: data.description,
       stringTemplate: data.stringTemplate,
+      systemInstruction: data.systemInstruction ?? null,
       updatedAt: new Date(),
     };
 
@@ -187,6 +196,7 @@ export class PromptService {
         id: config.id,
         label: config.label,
         type: config.type,
+        info: config.info,
         updatedAt: new Date(),
       }));
 
@@ -201,6 +211,7 @@ export class PromptService {
         id: config.id,
         label: config.label,
         type: config.type,
+        info: config.info,
         promptId: id,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -264,6 +275,31 @@ export class PromptService {
     await this.configRepo.deleteMany(deletedConfigIds);
   }
 
+  async updateResult(
+    id: string,
+    dto: PromptUpdateResultDTO,
+    creatorId: string,
+  ): Promise<void> {
+    const data = promptUpdateResultDTOSchema.parse(dto);
+
+    const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
+
+    if (!existedPrompt) {
+      throw AppError.from(ErrPromptNotFound, 400);
+    }
+
+    if (existedPrompt.creatorId !== creatorId) {
+      throw AppError.from(ErrForbidden, 403);
+    }
+
+    const prompt: PromptUpdateResultDTO = {
+      exampleResult: data.exampleResult,
+      updatedAt: new Date(),
+    };
+
+    await this.promptRepo.updateResult(id, prompt);
+  }
+
   async remove(id: string, creatorId: string): Promise<void> {
     const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
 
@@ -289,6 +325,11 @@ export class PromptService {
     await this.tagService.updateTagsOfPrompt(id, { tagIds: [] }, creatorId);
     try {
       await this.starService.unstar(id, creatorId);
+    } catch (error) {
+      console.log(error); // really not
+    }
+    try {
+      await this.promptPinService.unpin(id, creatorId);
     } catch (error) {
       console.log(error); // really not
     }

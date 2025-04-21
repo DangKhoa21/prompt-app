@@ -1,13 +1,13 @@
 import { Compass, PencilRuler, Plus } from "lucide-react";
 
+import { ModelSelector } from "@/components/model-selector";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
-import { ModelSelector } from "@/components/model-selector";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 import { useWindowSize } from "usehooks-ts";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {

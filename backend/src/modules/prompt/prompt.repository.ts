@@ -5,18 +5,23 @@ import {
   PromptCardRepo,
   PromptCondDTO,
   PromptUpdateDTO,
+  PromptUpdateResultDTO,
   PromptWithConfigs,
   TemplateCard,
 } from './model';
 import { Paginated, PagingDTO } from 'src/shared';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PromptRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async insert(prompt: Prompt): Promise<void> {
+    // exampleResult won't be saved when insert
+    const { exampleResult, ...data } = prompt;
+
     await this.prisma.prompt.create({
-      data: prompt,
+      data,
     });
   }
 
@@ -71,6 +76,7 @@ export class PromptRepository {
           select: {
             id: true,
             username: true,
+            avatarUrl: true,
           },
         },
         stars: {
@@ -91,7 +97,7 @@ export class PromptRepository {
     cond: PromptCondDTO,
   ): Promise<Paginated<PromptCardRepo>> {
     const { cursor, limit } = paging;
-    const { promptIds, creatorId, search } = cond;
+    const { promptIds, creatorId, search, sort } = cond;
 
     let where = {};
     if (promptIds) {
@@ -104,19 +110,24 @@ export class PromptRepository {
       where = { ...where, title: { contains: search, mode: 'insensitive' } };
     }
 
+    let orderBy = {};
+    orderBy = { id: sort === 'oldest' ? 'asc' : 'desc' };
+    if (sort === 'most-starred') {
+      orderBy = { stars: { _count: 'desc' } };
+    }
+
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
-      orderBy: {
-        id: 'desc',
-      },
+      orderBy,
       where,
       include: {
         creator: {
           select: {
             id: true,
             username: true,
+            avatarUrl: true,
           },
         },
         stars: {
@@ -136,6 +147,17 @@ export class PromptRepository {
     await this.prisma.prompt.update({
       where: { id },
       data: prompt,
+    });
+  }
+
+  async updateResult(id: string, prompt: PromptUpdateResultDTO): Promise<void> {
+    await this.prisma.prompt.update({
+      where: { id },
+      data: {
+        exampleResult: prompt.exampleResult
+          ? (prompt.exampleResult as Prisma.JsonArray)
+          : undefined,
+      },
     });
   }
 

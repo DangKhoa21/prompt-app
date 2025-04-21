@@ -29,15 +29,24 @@ export const formatRating = (num: number): string => {
   return num.toString();
 };
 
-export function createPromptDetailURL(title: string, id: string): string {
+export function createPromptDetailURL(id: string, title: string): string {
   const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
-  const detailUrl = `prompts/${formattedTitle}-i${id}`;
+  const detailUrl = `/prompts/${formattedTitle}-pid${id}`;
   return detailUrl;
 }
 
 export function getIdFromDetailURL(url: string): string {
-  const match = url.split("-i");
-  return match[match.length - 1];
+  const match = url.split("-pid");
+  const promptId = match[1];
+  return promptId;
+}
+
+export function formatDate(date: Date): string {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 export function sanitizeResponseMessages(

@@ -1,35 +1,15 @@
+import { ConfigType } from "@/features/template";
+
+// Prompt
 export interface Prompt {
   id: string;
   title: string;
   description: string;
   stringTemplate: string;
+  systemInstruction: string | null;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface PromptCard {
-  id: string;
-  title: string;
-  description: string;
-  stringTemplate: string;
-  creatorId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  creator: {
-    id: string;
-    username: string;
-  };
-  hasStarred: boolean;
-  starCount: number;
-}
-
-export interface PromptTemplate {
-  id: string;
-  title: string;
-  description: string;
-  stringTemplate: string;
-  creatorId: string;
 }
 
 export interface ConfigValue {
@@ -38,12 +18,6 @@ export interface ConfigValue {
   promptConfigId: string;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface TemplateConfigValue {
-  id: string;
-  value: string;
-  promptConfigId: string;
 }
 
 export interface PromptConfig {
@@ -56,23 +30,20 @@ export interface PromptConfig {
   values: ConfigValue[];
 }
 
-export interface TemplateConfig {
-  id: string;
-  label: string;
-  type: string;
-  promptId: string;
-  values: TemplateConfigValue[];
-}
-
 export interface PromptWithConfigs extends Prompt {
   configs: PromptConfig[];
 }
 
-export interface TemplateWithConfigs extends PromptTemplate {
-  tags: TemplateTag[];
-  configs: TemplateConfig[];
+export interface PromptCard extends Prompt {
+  creator: {
+    id: string;
+    username: string;
+  };
+  hasStarred: boolean;
+  starCount: number;
 }
 
+// Creation
 export interface ConfigsValueCreation {
   id: string;
   value: string;
@@ -93,6 +64,36 @@ export interface PromptWithConfigsCreation {
   configs: ConfigsCreation[];
 }
 
+// Template
+export interface PromptTemplate {
+  id: string;
+  title: string;
+  description: string;
+  stringTemplate: string;
+  systemInstruction?: string | null;
+  creatorId: string;
+}
+
+export interface TemplateConfigValue {
+  id: string;
+  value: string;
+  promptConfigId: string;
+}
+
+export interface TemplateConfig {
+  id: string;
+  label: string;
+  type: ConfigType;
+  promptId: string;
+  values: TemplateConfigValue[];
+}
+
+export interface TemplateWithConfigs extends PromptTemplate {
+  tags: TemplateTag[];
+  configs: TemplateConfig[];
+}
+
+// Tag
 export interface Tag {
   id: string;
   name: string;
@@ -105,8 +106,10 @@ export interface TemplateTag {
   name: string;
 }
 
+// Filter
 export interface PromptFilter {
   search?: string;
   tagId?: string;
   creatorId?: string;
+  sort?: "newest" | "oldest" | "most-starred";
 }

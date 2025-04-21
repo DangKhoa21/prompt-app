@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
-
+import { DarkModeSwitch } from "@/components/nav/darkmode-switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -26,22 +18,34 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { Settings } from "@/features/settings";
 import { getUserProfile } from "@/services/user";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  LogOut,
+  Moon,
+  Sparkles,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function NavUser() {
+export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
   const { isMobile } = useSidebar();
   const auth = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: ["user", "profile"],
     queryFn: getUserProfile,
+    enabled: isAuthenticated,
   });
 
   const handleLogout = () => {
     auth.setToken(null);
+    queryClient.removeQueries({ queryKey: ["user", "profile"] });
     router.push("/");
   };
 
@@ -58,14 +62,12 @@ export function NavUser() {
                 {user && <AvatarImage alt={user.username} />}
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
-              {user && (
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {user.username}
-                  </span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              )}
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">
+                  {user ? user.username : "Guest"}
+                </span>
+                <span className="truncate text-xs">{user?.email}</span>
+              </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -81,43 +83,56 @@ export function NavUser() {
                   {user && <AvatarImage alt={user.username} />}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
-                {user && (
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {user.username}
-                    </span>
-                    <span className="truncate text-xs">{user.email}</span>
-                  </div>
-                )}
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {user ? user.username : "Guest"}
+                  </span>
+                  <span className="truncate text-xs">{user?.email}</span>
+                </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem
+                className="cursor-default"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <Moon />
+                Dark Mode
+                <DarkModeSwitch />
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
+
+              {isAuthenticated && (
+                <>
+                  <Settings />
+
+                  <DropdownMenuItem disabled>
+                    <BadgeCheck />
+                    Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    <Bell />
+                    Notifications
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleLogout()}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            {isAuthenticated && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => handleLogout()}>
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

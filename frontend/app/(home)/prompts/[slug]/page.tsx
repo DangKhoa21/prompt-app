@@ -1,3 +1,4 @@
+import DetailsWrapper from "@/components/details/details-wrapper";
 import { getIdFromDetailURL } from "@/lib/utils";
 
 export default async function Page({
@@ -8,5 +9,9 @@ export default async function Page({
   const { slug } = await params;
   const promptId = getIdFromDetailURL(slug);
 
-  return <h1>Accessing prompt with id {promptId} </h1>;
+  return (
+    <>
+      <DetailsWrapper promptId={promptId}></DetailsWrapper>
+    </>
+  );
 }

@@ -3,10 +3,18 @@
 import {
   createPromptTemplate,
   deletePromptTemplate,
+  evaluatePrompt,
+  generateResult,
+  updatePromptResult,
   updatePromptTemplate,
   updateTag,
 } from "@/services/prompt";
-import { PromptCard, PromptFilter } from "@/services/prompt/interface";
+import { pinPrompt, unpinPrompt } from "@/services/prompt-pin";
+import {
+  PromptCard,
+  PromptFilter,
+  TemplateTag,
+} from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
 import { starPrompt, unstarPrompt } from "@/services/star";
 import {
@@ -44,8 +52,16 @@ export const useUpdatePromptTemplate = () => {
 };
 
 export const useUpdateTag = () => {
+  const handleUpdateTags = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: TemplateTag[];
+  }) => updateTag(id, data);
+
   return useMutation({
-    mutationFn: updateTag,
+    mutationFn: handleUpdateTags,
     onSuccess: (res: boolean) => {
       console.log("Updating tags status: ", res);
     },
@@ -95,7 +111,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {
@@ -132,7 +148,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
     },
     onError: (e) => {
@@ -140,6 +156,87 @@ export const useUnstarPrompt = ({
       if (e.message) {
         toast.error(e.message);
       }
+    },
+  });
+};
+
+export const usePinPrompt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: pinPrompt,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", "pinned-prompts"] });
+    },
+    onError: (e) => {
+      console.error(e);
+      if (e.message) {
+        toast.error(e.message);
+      }
+    },
+  });
+};
+
+export const useUnpinPrompt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: unpinPrompt,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", "pinned-prompts"] });
+    },
+    onError: (e) => {
+      console.error(e);
+      if (e.message) {
+        toast.error(e.message);
+      }
+    },
+  });
+};
+
+export const useUpdatePromptResult = () => {
+  const handleUpdatePromptResult = ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: string;
+  }) => updatePromptResult(id, data);
+
+  return useMutation({
+    mutationFn: handleUpdatePromptResult,
+    onSuccess: () => {
+      console.log("Update prompt result successfully");
+    },
+    onError: (e) => {
+      console.error(e);
+      if (e.message) {
+        toast.error(e.message);
+      }
+    },
+  });
+};
+
+export const useGeneratePromptResult = () => {
+  return useMutation({
+    mutationFn: generateResult,
+    onSuccess: () => {
+      console.log("Succesfully generate prompt result");
+    },
+    onError: (error: string) => {
+      console.error("Error generating prompt result:", error);
+    },
+  });
+};
+
+export const useEvaluatePrompt = (onSuccess: (improvement: string) => void) => {
+  return useMutation({
+    mutationFn: evaluatePrompt,
+    onSuccess: (res) => {
+      onSuccess(res);
+    },
+    onError: (error: string) => {
+      console.error("Error evaluating template:", error);
     },
   });
 };

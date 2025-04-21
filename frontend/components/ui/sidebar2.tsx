@@ -18,7 +18,7 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar(second):state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "18rem";
+const SIDEBAR_WIDTH = "20rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
@@ -62,7 +62,7 @@ const SidebarProvider2 = React.forwardRef<
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
@@ -83,7 +83,7 @@ const SidebarProvider2 = React.forwardRef<
         // This sets the cookie to keep the sidebar state.
         document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
       },
-      [setOpenProp, open]
+      [setOpenProp, open],
     );
 
     // Helper to toggle the sidebar.
@@ -123,7 +123,15 @@ const SidebarProvider2 = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [
+        state,
+        open,
+        setOpen,
+        isMobile,
+        openMobile,
+        setOpenMobile,
+        toggleSidebar,
+      ],
     );
 
     return (
@@ -139,7 +147,7 @@ const SidebarProvider2 = React.forwardRef<
             }
             className={cn(
               "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
-              className
+              className,
             )}
             ref={ref}
             {...props}
@@ -149,7 +157,7 @@ const SidebarProvider2 = React.forwardRef<
         </TooltipProvider>
       </SidebarContext2.Provider>
     );
-  }
+  },
 );
 SidebarProvider2.displayName = "SidebarProvider2";
 
@@ -170,7 +178,7 @@ const Sidebar2 = React.forwardRef<
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar2();
 
@@ -179,7 +187,7 @@ const Sidebar2 = React.forwardRef<
         <div
           className={cn(
             "flex h-full w-[--sidebar2-width] flex-col bg-sidebar text-sidebar-foreground",
-            className
+            className,
           )}
           ref={ref}
           {...props}
@@ -226,7 +234,7 @@ const Sidebar2 = React.forwardRef<
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
               ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar2-width-icon)_+_theme(spacing.4))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar2-width-icon]"
+              : "group-data-[collapsible=icon]:w-[--sidebar2-width-icon]",
           )}
         />
         <div
@@ -239,7 +247,7 @@ const Sidebar2 = React.forwardRef<
             variant === "floating" || variant === "inset"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar2-width-icon)_+_theme(spacing.4)_+2px)]"
               : "group-data-[collapsible=icon]:w-[--sidebar2-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
-            className
+            className,
           )}
           {...props}
         >
@@ -252,7 +260,7 @@ const Sidebar2 = React.forwardRef<
         </div>
       </div>
     );
-  }
+  },
 );
 Sidebar2.displayName = "Sidebar2";
 
@@ -303,7 +311,7 @@ const SidebarRail2 = React.forwardRef<
         "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
-        className
+        className,
       )}
       {...props}
     />
@@ -330,7 +338,7 @@ const sidebarMenuButtonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const SidebarMenuButton2 = React.forwardRef<
@@ -351,7 +359,7 @@ const SidebarMenuButton2 = React.forwardRef<
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const Comp = asChild ? Slot : "button";
     const { isMobile, state } = useSidebar2();
@@ -388,7 +396,7 @@ const SidebarMenuButton2 = React.forwardRef<
         />
       </Tooltip>
     );
-  }
+  },
 );
 SidebarMenuButton2.displayName = "SidebarMenuButton2";
 

@@ -2,17 +2,24 @@
 
 import React from "react";
 
-import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
+import { motion } from "framer-motion";
 
+import MarketplaceHoverCard from "@/components/marketplace/market-hover-card";
+import { cn } from "@/lib/utils";
 import { getPrompts } from "@/services/prompt";
-import { PromptFilter } from "@/services/prompt/interface";
+import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import PromptHoverCard from "@/components/prompt/prompt-hover-card";
-import { cn } from "@/lib/utils";
+import { Paginated } from "@/services/shared";
 
-export default function PromptsList({ filter }: { filter: PromptFilter }) {
+export default function PromptsList({
+  initialPrompt,
+  filter,
+}: {
+  initialPrompt: Paginated<PromptCard>;
+  filter: PromptFilter;
+}) {
   const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
@@ -26,7 +33,14 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
     queryKey: ["prompts", filter],
     queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
     initialPageParam: "",
+    initialData: initialPrompt
+      ? {
+          pages: [initialPrompt],
+          pageParams: [""],
+        }
+      : undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
+    staleTime: 1000 * 60 * 5,
   });
 
   React.useEffect(() => {
@@ -35,13 +49,13 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
     }
   }, [fetchNextPage, hasNextPage, inView]);
 
-  if (status === "pending") {
-    return (
-      <div className="flex justify-center items-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
+  // if (status === "pending") {
+  //   return (
+  //     <div className="flex h-full justify-center items-center">
+  //       <LoadingSpinner />
+  //     </div>
+  //   );
+  // }
 
   if (status === "error") {
     return <span>Error: {error.message}</span>;
@@ -59,7 +73,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
       <div
         className={cn(
           "fixed inset-0 bg-background/80 backdrop-blur-[1px] transition-all duration-200 z-10",
-          isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+          isHovered ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
       />
 
@@ -67,7 +81,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.data.map((prompt) => (
-              <PromptHoverCard
+              <MarketplaceHoverCard
                 key={prompt.id}
                 {...prompt}
                 filter={filter}

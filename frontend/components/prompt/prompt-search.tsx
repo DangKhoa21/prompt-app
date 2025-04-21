@@ -2,11 +2,10 @@
 
 import * as React from "react";
 
-import { Search, PencilRuler } from "lucide-react";
+import { PencilRuler, Search } from "lucide-react";
 
-import { LoadingSpinner } from "../icons";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -15,12 +14,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { LoadingSpinner } from "../icons";
 
 import { getPrompts } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useDebounceCallback } from "usehooks-ts";
 import { useSearchParams } from "next/navigation";
 import { useInView } from "react-intersection-observer";
+import { useDebounceCallback } from "usehooks-ts";
 
 export function PromptSearch() {
   const [open, setOpen] = React.useState(false);
@@ -74,6 +74,7 @@ export function PromptSearch() {
   return (
     <>
       <Button
+        id="prompt-search"
         variant="outline"
         className="w-full justify-start text-muted-foreground"
         onClick={() => setOpen(true)}
@@ -107,11 +108,12 @@ export function PromptSearch() {
               {filteredPrompts.map((prompt) => (
                 <CommandItem
                   key={prompt.id}
+                  value={prompt.id}
                   onSelect={() => handlePromptChange(prompt.id)}
                 >
                   <PencilRuler className="mr-2 h-4 w-4" />
                   <div>
-                    <div>{prompt.title}</div>
+                    <div className="line-clamp-2">{prompt.title}</div>
                     <div className="text-xs line-clamp-2">
                       {prompt.description}
                     </div>

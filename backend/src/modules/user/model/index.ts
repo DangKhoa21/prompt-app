@@ -17,6 +17,8 @@ export type UserCreationDTO = z.infer<typeof userCreationDTOSchema>;
 export const userUpdateDTOSchema = userSchema
   .pick({
     username: true,
+    avatarUrl: true,
+    bio: true,
   })
   .partial();
 

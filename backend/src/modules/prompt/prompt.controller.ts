@@ -4,10 +4,12 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
@@ -18,14 +20,21 @@ import {
   ReqWithRequesterOpt,
 } from 'src/shared';
 import {
+  PromptGenDTO,
+  PromptUpdateResultDTO,
   PromptWithConfigsCreationDTO,
   PromptWithConfigsUpdateDTO,
 } from './model';
 import { PromptService } from './prompt.service';
+import { PromptGenService } from './prompt-gen.service';
+import { Response } from 'express';
 
 @Controller('prompts')
 export class PromptController {
-  constructor(private readonly promptService: PromptService) {}
+  constructor(
+    private readonly promptService: PromptService,
+    private readonly promptGenService: PromptGenService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -36,6 +45,27 @@ export class PromptController {
     const { sub: userId } = req.user;
     const data = await this.promptService.create(dto, userId);
     return { data };
+  }
+
+  @Post('generate-template')
+  @UseGuards(JwtAuthGuard)
+  async generateTemplate(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.generateTemplate(dto, res);
+  }
+
+  @Post('enhance')
+  async enhance(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.enhancePrompt(dto, res);
+  }
+
+  @Post('generate-result')
+  async generateResult(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.generatePromptResult(dto, res);
+  }
+
+  @Post('evaluate')
+  async evaluate(@Body() dto: PromptGenDTO, @Res() res: Response) {
+    await this.promptGenService.evaluatePrompt(dto, res);
   }
 
   @Get()
@@ -55,14 +85,6 @@ export class PromptController {
     return result;
   }
 
-  // @Get('templates')
-  // @UseGuards(JwtAuthGuard)
-  // async findAllByUser(@Request() req: ReqWithRequester) {
-  //   const { sub: userId } = req.user;
-  //   const data = await this.promptService.findByUserWithConfigs(userId);
-  //   return { data };
-  // }
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const data = await this.promptService.findOne(id);
@@ -78,6 +100,18 @@ export class PromptController {
   ) {
     const { sub: userId } = req.user;
     await this.promptService.update(id, dto, userId);
+    return { data: true };
+  }
+
+  @Patch(':id/result')
+  @UseGuards(JwtAuthGuard)
+  async updateResult(
+    @Request() req: ReqWithRequester,
+    @Param('id') id: string,
+    @Body() dto: PromptUpdateResultDTO,
+  ) {
+    const { sub: userId } = req.user;
+    await this.promptService.updateResult(id, dto, userId);
     return { data: true };
   }
 
