@@ -28,7 +28,7 @@ export default function PromptCarousels({
           getPrompts({
             pageParam: "",
             filter: { tagId: tag.id },
-          }),
+          })
         ),
         getPrompts({
           pageParam: "",
@@ -64,10 +64,14 @@ export default function PromptCarousels({
 
   return (
     <div className="w-max mx-auto">
+      <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-4">
+        Related prompts
+      </h2>
+
       {data.relatedPrompts.map((promptsData, index) => (
         <PromptCarousel
           key={relatedTags[index].id}
-          label={`Prompts with same tag: ${relatedTags[index].name}`}
+          label={`${relatedTags[index].name}`}
           promptId={promptId}
           carouselPrompts={promptsData}
           filter={{ tagId: relatedTags[index].id }}
