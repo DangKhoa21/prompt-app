@@ -61,6 +61,7 @@ export class PromptService {
       description: data.description,
       stringTemplate: data.stringTemplate,
       systemInstruction: data.systemInstruction ?? null,
+      usageCount: 0,
       creatorId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -298,6 +299,16 @@ export class PromptService {
     };
 
     await this.promptRepo.updateResult(id, prompt);
+  }
+
+  async increaseUsageCount(id: string): Promise<void> {
+    const existedPrompt = await this.promptRepo.findByIdWithConfigs(id);
+
+    if (!existedPrompt) {
+      throw AppError.from(ErrPromptNotFound, 400);
+    }
+
+    await this.promptRepo.increaseUsageCount(id);
   }
 
   async remove(id: string, creatorId: string): Promise<void> {

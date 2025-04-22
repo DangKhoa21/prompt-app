@@ -5,6 +5,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -57,10 +59,10 @@ export default function PromptCarousel({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ delay: 0.3 }}
-      className="w-max"
+      className="w-full my-4"
     >
-      <div className="w-max flex flex-col gap-4">
-        <div className="text-xl font-semibold text-wrap">{label} prompts</div>
+      <div className="w-full flex flex-col gap-4">
+        <div className="ml-4 text-xl font-semibold">{label}</div>
         <Carousel
           className={cn(
             "w-full max-w-[359px]",
@@ -74,12 +76,26 @@ export default function PromptCarousel({
             dragThreshold: 3,
           }}
         >
-          <CarouselContent className="w-full">
+          <div className="absolute right-0 -top-14 flex space-x-2 z-10">
+            <CarouselPrevious
+              variant="outline"
+              className="static h-8 w-8 translate-x-0 translate-y-0"
+            />
+            <CarouselNext
+              variant="outline"
+              className="static h-8 w-8 translate-x-0 translate-y-0"
+            />
+          </div>
+
+          <CarouselContent className="w-full p-2">
             {carouselData.map((prompt) => (
-              <CarouselItem key={prompt.id} className="basis-auto min-w-fit">
+              <CarouselItem
+                key={prompt.id}
+                className="md:basis-1/2 lg:basis-1/3 px-2 py-4 md:px-4"
+              >
                 <MarketplacePromptCard
                   {...prompt}
-                  variant="carousel"
+                  variant="default"
                   filter={filter}
                 />
               </CarouselItem>

@@ -61,7 +61,7 @@ export function TemplatesConfigVariable({
               ...config,
               type: ConfigType[type.toUpperCase() as keyof typeof ConfigType],
             }
-          : config,
+          : config
       ),
     };
 
@@ -70,7 +70,7 @@ export function TemplatesConfigVariable({
 
   const handleAddConfigValue = (
     event: React.FormEvent | React.KeyboardEvent,
-    configId: string,
+    configId: string
   ) => {
     event.preventDefault();
 
@@ -97,7 +97,7 @@ export function TemplatesConfigVariable({
                 { id: v7(), value: value, promptConfigId: id },
               ],
             }
-          : config,
+          : config
       ),
     };
 
@@ -116,6 +116,17 @@ export function TemplatesConfigVariable({
       >
         <CardTitle className="text-base font-semibold flex justify-between items-center">
           <div>Config {label}</div>
+
+          {!isOpen ? (
+            <div className="italic text-sm font-thin cursor-default">
+              Click to add
+            </div>
+          ) : (
+            <div className="italic text-sm font-thin cursor-default">
+              Click to hide
+            </div>
+          )}
+
           <Select
             onValueChange={(value) => {
               const handledValue =
@@ -159,7 +170,7 @@ export function TemplatesConfigVariable({
                     <p className="text-sm text-gray-600">[{label}] values</p>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end p-2">
                           <Button variant="ghost" size="icon" className="mr-1">
                             <Plus className="w-4 h-4" />
                           </Button>

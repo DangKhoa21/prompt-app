@@ -44,6 +44,13 @@ export default async function DetailsWrapper({
           />
         </div>
       </div>
+      <div className="flex flex-col px-auto gap-4">
+        <PromptCarousels
+          promptId={promptId}
+          creatorId={promptData.creatorId}
+          tagsData={tagsData}
+        ></PromptCarousels>
+      </div>
     </>
   );
 }

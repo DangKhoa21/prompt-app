@@ -39,8 +39,8 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
       <div className="max-w-screen-xl self-center items-center">
         <UserDetail userData={userData} className="mt-2 mx-8"></UserDetail>
 
-        <div className="max-w-6xl mx-auto mt-4">
-          <MarketSearch />
+      <div className="max-w-6xl mx-auto mt-4">
+        <MarketSearch showTitle={false} />
 
           <Suspense fallback={<LoadingSpinner />}>
             <TagsList />

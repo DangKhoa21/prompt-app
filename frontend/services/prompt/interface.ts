@@ -8,6 +8,7 @@ export interface Prompt {
   stringTemplate: string;
   systemInstruction: string | null;
   exampleResult: JSON | null;
+  usageCount: number;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;
