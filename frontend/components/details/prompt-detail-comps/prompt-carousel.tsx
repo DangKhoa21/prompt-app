@@ -65,10 +65,10 @@ export default function PromptCarousel({
         <div className="ml-4 text-xl font-semibold">{label}</div>
         <Carousel
           className={cn(
-            "w-full max-w-[360px]",
+            "w-full max-w-[359px]",
             open
-              ? "md:max-w-[30rem] lg:max-w-[45rem] xl:max-w-[60rem] 2xl:max-w-[75rem]"
-              : "md:max-w-[40rem] lg:max-w-[55rem] xl:max-w-[70rem] 2xl:max-w-[85rem]"
+              ? "md:max-w-[28rem] lg:max-w-[44rem] xl:max-w-[60rem] 2xl:max-w-[76rem]"
+              : "md:max-w-[41rem] lg:max-w-[57rem] xl:max-w-[73rem] 2xl:max-w-[89rem]",
           )}
           opts={{
             align: "start",

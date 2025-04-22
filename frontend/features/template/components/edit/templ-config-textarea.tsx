@@ -57,7 +57,7 @@ export function TemplatesConfigTextarea({
 
   return (
     <Card className="mb-4">
-      <CardHeader className="flex flex-row justify-between items-center">
+      <CardHeader className="flex flex-row justify-between items-center space-y-0">
         <CardTitle className="text-xl font-medium">{label}</CardTitle>
         {id === "stringTemplate" && (
           <Button

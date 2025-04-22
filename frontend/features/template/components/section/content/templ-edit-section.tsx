@@ -157,19 +157,19 @@ export function TemplateEditSection({
   };
 
   return (
-    <>
-      <div className="w-full max-w-5xl mx-auto pb-6 space-y-6">
-        <div className="flex flex-col px-5">
+    <div className="w-full bg-background/90 px-2 pt-2">
+      <div className="w-full max-w-5xl bg-background mx-auto space-y-6">
+        <div className="flex flex-col gap-4">
           <TemplateEditTextField
             label="title"
             text={template.title}
-            className="text-2xl font-semibold"
+            className=""
           />
 
           <TemplateEditTextField
             label="description"
             text={template.description}
-            className="text-muted-foreground text-lg"
+            className="text-muted-foreground"
           />
 
           <TemplateEditTag
@@ -183,15 +183,15 @@ export function TemplateEditSection({
           value={activeTab}
           onValueChange={setActiveTab}
         >
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="sticky top-14 z-20 grid w-full grid-cols-2">
             <TabsTrigger value="edit">Edit Template</TabsTrigger>
             <TabsTrigger value="evaluate">Evaluate</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="edit" className="space-y-6">
+          <TabsContent value="edit" className="p-1 space-y-6">
             <div
               className={cn(
-                "py-2 grid gap-6 h-fit lg:grid-cols-2",
+                "bg-background py-2 grid gap-6 h-fit lg:grid-cols-2",
                 open ? "md:grid-cols-1" : "md:grid-cols-2",
               )}
             >
@@ -248,46 +248,49 @@ export function TemplateEditSection({
                 </div>
               </div>
             </div>
-
-            <div className="grid sticky bottom-0 p-2 bg-background w-full items-center justify-end md:grid-cols-2">
-              {!isMobile && (
-                <div className="flex justify-end">
-                  <ConfirmDialog
-                    description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
-                    variant="secondary"
-                    action={handleParseTemplate}
-                    className="mr-3"
-                  >
-                    Parse
-                  </ConfirmDialog>
-                </div>
-              )}
-              <div className="flex gap-6 justify-end">
-                <ConfirmDialog
-                  description="This action can't be undone. Newest changes will be deleted!"
-                  variant="secondary"
-                  action={handleReset}
-                  className=""
-                >
-                  Reset
-                </ConfirmDialog>
-
-                <ConfirmDialog
-                  description="This will save your template. Older configurations will be deleted permanently!"
-                  variant="default"
-                  action={handleSave}
-                  className={"border-primary hover:border-primary"}
-                >
-                  Save
-                </ConfirmDialog>
-              </div>
-            </div>
           </TabsContent>
-          <TabsContent value="evaluate" className="space-y-6">
+          <TabsContent value="evaluate" className="p-1 space-y-6">
             <EvaluatePrompt></EvaluatePrompt>
           </TabsContent>
         </Tabs>
       </div>
-    </>
+      {activeTab === "edit" && (
+        <div className="bg-background/90 sticky bottom-0 py-2 flex justify-center items-center">
+          <div className="grid w-full max-w-5xl items-center justify-end md:grid-cols-2">
+            {!isMobile && (
+              <div className="flex">
+                <ConfirmDialog
+                  description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
+                  variant="secondary"
+                  action={handleParseTemplate}
+                  className="mr-3"
+                >
+                  Parse
+                </ConfirmDialog>
+              </div>
+            )}
+            <div className="flex gap-6 justify-end">
+              <ConfirmDialog
+                description="This action can't be undone. Newest changes will be deleted!"
+                variant="secondary"
+                action={handleReset}
+                className=""
+              >
+                Reset
+              </ConfirmDialog>
+
+              <ConfirmDialog
+                description="This will save your template. Older configurations will be deleted permanently!"
+                variant="default"
+                action={handleSave}
+                className={"border-primary hover:border-primary"}
+              >
+                Save
+              </ConfirmDialog>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -36,8 +36,8 @@ export function EditTextField({
   };
 
   return (
-    <div className="w-full flex flex-row justify-start items-center m-1">
-      <div className={cn("text-xl font-semibold basis-1/5", className)}>
+    <div className="w-full flex flex-col gap-1 md:gap-0 md:flex-row justify-start md:items-center">
+      <div className={cn("text-xl font-semibold md:basis-1/5", className)}>
         {label[0].toUpperCase()}
         {label.slice(1)}
       </div>
@@ -48,13 +48,13 @@ export function EditTextField({
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className={cn("basis-4/5", className)}
+          className={cn("md:basis-4/5", className)}
         />
       ) : (
         <div
           onClick={handleEdit}
           className={cn(
-            "basis-4/5 text-2xl font-semibold p-2 w-full text-wrap rounded-md",
+            "md:basis-4/5 text-lg font-normal p-2 w-full text-wrap rounded-md",
             editable ? " hover:bg-accent" : "",
             className,
           )}

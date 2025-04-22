@@ -7,6 +7,7 @@ export interface Prompt {
   description: string;
   stringTemplate: string;
   systemInstruction: string | null;
+  exampleResult: JSON | null;
   usageCount: number;
   creatorId: string;
   createdAt: Date;
