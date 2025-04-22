@@ -11,7 +11,11 @@ export default async function Page({
 
   return (
     <>
-      <DetailsWrapper promptId={promptId}></DetailsWrapper>
+      <div className="min-h-screen">
+        <div className="p-2 md:p-8 bg-muted">
+          <DetailsWrapper promptId={promptId}></DetailsWrapper>
+        </div>
+      </div>
     </>
   );
 }

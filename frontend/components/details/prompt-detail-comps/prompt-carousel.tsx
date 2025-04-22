@@ -57,16 +57,16 @@ export default function PromptCarousel({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ delay: 0.3 }}
-      className="w-max my-4"
+      className="w-max"
     >
       <div className="w-max flex flex-col gap-4">
-        <div className="ml-4 text-xl font-semibold">{label} prompts</div>
+        <div className="text-xl font-semibold text-wrap">{label} prompts</div>
         <Carousel
           className={cn(
-            "w-full max-w-[360px]",
+            "w-full max-w-[359px]",
             open
-              ? "md:max-w-[30rem] lg:max-w-[45rem] xl:max-w-[60rem] 2xl:max-w-[75rem]"
-              : "md:max-w-[40rem] lg:max-w-[55rem] xl:max-w-[70rem] 2xl:max-w-[85rem]",
+              ? "md:max-w-[28rem] lg:max-w-[44rem] xl:max-w-[60rem] 2xl:max-w-[76rem]"
+              : "md:max-w-[41rem] lg:max-w-[57rem] xl:max-w-[73rem] 2xl:max-w-[89rem]",
           )}
           opts={{
             align: "start",

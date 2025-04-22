@@ -6,6 +6,7 @@ import {
   getTagsForTemplateServer,
 } from "@/services/prompt/action";
 import { getUserServer } from "@/services/user/action";
+import PromptOverview from "./prompt-detail-comps/prompt-overview";
 
 interface DetailsWrapperProps {
   promptId: string;
@@ -22,28 +23,26 @@ export default async function DetailsWrapper({
 
   return (
     <>
-      <div className="flex flex-col gap-12 p-1 md:p-4">
-        <div className="flex gap-2 flex-col lg:flex-row">
+      <div className="max-w-screen-2xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <PromptDetail
             promptData={promptData}
-            tagsData={tagsData}
-            className="lg:basis-3/5 xl:basis-2/3"
-          ></PromptDetail>
-          <UserDetail
             userData={userData}
-            className="mt-4 md:mt-0 lg:basis-2/5 xl:basis-1/3"
-          ></UserDetail>
+            tagsData={tagsData}
+            className="lg:col-span-2 space-y-6"
+          />
+          <div className="space-y-6">
+            <PromptOverview promptData={promptData} />
+            <UserDetail userData={userData} className="mt-4 md:mt-0" />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col px-auto gap-4">
-        <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-2 md:ml-16">
-          Related prompts
-        </h2>
-        <PromptCarousels
-          promptId={promptId}
-          creatorId={promptData.creatorId}
-          tagsData={tagsData}
-        ></PromptCarousels>
+        <div className="flex flex-col">
+          <PromptCarousels
+            promptId={promptId}
+            creatorId={promptData.creatorId}
+            tagsData={tagsData}
+          />
+        </div>
       </div>
     </>
   );

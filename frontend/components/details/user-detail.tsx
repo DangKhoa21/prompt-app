@@ -38,7 +38,10 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.3 }}
-      className={cn("md:border-2 md:rounded-lg md:p-4 h-fit", className)}
+      className={cn(
+        "max-w-4xl md:border-2 md:rounded-lg md:p-4 h-fit",
+        className,
+      )}
     >
       <div className="relative w-full h-32">
         <Image
@@ -72,7 +75,7 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
             ? "..."
             : userPrompts.reduce(
                 (totalStars, prompt) => totalStars + prompt.starCount,
-                0
+                0,
               )}{" "}
           <Star size={16}></Star>
         </div>

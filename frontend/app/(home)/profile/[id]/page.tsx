@@ -1,4 +1,3 @@
-import { DetailsHeader } from "@/components/details/details-header";
 import UserDetail from "@/components/details/user-detail";
 import { LoadingSpinner } from "@/components/icons";
 import { MarketSearch } from "@/components/marketplace/market-search";
@@ -37,17 +36,18 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
 
   return (
     <>
-      <DetailsHeader pageName={"Profile detail"}></DetailsHeader>
-      <UserDetail userData={userData} className="mt-2 mx-8"></UserDetail>
+      <div className="max-w-screen-xl self-center items-center">
+        <UserDetail userData={userData} className="mt-2 mx-8"></UserDetail>
 
-      <div className="max-w-6xl mx-auto mt-4">
-        <MarketSearch />
+        <div className="max-w-6xl mx-auto mt-4">
+          <MarketSearch />
 
-        <Suspense fallback={<LoadingSpinner />}>
-          <TagsList />
-        </Suspense>
+          <Suspense fallback={<LoadingSpinner />}>
+            <TagsList />
+          </Suspense>
 
-        <PromptsList initialPrompt={initialPrompt} filter={filter} />
+          <PromptsList initialPrompt={initialPrompt} filter={filter} />
+        </div>
       </div>
     </>
   );

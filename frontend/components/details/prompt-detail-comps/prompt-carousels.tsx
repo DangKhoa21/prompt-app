@@ -63,11 +63,11 @@ export default function PromptCarousels({
   }
 
   return (
-    <div className="w-max mx-auto">
+    <div className="w-max mx-auto space-y-4">
       {data.relatedPrompts.map((promptsData, index) => (
         <PromptCarousel
           key={relatedTags[index].id}
-          label={`Prompts with same tag: ${relatedTags[index].name}`}
+          label={`Tag: ${relatedTags[index].name}`}
           promptId={promptId}
           carouselPrompts={promptsData}
           filter={{ tagId: relatedTags[index].id }}
