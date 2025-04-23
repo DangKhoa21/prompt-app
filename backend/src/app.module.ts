@@ -11,6 +11,7 @@ import { TagModule } from './modules/tag/tag.module';
 import { PromptPinModule } from './modules/prompt-pin/prompt-pin.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { OptionModule } from './modules/option/option.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { OptionModule } from './modules/option/option.module';
     PromptPinModule,
     UploadModule,
     OptionModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
