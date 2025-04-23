@@ -1,5 +1,6 @@
 "use client";
 
+import { Markdown } from "@/components/markdown";
 import {
   Accordion,
   AccordionContent,
@@ -113,7 +114,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
               value={expanded || ""}
               onValueChange={(val) => setExpanded(val || null)}
             >
-              {[...Array(10)].map((_, i) => {
+              {[...Array(1)].map((_, i) => {
                 const itemKey = `item-${i}`;
                 return (
                   <AccordionItem key={`test-${itemKey}`} value={itemKey}>
@@ -122,61 +123,17 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                         itemRefs.current[itemKey] = el;
                       }}
                     >
-                      <AccordionTrigger>Result {i + 1}</AccordionTrigger>
+                      <AccordionTrigger>Example Result</AccordionTrigger>
                     </div>
                     <AccordionContent>
                       <ScrollArea className="border rounded-lg m-2 p-4 md:p-8 h-[32rem]">
-                        <div>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit. Praesent commodo cursus magna, vel scelerisque
-                          nisl consectetur et. Donec sed odio dui. Nulla vitae
-                          elit libero, a pharetra augue. Nullam id dolor id nibh
-                          ultricies vehicula ut id elit. Curabitur blandit
-                          tempus porttitor. Integer posuere erat a ante
-                          venenatis dapibus posuere velit aliquet.Lorem ipsum
-                          dolor sit amet, consectetur adipiscing elit. Praesent
-                          commodo cursus magna, vel scelerisque nisl consectetur
-                          et. Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit. Praesent commodo
-                          cursus magna, vel scelerisque nisl consectetur et.
-                          Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit. Praesent commodo
-                          cursus magna, vel scelerisque nisl consectetur et.
-                          Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit. Praesent commodo
-                          cursus magna, vel scelerisque nisl consectetur et.
-                          Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit. Praesent commodo
-                          cursus magna, vel scelerisque nisl consectetur et.
-                          Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit. Praesent commodo
-                          cursus magna, vel scelerisque nisl consectetur et.
-                          Donec sed odio dui. Nulla vitae elit libero, a
-                          pharetra augue. Nullam id dolor id nibh ultricies
-                          vehicula ut id elit. Curabitur blandit tempus
-                          porttitor. Integer posuere erat a ante venenatis
-                          dapibus posuere velit aliquet.
-                        </div>
+                        <Markdown>
+                          {JSON.stringify(
+                            promptData.exampleResult ?? "No result",
+                          )
+                            .replace(/^"(.*)"$/, "$1")
+                            .replace(/\\n/g, "\n")}
+                        </Markdown>
                       </ScrollArea>
                     </AccordionContent>
                   </AccordionItem>
@@ -184,7 +141,6 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
               })}
             </Accordion>
           </ScrollArea>
-          <div>{JSON.stringify(promptData.exampleResult ?? "No result")}</div>
           {/* {promptData.examples.map((example) => ( */}
           {/*   <div key={example.id} className="space-y-4"> */}
           {/*     <h3 className="font-medium">{example.title}</h3> */}

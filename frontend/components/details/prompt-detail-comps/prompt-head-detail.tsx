@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { Prompt, TemplateTag } from "@/services/prompt/interface";
 import { User } from "@/services/user/interface";
-import { BookmarkPlus, Heart, Share2 } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import { useState } from "react";
 
 interface PromptHeadDetailProps {
@@ -53,11 +53,11 @@ export default function PromptHeadDetail({
                 className={`h-4 w-4 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
               />
             </Button>
-            <Button variant="outline" size="icon" onClick={handleSave}>
-              <BookmarkPlus
-                className={`h-4 w-4 ${isSaved ? "fill-primary text-primary" : ""}`}
-              />
-            </Button>
+            {/* <Button variant="outline" size="icon" onClick={handleSave}> */}
+            {/*   <BookmarkPlus */}
+            {/*     className={`h-4 w-4 ${isSaved ? "fill-primary text-primary" : ""}`} */}
+            {/*   /> */}
+            {/* </Button> */}
             <Button variant="outline" size="icon" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
             </Button>
@@ -94,21 +94,19 @@ export default function PromptHeadDetail({
                 {/*     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /> */}
                 {/*   </svg> */}
                 {/* )} */}
-                <svg
-                  className="h-4 w-4 text-blue-500"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                </svg>
+
+                {/* <svg */}
+                {/*   className="h-4 w-4 text-blue-500" */}
+                {/*   fill="currentColor" */}
+                {/*   viewBox="0 0 24 24" */}
+                {/* > */}
+                {/*   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /> */}
+                {/* </svg> */}
               </div>
-              <p className="text-sm text-muted-foreground">
-                @{userData.username}
-              </p>
+              <p className="text-sm text-muted-foreground">{userData.email}</p>
             </div>
           </div>
           <div className="flex flex-col gap-2 text-sm text-muted-foreground italic">
-            <div className="">Created {formatDate(promptData.createdAt)}</div>
             <div className="">Updated {formatDate(promptData.updatedAt)}</div>
           </div>
         </div>

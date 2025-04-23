@@ -67,8 +67,8 @@ export default function PromptCarousel({
           className={cn(
             "w-full max-w-[359px]",
             open
-              ? "md:max-w-[28rem] lg:max-w-[44rem] xl:max-w-[60rem] 2xl:max-w-[76rem]"
-              : "md:max-w-[41rem] lg:max-w-[57rem] xl:max-w-[73rem] 2xl:max-w-[89rem]",
+              ? "md:max-w-[28rem] lg:max-w-[44rem] xl:max-w-[60rem] 2xl:max-w-[75rem]"
+              : "md:max-w-[41rem] lg:max-w-[57rem] xl:max-w-[73rem] 2xl:max-w-[80rem]",
           )}
           opts={{
             align: "start",

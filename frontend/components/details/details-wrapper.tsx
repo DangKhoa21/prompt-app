@@ -23,7 +23,7 @@ export default async function DetailsWrapper({
 
   return (
     <>
-      <div className="max-w-screen-2xl mx-auto">
+      <div className="max-w-screen-xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <PromptDetail
             promptData={promptData}
