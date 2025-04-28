@@ -24,6 +24,7 @@ export type CommentCard = Comment & {
     username: string;
     avatarUrl: string | null;
   };
+  repliesCount: number;
 };
 
 export const commentCreateDTOSchema = commentSchema.pick({

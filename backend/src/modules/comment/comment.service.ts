@@ -12,7 +12,13 @@ import {
   ErrInvalidParentId,
 } from './model';
 import { PromptService } from '../prompt/prompt.service';
-import { AppError, Paginated, PagingDTO, pagingDTOSchema } from 'src/shared';
+import {
+  AppError,
+  ErrForbidden,
+  Paginated,
+  PagingDTO,
+  pagingDTOSchema,
+} from 'src/shared';
 import { v7 } from 'uuid';
 
 @Injectable()
@@ -75,8 +81,12 @@ export class CommentService {
 
   async remove(id: string, creatorId: string): Promise<void> {
     const existedComment = await this.commentRepo.findById(id);
-    if (!existedComment || existedComment.creatorId !== creatorId) {
+    if (!existedComment) {
       throw AppError.from(ErrCommentNotFound, 404);
+    }
+
+    if (existedComment.creatorId !== creatorId) {
+      throw AppError.from(ErrForbidden, 403);
     }
 
     await this.commentRepo.delete(id);

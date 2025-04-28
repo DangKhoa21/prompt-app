@@ -47,10 +47,15 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
   }, [expanded]);
 
   const handleCopyPrompt = () => {
-    if (!promptData) return;
     navigator.clipboard.writeText(promptData.stringTemplate);
     toast.success("Prompt copied to clipboard!");
   };
+
+  const handleCopySystemInstruction = () => {
+    navigator.clipboard.writeText(promptData.systemInstruction as string);
+    toast.success("System instruction copied to clipboard!");
+  };
+
   return (
     <div className="bg-background rounded-lg">
       <Tabs
@@ -91,9 +96,8 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </div>
           <Button
             variant="outline"
-            onClick={() =>
-              navigator.clipboard.writeText(promptData.systemInstruction ?? "")
-            }
+            onClick={handleCopySystemInstruction}
+            disabled={!promptData.systemInstruction}
             className="w-full"
           >
             <Copy className="h-4 w-4 mr-2" />
@@ -105,7 +109,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           <ScrollArea
             className={cn(
               "transition-all duration-300 md:p-4",
-              scrollAreaMaxHeight,
+              scrollAreaMaxHeight
             )}
           >
             <Accordion
@@ -129,7 +133,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                       <ScrollArea className="border rounded-lg m-2 p-4 md:p-8 h-[32rem]">
                         <Markdown>
                           {JSON.stringify(
-                            promptData.exampleResult ?? "No result",
+                            promptData.exampleResult ?? "No result"
                           )
                             .replace(/^"(.*)"$/, "$1")
                             .replace(/\\n/g, "\n")}

@@ -1,209 +1,185 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
-import { AlertCircle, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, Fragment } from "react";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { createComment, getComments } from "@/services/comment";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth-context";
+import { AlertCircle, MessageSquare } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Comment from "./comment";
+import { LoadingSpinner } from "@/components/icons";
 
-const reviews = [
-  {
-    id: "r1",
-    user: {
-      name: "Alex Chen",
-      username: "alexc",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    rating: 5,
-    comment:
-      "This prompt is incredibly versatile! I've used it for short stories, character sketches, and even to outline a novel. The way it guides the creative process without being too restrictive is perfect.",
-    date: new Date(),
-    helpful: 42,
-    notHelpful: 3,
-    replies: [
-      {
-        id: "reply1",
-        user: {
-          name: "Emma Johnson",
-          username: "emmawrites",
-          avatar: "/placeholder.svg?height=40&width=40",
-        },
-        comment:
-          "Thank you for the kind feedback, Alex! I'm glad it's helping with your writing projects.",
-        date: new Date(),
-      },
-    ],
-  },
-  {
-    id: "r2",
-    user: {
-      name: "Sarah Johnson",
-      username: "sarahj",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    rating: 4,
-    comment:
-      "Great prompt overall! I especially love how it helps develop character motivations. The only reason I'm giving 4 stars instead of 5 is that I wish it had more guidance for genre-specific writing.",
-    date: new Date(),
-    helpful: 28,
-    notHelpful: 2,
-  },
-  {
-    id: "r3",
-    user: {
-      name: "Michael Rodriguez",
-      username: "michaelr",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    rating: 5,
-    comment:
-      "This prompt helped me break through a serious case of writer's block. The structure it provides while still leaving room for creativity is perfect. Highly recommended!",
-    date: new Date(),
-    helpful: 35,
-    notHelpful: 1,
-  },
-];
-
-export default function CommentSection({ className }: { className: string }) {
-  const [userRating, setUserRating] = useState<number | null>(null);
+export default function CommentSection({
+  promptId,
+  className,
+}: {
+  promptId: string;
+  className?: string;
+}) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [userComment, setUserComment] = useState("");
-  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  const handleSubmitReview = () => {
-    if (!userRating) return;
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["comments", { promptId }],
+    queryFn: ({ pageParam }) =>
+      getComments({ pageParam, promptId, parentId: "null" }),
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
 
-    setIsSubmittingReview(true);
-
-    // In a real app, you would send this to your API
-    setTimeout(() => {
-      // Simulate adding the review to the list
-      const newReview = {
-        id: `r${Date.now()}`,
-        user: {
-          name: "Current User",
-          username: "currentuser",
-          avatar: "/placeholder.svg?height=40&width=40",
-        },
-        rating: userRating,
-        comment: userComment,
-        date: new Date().toISOString(),
-        helpful: 0,
-        notHelpful: 0,
-      };
-      console.log(newReview);
-
-      // Reset form
-      setUserRating(null);
+  const createCommentMutation = useMutation({
+    mutationFn: createComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", { promptId }] });
       setUserComment("");
-      setIsSubmittingReview(false);
+    },
+    onError: (e) => {
+      if (e.message) {
+        toast.error(e.message);
+      } else {
+        toast.error("Something went wrong, please try again!");
+      }
+    },
+  });
 
-      // Show success message or update UI
-      alert("Review submitted successfully!");
-    }, 1000);
-  };
+  if (status === "pending") {
+    return (
+      <div className="flex h-full justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return <span>Error: {error.message}</span>;
+  }
 
   return (
     <>
       <div className={cn("mt-12", className)}>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Reviews & Feedback</h2>
-          <div className="text-sm text-muted-foreground">
-            {reviews ? reviews.length : 0} reviews
-          </div>
+          <h2 className="text-xl font-bold">Comments</h2>
+          <div className="text-sm text-muted-foreground">... comments</div>
         </div>
 
-        {/* Write a Review */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Write a Review</CardTitle>
-            <CardDescription>
-              Share your experience with this prompt
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Rating</Label>
-              <RadioGroup
-                className="flex space-x-2"
-                value={userRating?.toString() || ""}
-                onValueChange={(value) => setUserRating(Number.parseInt(value))}
+        {/* Write a Comment */}
+        {isAuthenticated ? (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-xl">Write a Comment</CardTitle>
+              <CardDescription>
+                Share your experience with this prompt
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="comment" className="hidden">
+                  Your Comment
+                </Label>
+                <Textarea
+                  id="comment"
+                  placeholder="Leave your comment here..."
+                  value={userComment}
+                  onChange={(e) => setUserComment(e.target.value)}
+                  rows={4}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="justify-end">
+              <Button
+                onClick={() => {
+                  createCommentMutation.mutate({
+                    promptId,
+                    content: userComment,
+                  });
+                }}
+                disabled={
+                  userComment.trim().length === 0 ||
+                  createCommentMutation.isPending
+                }
               >
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <div
-                    key={rating}
-                    className="flex flex-col items-center space-y-1"
-                  >
-                    <RadioGroupItem
-                      value={rating.toString()}
-                      id={`rating-${rating}`}
-                      className="sr-only"
-                    />
-                    <Label
-                      htmlFor={`rating-${rating}`}
-                      className={`cursor-pointer rounded-full p-1 hover:bg-muted ${
-                        userRating === rating
-                          ? "text-amber-500"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      <Star
-                        className={`h-8 w-8 ${userRating && userRating >= rating ? "fill-amber-500" : ""}`}
-                      />
-                    </Label>
-                    <span className="text-xs">{rating}</span>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
+                {createCommentMutation.isPending ? "Submitting..." : "Submit"}
+              </Button>
+            </CardFooter>
+          </Card>
+        ) : (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-xl">Join the conversation</CardTitle>
+              <CardDescription>
+                Log in to share your thoughts on this prompt
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center justify-center py-8">
+              <div className="text-center mb-4">
+                <MessageSquare className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  You need to be logged in to comment
+                </p>
+              </div>
+              <Button onClick={() => router.push("/login")}>Log In</Button>
+            </CardContent>
+          </Card>
+        )}
 
-            <div className="space-y-2">
-              <Label htmlFor="comment">Your Review</Label>
-              <Textarea
-                id="comment"
-                placeholder="Share your thoughts about this prompt..."
-                value={userComment}
-                onChange={(e) => setUserComment(e.target.value)}
-                rows={4}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              onClick={handleSubmitReview}
-              disabled={!userRating || isSubmittingReview}
-            >
-              {isSubmittingReview ? "Submitting..." : "Submit Review"}
-            </Button>
-          </CardFooter>
-        </Card>
-
-        {/* Reviews List */}
+        {/* Comments List */}
         <div className="space-y-4">
-          {reviews && reviews.length > 0 ? (
-            reviews.map((review) => (
-              <Comment key={`comment-${review.id}`} {...review} />
-            ))
-          ) : (
+          {data.pages.map((group, i) => (
+            <Fragment key={i}>
+              {group.data.map((comment) => (
+                <Comment
+                  key={`comment-${comment.id}`}
+                  comment={comment}
+                  promptId={promptId}
+                />
+              ))}
+            </Fragment>
+          ))}
+
+          {data.pages[0].data.length > 0 ? null : (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>No reviews yet</AlertTitle>
+              <AlertTitle>No comments yet</AlertTitle>
               <AlertDescription>
-                Be the first to review this prompt and help others decide if
+                Be the first to comment this prompt and help others decide if
                 it&apos;s right for them.
               </AlertDescription>
             </Alert>
+          )}
+
+          {!hasNextPage ? null : (
+            <div className="mt-6 flex justify-center">
+              <Button variant="outline" onClick={() => fetchNextPage()}>
+                {isFetchingNextPage ? "Loading..." : "Load More Comments"}
+              </Button>
+            </div>
           )}
         </div>
       </div>

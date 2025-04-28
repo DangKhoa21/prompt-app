@@ -44,6 +44,7 @@ export class CommentController {
       promptId,
       parentId: parentId === 'null' ? null : parentId,
     };
+
     const result = await this.commentService.findAll(
       userId,
       pagingDTO,

@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { Prompt, TemplateTag } from "@/services/prompt/interface";
 import { User } from "@/services/user/interface";
-import { Heart, Share2 } from "lucide-react";
-import { useState } from "react";
+import { Share2, Star } from "lucide-react";
+import { toast } from "sonner";
 
 interface PromptHeadDetailProps {
   promptData: Prompt;
@@ -18,28 +18,9 @@ export default function PromptHeadDetail({
   userData,
   tagsData,
 }: PromptHeadDetailProps) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
-
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-  };
-
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: promptData?.title,
-        text: promptData?.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
-    }
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("URL copied to clipboard!");
   };
 
   return (
@@ -48,16 +29,9 @@ export default function PromptHeadDetail({
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-2xl font-bold">{promptData.title}</h1>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleLike}>
-              <Heart
-                className={`h-4 w-4 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
-              />
+            <Button variant="outline" size="icon" disabled>
+              <Star className={`h-4 w-4`} />
             </Button>
-            {/* <Button variant="outline" size="icon" onClick={handleSave}> */}
-            {/*   <BookmarkPlus */}
-            {/*     className={`h-4 w-4 ${isSaved ? "fill-primary text-primary" : ""}`} */}
-            {/*   /> */}
-            {/* </Button> */}
             <Button variant="outline" size="icon" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
             </Button>
@@ -80,7 +54,7 @@ export default function PromptHeadDetail({
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={"/placeholder.svg"} alt={"User"} />
-              <AvatarFallback>{"Test"}</AvatarFallback>
+              <AvatarFallback>{userData.username.slice(0, 2)}</AvatarFallback>
             </Avatar>
             <div>
               <div className="flex items-center gap-1">

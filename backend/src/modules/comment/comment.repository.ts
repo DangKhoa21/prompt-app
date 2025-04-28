@@ -33,7 +33,7 @@ export class CommentRepository {
       where = { ...where, parentId };
     }
 
-    const data: CommentCard[] = await this.prisma.comment.findMany({
+    const comments = await this.prisma.comment.findMany({
       take: limit,
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
@@ -47,8 +47,18 @@ export class CommentRepository {
             avatarUrl: true,
           },
         },
+        _count: {
+          select: {
+            replyComments: true,
+          },
+        },
       },
     });
+
+    const data: CommentCard[] = comments.map(({ _count, ...comment }) => ({
+      ...comment,
+      repliesCount: _count.replyComments,
+    }));
 
     const nextCursor = data.length > 0 ? data[data.length - 1].id : undefined;
 

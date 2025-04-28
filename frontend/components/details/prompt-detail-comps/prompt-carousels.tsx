@@ -67,7 +67,7 @@ export default function PromptCarousels({
       {data.relatedPrompts.map((promptsData, index) => (
         <PromptCarousel
           key={relatedTags[index].id}
-          label={`Tag: ${relatedTags[index].name}`}
+          label={`${relatedTags[index].name}`}
           promptId={promptId}
           carouselPrompts={promptsData}
           filter={{ tagId: relatedTags[index].id }}
