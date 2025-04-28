@@ -19,15 +19,15 @@ export default function PromptHeadDetail({
   tagsData,
 }: PromptHeadDetailProps) {
   const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  // const [isSaved, setIsSaved] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-  };
+  // const handleSave = () => {
+  //   setIsSaved(!isSaved);
+  // };
 
   const handleShare = () => {
     if (navigator.share) {
