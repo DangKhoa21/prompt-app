@@ -22,6 +22,13 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
     sizes: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
   };
 
+  const mockLocation = "San Francisco, CA";
+  const mockSocialLinks = [
+    { platform: "Twitter", url: "https://twitter.com/example" },
+    { platform: "LinkedIn", url: "https://linkedin.com/in/example" },
+  ];
+  const mockSkills = ["JavaScript", "React", "Next.js", "TypeScript"];
+
   const {
     data: userPrompts,
     isPending,
@@ -38,7 +45,10 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.3 }}
-      className={cn("md:border-2 md:rounded-lg md:p-4 h-fit", className)}
+      className={cn(
+        "max-w-4xl md:border-2 md:rounded-lg md:p-4 h-fit",
+        className
+      )}
     >
       <div className="relative w-full h-32">
         <Image
@@ -65,6 +75,41 @@ export default function UserDetail({ userData, className }: UserDetailProps) {
         </div>
       </div>
       <div className="mt-4 mx-1 text-base">{userData.bio}</div>
+
+      {/* New Section: Location */}
+      <div className="mt-4 text-sm">
+        <strong>Location:</strong> {mockLocation}
+      </div>
+
+      {/* New Section: Social Media Links */}
+      <div className="mt-4 text-sm">
+        <strong>Social Media:</strong>
+        <ul className="list-disc list-inside">
+          {mockSocialLinks.map((link, index) => (
+            <li key={index}>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                {link.platform}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* New Section: Skills */}
+      <div className="mt-4 text-sm">
+        <strong>Skills:</strong>
+        <ul className="list-disc list-inside">
+          {mockSkills.map((skill, index) => (
+            <li key={index}>{skill}</li>
+          ))}
+        </ul>
+      </div>
+
       <div className="flex flex-col gap-2 mt-4 text-sm italic">
         <div>{isPending || isError ? "..." : userPrompts.length} Prompts</div>
         <div className="flex justify-start items-center gap-1">

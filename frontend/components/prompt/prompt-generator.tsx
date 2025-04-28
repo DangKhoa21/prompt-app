@@ -40,10 +40,10 @@ import { toast } from "sonner";
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {},
+    {}
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
@@ -156,7 +156,7 @@ export function PromptGeneratorSidebar() {
         ) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            selectedValues[config.label],
+            selectedValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -165,7 +165,7 @@ export function PromptGeneratorSidebar() {
         if (textareaValues[config.label]) {
           prompt = prompt.replace(
             `{${config.label}}`,
-            textareaValues[config.label],
+            textareaValues[config.label]
           );
         } else {
           prompt = prompt.replace(`{${config.label}}`, "");
@@ -179,9 +179,9 @@ export function PromptGeneratorSidebar() {
                     (value, labelIndex) =>
                       `\n\t${config.values[labelIndex].value} ${
                         index + 1
-                      }: ${value}`,
+                      }: ${value}`
                   )
-                  .join(""),
+                  .join("")
               )
               .join("\n")
           : "";
@@ -194,6 +194,7 @@ export function PromptGeneratorSidebar() {
     prompt = prompt.replace(/ {2,}/g, " ");
     prompt = prompt.replace(/\\n/g, "\n");
     setPrompt({
+      id: data.id,
       value: prompt,
       isSending,
     });

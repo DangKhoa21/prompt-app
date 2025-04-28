@@ -10,6 +10,7 @@ export const promptSchema = z.object({
   stringTemplate: z.string(),
   systemInstruction: z.string().nullable().optional(),
   exampleResult: z.unknown().nullable().optional(),
+  usageCount: z.number().default(0),
   creatorId: z.string().uuid(),
   createdAt: z.date().default(new Date()),
   updatedAt: z.date().default(new Date()),

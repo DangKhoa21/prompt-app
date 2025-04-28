@@ -63,11 +63,7 @@ export default function PromptCarousels({
   }
 
   return (
-    <div className="w-max mx-auto">
-      <h2 className="text-2xl font-semibold tracking-wide mt-6 mb-2 ml-4">
-        Related prompts
-      </h2>
-
+    <div className="w-max mx-auto space-y-4">
       {data.relatedPrompts.map((promptsData, index) => (
         <PromptCarousel
           key={relatedTags[index].id}

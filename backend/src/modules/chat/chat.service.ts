@@ -25,12 +25,14 @@ import {
   systemPrompt,
 } from 'src/shared/ai';
 import { v7 } from 'uuid';
+import { PromptService } from '../prompt/prompt.service';
 
 @Injectable()
 export class ChatService {
   constructor(
     private readonly chatRepo: ChatRepository,
     private readonly messageRepo: MessageRepository,
+    private readonly promptService: PromptService,
   ) {}
 
   async findMessagesByChatId(
@@ -66,7 +68,7 @@ export class ChatService {
     res: Response,
     userId: string | null,
   ) {
-    const { id, messages, modelId, systemInstruction } = dto;
+    const { id, messages, modelId, systemInstruction, promptId } = dto;
 
     const model = models.find((model) => model.id === modelId);
 
@@ -146,6 +148,10 @@ export class ChatService {
                   };
                 }),
               );
+            }
+
+            if (promptId) {
+              await this.promptService.increaseUsageCount(promptId);
             }
           },
           experimental_telemetry: {

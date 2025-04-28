@@ -31,7 +31,7 @@ export function Chat({
   const router = useRouter();
   const { token, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
-  const { systemInstruction } = usePrompt();
+  const { prompt, setPrompt, systemInstruction } = usePrompt();
 
   const {
     messages,
@@ -50,6 +50,7 @@ export function Chat({
       id,
       modelId: selectedModelId,
       systemInstruction,
+      promptId: prompt.id ?? undefined,
     },
     initialMessages,
     headers: { Authorization: "Bearer " + token },
@@ -60,6 +61,10 @@ export function Chat({
           router.push(`/chat/${id}?${searchParams.toString()}`);
           router.refresh();
         }
+      }
+
+      if (prompt.value.length > 0) {
+        setPrompt({ id: "", value: "", isSending: false });
       }
     },
     onError: (e) => {

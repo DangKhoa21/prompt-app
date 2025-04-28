@@ -1,60 +1,87 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { Prompt, TemplateTag } from "@/services/prompt/interface";
-import Image from "next/image";
+import { User } from "@/services/user/interface";
+import { Share2, Star } from "lucide-react";
+import { toast } from "sonner";
 
 interface PromptHeadDetailProps {
   promptData: Prompt;
+  userData: User;
   tagsData: TemplateTag[];
 }
 
 export default function PromptHeadDetail({
   promptData,
+  userData,
   tagsData,
 }: PromptHeadDetailProps) {
-  const commonBackProps = {
-    src: "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80",
-    alt: "Background image",
-    sizes: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("URL copied to clipboard!");
   };
 
   return (
     <>
-      <div className="flex flex-row relative gap-2 p-2 md:p-4">
-        <Image
-          src={commonBackProps.src}
-          alt={commonBackProps.alt}
-          fill
-          sizes={commonBackProps.sizes}
-          className="absolute inset-0 rounded-xl shadow-xl z-0 opacity-40 object-cover"
-        ></Image>
-        <div className="flex relative w-[160px] h-[96px] md:w-[240px] md:h-[144px] z-10 mt-4 mx-4 mb-2">
-          <Image
-            src={`https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80`}
-            alt="Photo by Drew Beamer"
-            fill
-            sizes={commonBackProps.sizes}
-            className="rounded-lg object-cover"
-          ></Image>
-        </div>
-        <div className="space-y-4 z-10 m-2">
-          <div className="text-2xl font-semibold">{promptData.title}</div>
-          <div className="flex gap-2 flex-wrap">
-            {tagsData.length
-              ? tagsData.map((tag, i) => (
-                  <Badge key={`tags-${i}`} className="line-clamp-1">
-                    {tag.name}
-                  </Badge>
-                ))
-              : "No tags"}
+      <div className="rounded-lg shadow-sm p-6 bg-background">
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-2xl font-bold">{promptData.title}</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon" disabled>
+              <Star className={`h-4 w-4`} />
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleShare}>
+              <Share2 className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex flex-col gap-2 text-muted-foreground">
-            <div className="italic">
-              Created at {formatDate(promptData.createdAt)}
+        </div>
+
+        <p className="text-muted-foreground mb-4">{promptData.description}</p>
+
+        <div className="flex flex-wrap gap-2 mb-6">
+          {tagsData.length
+            ? tagsData.map((tag, i) => (
+                <Badge key={`tags-${i}`} className="line-clamp-1">
+                  {tag.name}
+                </Badge>
+              ))
+            : "No tags"}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={"/placeholder.svg"} alt={"User"} />
+              <AvatarFallback>{userData.username.slice(0, 2)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="flex items-center gap-1">
+                <p className="font-medium">{userData.username}</p>
+                {/* {promptData.creator.verified && ( */}
+                {/*   <svg */}
+                {/*     className="h-4 w-4 text-blue-500" */}
+                {/*     fill="currentColor" */}
+                {/*     viewBox="0 0 24 24" */}
+                {/*   > */}
+                {/*     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /> */}
+                {/*   </svg> */}
+                {/* )} */}
+
+                {/* <svg */}
+                {/*   className="h-4 w-4 text-blue-500" */}
+                {/*   fill="currentColor" */}
+                {/*   viewBox="0 0 24 24" */}
+                {/* > */}
+                {/*   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /> */}
+                {/* </svg> */}
+              </div>
+              <p className="text-sm text-muted-foreground">{userData.email}</p>
             </div>
-            <div className="italic">
-              Updated at {formatDate(promptData.updatedAt)}
-            </div>
+          </div>
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground italic">
+            <div className="">Updated {formatDate(promptData.updatedAt)}</div>
           </div>
         </div>
       </div>

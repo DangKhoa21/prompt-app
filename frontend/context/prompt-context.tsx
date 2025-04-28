@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 type Prompt = {
+  id: string;
   value: string;
   isSending: boolean;
 };
@@ -32,6 +33,7 @@ export const usePrompt = () => {
 
 export const PromptProvider = ({ children }: { children: ReactNode }) => {
   const [prompt, setPrompt] = useState<Prompt>({
+    id: "",
     value: "",
     isSending: false,
   });

@@ -29,6 +29,7 @@ model User {
   stars      Star[]
   roles      UserRole[]
   promptPins PromptPin[]
+  comments   Comment[]
 }
 
 model Role {
@@ -77,6 +78,7 @@ model Prompt {
   stringTemplate    String
   systemInstruction String? // nullable
   exampleResult     Json? // nullable
+  usageCount        Int      @default(0)
   creator           User     @relation(fields: [creatorId], references: [id])
   creatorId         String
   createdAt         DateTime @default(now())
@@ -86,6 +88,7 @@ model Prompt {
   configs    PromptConfig[]
   stars      Star[]
   promptPins PromptPin[]
+  comments   Comment[]
 }
 
 model PromptTag {
@@ -149,4 +152,19 @@ model PromptPin {
 model Option {
   id     String @id @default(uuid(7))
   option String @unique
+}
+
+model Comment {
+  id        String   @id @default(uuid(7))
+  content   String
+  parentId  String? // nullable
+  parent    Comment? @relation("CommentParent", fields: [parentId], references: [id])
+  prompt    Prompt   @relation(fields: [promptId], references: [id])
+  promptId  String
+  creator   User     @relation(fields: [creatorId], references: [id])
+  creatorId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  replyComments Comment[] @relation("CommentParent")
 }

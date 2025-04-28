@@ -136,7 +136,6 @@ export function MultimodalInput({
         // calling submitForm() here will send the current input
         setShouldSubmit(true);
       }
-      setPrompt({ value: "", isSending: false });
     }
   }, [prompt, setInput, setPrompt]);
 

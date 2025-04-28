@@ -65,6 +65,8 @@ export async function getPrompt(id: string | null): Promise<PromptWithConfigs> {
       description: "You need to go to the marketplace to select a prompt",
       stringTemplate: "",
       systemInstruction: null,
+      exampleResult: null,
+      usageCount: 0,
       creatorId: "",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -154,7 +156,7 @@ export async function evaluatePrompt(prompt: string): Promise<string> {
   const regex = /<improved_prompt>\s*([\s\S]*?)\s*<\/improved_prompt>/i;
   const data = response.data.match(regex);
 
-  return data ? data[1].trim() : null;
+  return data ? data[1].trim() : "";
 }
 
 export async function getPromptsOfCreator(
