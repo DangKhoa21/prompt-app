@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { cn, deserializeConfigData } from "@/lib/utils";
 import { Prompt } from "@/services/prompt/interface";
 import { Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -55,6 +55,30 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
     navigator.clipboard.writeText(promptData.systemInstruction as string);
     toast.success("System instruction copied to clipboard!");
   };
+
+  const deserializedData = deserializeConfigData(
+    JSON.stringify(promptData.exampleResult ?? ""),
+  );
+
+  console.log(deserializedData);
+
+  const configValues: Record<string, string> = {};
+
+  Object.entries(deserializedData.selectedValues).forEach(([key, value]) => {
+    configValues[key] = value;
+  });
+
+  Object.entries(deserializedData.textareaValues).forEach(([key, value]) => {
+    configValues[key] = value;
+  });
+
+  Object.entries(deserializedData.arrayValues).forEach(([key, value]) => {
+    configValues[key] = value
+      .map((item, index) =>
+        item.values.map((value) => `${key} ${index + 1}: ${value}`).join("\n"),
+      )
+      .join("\n\n");
+  });
 
   return (
     <div className="bg-background rounded-lg">
@@ -109,7 +133,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           <ScrollArea
             className={cn(
               "transition-all duration-300 md:p-4",
-              scrollAreaMaxHeight
+              scrollAreaMaxHeight,
             )}
           >
             <Accordion
@@ -129,16 +153,26 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                     >
                       <AccordionTrigger>Example Result</AccordionTrigger>
                     </div>
-                    <AccordionContent>
-                      <ScrollArea className="border rounded-lg m-2 p-4 md:p-8 h-[32rem]">
-                        <Markdown>
-                          {JSON.stringify(
-                            promptData.exampleResult ?? "No result"
-                          )
-                            .replace(/^"(.*)"$/, "$1")
-                            .replace(/\\n/g, "\n")}
-                        </Markdown>
-                      </ScrollArea>
+                    <AccordionContent className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-2">Input:</p>
+                        <div className="p-4 rounded-md border text-sm grid grid-cols-2 gap-2">
+                          {Object.entries(configValues).map((value) => {
+                            return (
+                              <div key={`${value[0]}`}>
+                                {value[0]}: {value[1]}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-medium mb-2">Output:</p>
+                        <ScrollArea className="border rounded-lg p-2 md:p-8 h-[32rem]">
+                          <Markdown>{deserializedData.exampleResult}</Markdown>
+                        </ScrollArea>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 );

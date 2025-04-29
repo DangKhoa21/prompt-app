@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 // import { LoadingSpinner } from "@/components/icons";
 
-import TagsList from "@/components/tags-list";
+import TagsList from "@/components/marketplace/tags-list";
 import {
   TemplatesHeader,
   TemplatesSearch,

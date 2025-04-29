@@ -26,7 +26,7 @@ import {
   useGeneratePromptResult,
   useUpdatePromptResult,
 } from "@/features/template";
-import { cn } from "@/lib/utils";
+import { cn, serializeResultConfigData } from "@/lib/utils";
 import { Check, Copy, FileQuestion, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -180,8 +180,8 @@ export function EvaluatePrompt() {
 
     const configValues: Record<string, string> = {};
     template.configs.forEach((config) => {
-      configValues[config.label] = selectedValues[config.label];
       if (config.type === "dropdown" || config.type === "combobox") {
+        configValues[config.label] = selectedValues[config.label];
       } else if (config.type === "textarea") {
         configValues[config.label] = textareaValues[config.label];
       } else if (config.type === "array") {
@@ -231,11 +231,22 @@ export function EvaluatePrompt() {
     }));
     setEvaluationResults(updatedResults);
 
+    const exampleResult = updatedResults.find(
+      (result) => result.id === resultId,
+    )!.result;
+
+    const serializedData = serializeResultConfigData({
+      promptId: template.id,
+      data: template,
+      selectedValues,
+      textareaValues,
+      arrayValues,
+      exampleResult,
+    });
+
     const updatePromptResultPromise = mutateUpdatePromptResult({
       id: template.id,
-      data: updatedResults.filter((result) => {
-        return result.id === resultId;
-      })[0].prompt,
+      data: serializedData,
     });
 
     toast.promise(updatePromptResultPromise, {

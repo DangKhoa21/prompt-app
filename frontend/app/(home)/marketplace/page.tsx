@@ -5,7 +5,7 @@ import { LoadingSpinner } from "@/components/icons";
 import { MarketHeader } from "@/components/marketplace/market-header";
 import { MarketSearch } from "@/components/marketplace/market-search";
 import PromptsList from "@/components/marketplace/prompts-list";
-import TagsList from "@/components/tags-list";
+import TagsList from "@/components/marketplace/tags-list";
 import { getPromptsServer } from "@/services/prompt/action";
 
 export default async function Page(props: {

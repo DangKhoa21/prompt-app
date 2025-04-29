@@ -10,6 +10,10 @@ import { twMerge } from "tailwind-merge";
 
 import type { Message as DBMessage } from "@/services/chat/interface";
 import { v7 } from "uuid";
+import {
+  PromptWithConfigs,
+  TemplateWithConfigs,
+} from "@/services/prompt/interface";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -50,7 +54,7 @@ export function formatDate(date: Date): string {
 }
 
 export function sanitizeResponseMessages(
-  messages: Array<CoreToolMessage | CoreAssistantMessage>
+  messages: Array<CoreToolMessage | CoreAssistantMessage>,
 ): Array<CoreToolMessage | CoreAssistantMessage> {
   const toolResultIds: Array<string> = [];
 
@@ -73,8 +77,8 @@ export function sanitizeResponseMessages(
       content.type === "tool-call"
         ? toolResultIds.includes(content.toolCallId)
         : content.type === "text"
-        ? content.text.length > 0
-        : true
+          ? content.text.length > 0
+          : true,
     );
 
     return {
@@ -84,7 +88,7 @@ export function sanitizeResponseMessages(
   });
 
   return messagesBySanitizedContent.filter(
-    (message) => message.content.length > 0
+    (message) => message.content.length > 0,
   );
 }
 
@@ -106,7 +110,7 @@ function addToolMessageToChat({
         ...message,
         toolInvocations: message.toolInvocations.map((toolInvocation) => {
           const toolResult = toolMessage.content.find(
-            (tool) => tool.toolCallId === toolInvocation.toolCallId
+            (tool) => tool.toolCallId === toolInvocation.toolCallId,
           );
 
           if (toolResult) {
@@ -127,7 +131,7 @@ function addToolMessageToChat({
 }
 
 export function convertToUIMessages(
-  messages: Array<DBMessage>
+  messages: Array<DBMessage>,
 ): Array<Message> {
   return messages.reduce((chatMessages: Array<Message>, message) => {
     if (message.role === "tool") {
@@ -185,7 +189,7 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
     const sanitizedToolInvocations = message.toolInvocations.filter(
       (toolInvocation) =>
         toolInvocation.state === "result" ||
-        toolResultIds.includes(toolInvocation.toolCallId)
+        toolResultIds.includes(toolInvocation.toolCallId),
     );
 
     return {
@@ -197,6 +201,145 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   return messagesBySanitizedToolInvocations.filter(
     (message) =>
       message.content.length > 0 ||
-      (message.toolInvocations && message.toolInvocations.length > 0)
+      (message.toolInvocations && message.toolInvocations.length > 0),
   );
+}
+
+type ConfigMapping = {
+  label: string;
+  type: string;
+  value: string;
+};
+
+type Serializing = {
+  promptId: string;
+  configs: ConfigMapping[];
+};
+
+type SerializingResult = Serializing & {
+  exampleResult: string;
+};
+
+export function serializeConfigData({
+  promptId,
+  data,
+  selectedValues,
+  textareaValues,
+  arrayValues,
+}: {
+  promptId: string;
+  data: PromptWithConfigs;
+  selectedValues: Record<string, string>;
+  textareaValues: Record<string, string>;
+  arrayValues: Record<string, { id: string; values: string[] }[]>;
+}) {
+  const serialized: Serializing = {
+    promptId,
+    configs: [],
+  };
+
+  data.configs.forEach((config) => {
+    const key = config.label;
+    let value: string = "";
+
+    if (config.type === "dropdown" || config.type === "combobox") {
+      value = selectedValues[key];
+    } else if (config.type === "textarea") {
+      value = textareaValues[key];
+    } else if (config.type === "array") {
+      value = JSON.stringify(arrayValues[key]);
+    } else {
+      return;
+    }
+
+    serialized.configs.push({
+      label: key,
+      type: config.type,
+      value,
+    });
+  });
+
+  return JSON.stringify(serialized);
+}
+
+export function serializeResultConfigData({
+  promptId,
+  data,
+  selectedValues,
+  textareaValues,
+  arrayValues,
+  exampleResult,
+}: {
+  promptId: string;
+  data: TemplateWithConfigs;
+  selectedValues: Record<string, string>;
+  textareaValues: Record<string, string>;
+  arrayValues: Record<string, { id: string; values: string[] }[]>;
+  exampleResult: string;
+}) {
+  const serialized: SerializingResult = {
+    promptId,
+    exampleResult,
+    configs: [],
+  };
+
+  data.configs.forEach((config) => {
+    const key = config.label;
+    let value: string = "";
+
+    if (config.type === "dropdown" || config.type === "combobox") {
+      value = selectedValues[key];
+    } else if (config.type === "textarea") {
+      value = textareaValues[key];
+    } else if (config.type === "array") {
+      value = JSON.stringify(arrayValues[key]);
+    } else {
+      return;
+    }
+
+    serialized.configs.push({
+      label: key,
+      type: config.type,
+      value,
+    });
+  });
+
+  return JSON.stringify(serialized);
+}
+
+export function deserializeConfigData(jsonString: string) {
+  // For some reasons, it double the JSON stringify function.
+  const parsed: SerializingResult = JSON.parse(JSON.parse(jsonString));
+
+  const newSelected: Record<string, string> = {};
+  const newTextarea: Record<string, string> = {};
+  const newArray: Record<string, { id: string; values: string[] }[]> = {};
+
+  parsed.configs.forEach((config) => {
+    const { label, type, value } = config;
+
+    if (type === "dropdown" || type === "combobox") {
+      newSelected[label] = value;
+    } else if (type === "textarea") {
+      newTextarea[label] = value;
+    } else if (type === "array") {
+      try {
+        const parsedArray = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          newArray[label] = parsedArray;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      console.error("Invalid array param:", value);
+    }
+  });
+
+  return {
+    promptId: parsed.promptId,
+    exampleResult: parsed.exampleResult,
+    selectedValues: newSelected,
+    textareaValues: newTextarea,
+    arrayValues: newArray,
+  };
 }

@@ -23,7 +23,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     <>
       <div className="min-h-screen">
         <div className="p-2 md:p-8 bg-muted">
-          <div className="max-w-screen-xl mx-auto">
+          <div className="max-w-screen-xl mx-auto space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <PromptDetail
                 promptData={promptData}
@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 <UserOverviewCard userData={userData} />
               </div>
             </div>
-            <div className="flex flex-col px-auto gap-4">
+            <div className="flex flex-col  px-auto py-6 gap-4 bg-background rounded-md">
               <PromptCarousels
                 promptId={promptId}
                 creatorId={promptData.creatorId}
