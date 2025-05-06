@@ -26,7 +26,7 @@ import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
 import { generateUUID, serializeConfigData } from "@/lib/utils";
-import { getPrompt } from "@/services/prompt";
+import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -57,7 +57,7 @@ export function PromptGeneratorSidebar() {
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
-    queryFn: () => getPrompt(promptId),
+    queryFn: () => getPromptWithConfigs(promptId),
   });
 
   const createShareOptionMutation = useMutation({

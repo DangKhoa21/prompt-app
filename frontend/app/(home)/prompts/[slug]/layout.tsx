@@ -10,7 +10,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <DetailsHeader pageName="Prompt Detail"></DetailsHeader>
-      {children}
+      <div className="min-h-screen">
+        <div className="p-2 md:p-8 bg-muted">{children}</div>
+      </div>
     </>
   );
 }

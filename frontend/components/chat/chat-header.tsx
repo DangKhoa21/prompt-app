@@ -9,12 +9,49 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
 import { useWindowSize } from "usehooks-ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
+import { getPrompts } from "@/services/prompt";
+import { Paginated } from "@/services/shared";
+import { PromptCard } from "@/services/prompt/interface";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
+
+  const queryClient = useQueryClient();
+  const triggerMarketplaceRef = useRef<HTMLDivElement>(null);
+  // const triggerTemplateRef = useRef<HTMLDivElement>(null);
+
+  const tagId = "";
+  const search = "";
+  const sort: "newest" | "oldest" | "most-starred" | undefined = "newest";
+  const filter = { tagId, search, sort };
+
+  // const tab = "";
+  //
+  // const updatedFilter = { ...filter, creatorId };
+
+  const prefetchPrompts = () => {
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["prompts", filter],
+      queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
+      initialPageParam: "",
+      getNextPageParam: (lastPage: Paginated<PromptCard>) =>
+        lastPage.nextCursor,
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
+  // const prefetchTemplates = () => {
+  //   queryClient.prefetchInfiniteQuery({
+  //     queryKey: ["prompts", updatedFilter, tab],
+  //     queryFn: () => getPromptTemplate(),
+  //     staleTime: 1000 * 60 * 5, // optional: cache for 5 mins
+  //   });
+  // };
 
   return (
     <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
@@ -57,17 +94,19 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
-          <Button
-            variant="ghost"
-            className="h-8 p-2"
-            onClick={() => {
-              router.push("/marketplace");
-              router.refresh();
-            }}
-          >
-            <Compass />
-            {!isMobile && "Marketplace"}
-          </Button>
+          <div ref={triggerMarketplaceRef} onMouseEnter={prefetchPrompts}>
+            <Button
+              variant="ghost"
+              className="h-8 p-2"
+              onClick={() => {
+                router.push("/marketplace");
+                router.refresh();
+              }}
+            >
+              <Compass />
+              {!isMobile && "Marketplace"}
+            </Button>
+          </div>
           <Separator orientation="vertical" className="h-4" />
           {!isAuthenticated && (
             <>

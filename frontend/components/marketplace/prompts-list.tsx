@@ -8,18 +8,11 @@ import { motion } from "framer-motion";
 import MarketplaceHoverCard from "@/components/marketplace/market-hover-card";
 import { cn } from "@/lib/utils";
 import { getPrompts } from "@/services/prompt";
-import { PromptCard, PromptFilter } from "@/services/prompt/interface";
+import { PromptFilter } from "@/services/prompt/interface";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { Paginated } from "@/services/shared";
 
-export default function PromptsList({
-  initialPrompt,
-  filter,
-}: {
-  initialPrompt: Paginated<PromptCard>;
-  filter: PromptFilter;
-}) {
+export default function PromptsList({ filter }: { filter: PromptFilter }) {
   const [isHovered, setIsHovered] = React.useState(false);
   const { ref, inView } = useInView();
   const {
@@ -33,12 +26,6 @@ export default function PromptsList({
     queryKey: ["prompts", filter],
     queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
     initialPageParam: "",
-    initialData: initialPrompt
-      ? {
-          pages: [initialPrompt],
-          pageParams: [""],
-        }
-      : undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     staleTime: 1000 * 60 * 5,
   });
@@ -78,18 +65,19 @@ export default function PromptsList({
       />
 
       <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
-        {data.pages.map((group, i) => (
-          <React.Fragment key={i}>
-            {group.data.map((prompt) => (
-              <MarketplaceHoverCard
-                key={prompt.id}
-                {...prompt}
-                filter={filter}
-                setIsHovered={setIsHovered}
-              />
-            ))}
-          </React.Fragment>
-        ))}
+        {data &&
+          data.pages.map((group, i) => (
+            <React.Fragment key={i}>
+              {group.data.map((prompt) => (
+                <MarketplaceHoverCard
+                  key={prompt.id}
+                  {...prompt}
+                  filter={filter}
+                  setIsHovered={setIsHovered}
+                />
+              ))}
+            </React.Fragment>
+          ))}
       </div>
 
       {hasNextPage ? null : (

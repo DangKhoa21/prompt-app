@@ -10,7 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn, deserializeConfigData } from "@/lib/utils";
+import {
+  cn,
+  deserializeResultConfigData,
+  ExampleResultOutput,
+} from "@/lib/utils";
 import { Prompt } from "@/services/prompt/interface";
 import { Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -56,29 +60,31 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
     toast.success("System instruction copied to clipboard!");
   };
 
-  const deserializedData = deserializeConfigData(
-    JSON.stringify(promptData.exampleResult ?? ""),
-  );
-
-  console.log(deserializedData);
+  let deserializedData: ExampleResultOutput | null = null;
 
   const configValues: Record<string, string> = {};
 
-  Object.entries(deserializedData.selectedValues).forEach(([key, value]) => {
-    configValues[key] = value;
-  });
+  if (promptData.exampleResult) {
+    deserializedData = deserializeResultConfigData(promptData.exampleResult);
 
-  Object.entries(deserializedData.textareaValues).forEach(([key, value]) => {
-    configValues[key] = value;
-  });
+    Object.entries(deserializedData.selectedValues).forEach(([key, value]) => {
+      configValues[key] = value;
+    });
 
-  Object.entries(deserializedData.arrayValues).forEach(([key, value]) => {
-    configValues[key] = value
-      .map((item, index) =>
-        item.values.map((value) => `${key} ${index + 1}: ${value}`).join("\n"),
-      )
-      .join("\n\n");
-  });
+    Object.entries(deserializedData.textareaValues).forEach(([key, value]) => {
+      configValues[key] = value;
+    });
+
+    Object.entries(deserializedData.arrayValues).forEach(([key, value]) => {
+      configValues[key] = value
+        .map((item, index) =>
+          item.values
+            .map((value) => `${key} ${index + 1}: ${value}`)
+            .join("\n"),
+        )
+        .join("\n\n");
+    });
+  }
 
   return (
     <div className="bg-background rounded-lg">
@@ -142,41 +148,41 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
               value={expanded || ""}
               onValueChange={(val) => setExpanded(val || null)}
             >
-              {[...Array(1)].map((_, i) => {
-                const itemKey = `item-${i}`;
-                return (
-                  <AccordionItem key={`test-${itemKey}`} value={itemKey}>
-                    <div
-                      ref={(el) => {
-                        itemRefs.current[itemKey] = el;
-                      }}
-                    >
-                      <AccordionTrigger>Example Result</AccordionTrigger>
+              {deserializedData && (
+                <AccordionItem
+                  key={`example-result-${deserializedData.promptId}`}
+                  value={deserializedData.promptId}
+                >
+                  <div
+                    ref={(el) => {
+                      itemRefs.current[deserializedData.promptId] = el;
+                    }}
+                  >
+                    <AccordionTrigger>Example Result</AccordionTrigger>
+                  </div>
+                  <AccordionContent className="space-y-4">
+                    <div>
+                      <p className="text-sm font-medium mb-2">Input:</p>
+                      <div className="p-4 rounded-md border text-sm grid grid-cols-2 gap-2">
+                        {Object.entries(configValues).map(([key, value]) => {
+                          return (
+                            <div key={`${key}`}>
+                              {key}: {value}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <AccordionContent className="space-y-4">
-                      <div>
-                        <p className="text-sm font-medium mb-2">Input:</p>
-                        <div className="p-4 rounded-md border text-sm grid grid-cols-2 gap-2">
-                          {Object.entries(configValues).map((value) => {
-                            return (
-                              <div key={`${value[0]}`}>
-                                {value[0]}: {value[1]}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
 
-                      <div>
-                        <p className="text-sm font-medium mb-2">Output:</p>
-                        <ScrollArea className="border rounded-lg p-2 md:p-8 h-[32rem]">
-                          <Markdown>{deserializedData.exampleResult}</Markdown>
-                        </ScrollArea>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
+                    <div>
+                      <p className="text-sm font-medium mb-2">Output:</p>
+                      <ScrollArea className="border rounded-lg p-2 md:p-8 h-[32rem]">
+                        <Markdown>{deserializedData.exampleResult}</Markdown>
+                      </ScrollArea>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
             </Accordion>
           </ScrollArea>
           {/* {promptData.examples.map((example) => ( */}

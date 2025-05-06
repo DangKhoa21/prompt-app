@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import {
+  Prompt,
   PromptCard,
   PromptFilter,
   PromptWithConfigs,
@@ -57,7 +58,28 @@ export async function getTags(): Promise<Tag[]> {
   return response.data.data;
 }
 
-export async function getPrompt(id: string | null): Promise<PromptWithConfigs> {
+export async function getPrompt(id: string | null): Promise<Prompt> {
+  if (!id) {
+    return {
+      id: "1",
+      title: "No prompt selected",
+      description: "You need to go to the marketplace to select a prompt",
+      stringTemplate: "",
+      systemInstruction: null,
+      exampleResult: null,
+      usageCount: 0,
+      creatorId: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
+  const response = await axiosInstance.get(`/prompts/${id}`);
+  return response.data.data;
+}
+
+export async function getPromptWithConfigs(
+  id: string | null,
+): Promise<PromptWithConfigs> {
   if (!id) {
     return {
       id: "1",

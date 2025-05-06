@@ -1,32 +1,58 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
 import { TemplateEditSection } from "@/features/template";
 import {
-  getPromptTemplateServer,
-  getTagsForTemplateServer,
-  getTagsServer,
-} from "@/services/prompt/action";
+  getPromptTemplate,
+  getTags,
+  getTagsForTemplate,
+} from "@/services/prompt";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-export async function TemplateEditWrapper({ id }: { id: string }) {
-  try {
-    const [promptTemplateData, tagsData, allTags] = await Promise.all([
-      getPromptTemplateServer(id),
-      getTagsForTemplateServer(id),
-      getTagsServer(),
-    ]);
+export function TemplateEditWrapper({ id }: { id: string }) {
+  const {
+    data: promptTemplateData,
+    isLoading: isTemplateLoading,
+    isError: isTemplateError,
+    error: templateError,
+    refetch: templateRefetch,
+  } = useQuery({
+    queryKey: ["template", id],
+    queryFn: () => getPromptTemplate(id),
+  });
 
-    promptTemplateData.tags = tagsData;
+  const { data: tagsData } = useQuery({
+    queryKey: ["tags", id],
+    queryFn: () => getTagsForTemplate(id),
+    initialData: [],
+  });
+  const { data: allTags } = useQuery({
+    queryKey: ["tags"],
+    queryFn: () => getTags(),
+    initialData: [],
+  });
 
+  if (isTemplateLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (isTemplateError) {
+    toast.error(templateError.message);
     return (
-      <TemplateEditSection
-        initialPrompt={promptTemplateData}
-        allTags={allTags}
-      />
-    );
-  } catch (error) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center text-red-400">
-        <h2 className="text-xl font-bold">Failed to load template.</h2>
-        <p>{(error as Error).message}</p>
+      <div>
+        <Button onClick={() => templateRefetch()}>Refetching</Button>
       </div>
     );
   }
+
+  if (!promptTemplateData) {
+    return <div>This template does not exist, please try again</div>;
+  }
+
+  promptTemplateData.tags = tagsData;
+
+  return (
+    <TemplateEditSection initialPrompt={promptTemplateData} allTags={allTags} />
+  );
 }

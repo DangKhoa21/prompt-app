@@ -35,8 +35,8 @@ export default function PromptDetail({
           promptData={promptData}
           userData={userData}
           tagsData={tagsData}
-        ></PromptHeadDetail>
-        <PromptResults promptData={promptData}></PromptResults>
+        />
+        <PromptResults promptData={promptData} />
         <CommentSection promptId={promptData.id} />
       </motion.div>
     </>

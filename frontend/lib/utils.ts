@@ -14,6 +14,7 @@ import {
   PromptWithConfigs,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
+import { ConfigType } from "@/features/template";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -242,11 +243,14 @@ export function serializeConfigData({
     const key = config.label;
     let value: string = "";
 
-    if (config.type === "dropdown" || config.type === "combobox") {
+    if (
+      config.type === ConfigType.DROPDOWN ||
+      config.type === ConfigType.COMBOBOX
+    ) {
       value = selectedValues[key];
-    } else if (config.type === "textarea") {
+    } else if (config.type === ConfigType.TEXTAREA) {
       value = textareaValues[key];
-    } else if (config.type === "array") {
+    } else if (config.type === ConfigType.ARRAY) {
       value = JSON.stringify(arrayValues[key]);
     } else {
       return;
@@ -287,11 +291,14 @@ export function serializeResultConfigData({
     const key = config.label;
     let value: string = "";
 
-    if (config.type === "dropdown" || config.type === "combobox") {
+    if (
+      config.type === ConfigType.DROPDOWN ||
+      config.type === ConfigType.COMBOBOX
+    ) {
       value = selectedValues[key];
-    } else if (config.type === "textarea") {
+    } else if (config.type === ConfigType.TEXTAREA) {
       value = textareaValues[key];
-    } else if (config.type === "array") {
+    } else if (config.type === ConfigType.ARRAY) {
       value = JSON.stringify(arrayValues[key]);
     } else {
       return;
@@ -307,9 +314,18 @@ export function serializeResultConfigData({
   return JSON.stringify(serialized);
 }
 
-export function deserializeConfigData(jsonString: string) {
-  // For some reasons, it double the JSON stringify function.
-  const parsed: SerializingResult = JSON.parse(JSON.parse(jsonString));
+export type ExampleResultOutput = {
+  promptId: string;
+  exampleResult: string;
+  selectedValues: Record<string, string>;
+  textareaValues: Record<string, string>;
+  arrayValues: Record<string, { id: string; values: string[] }[]>;
+};
+
+export function deserializeResultConfigData(
+  jsonString: string,
+): ExampleResultOutput {
+  const parsed: SerializingResult = JSON.parse(jsonString);
 
   const newSelected: Record<string, string> = {};
   const newTextarea: Record<string, string> = {};
@@ -318,11 +334,11 @@ export function deserializeConfigData(jsonString: string) {
   parsed.configs.forEach((config) => {
     const { label, type, value } = config;
 
-    if (type === "dropdown" || type === "combobox") {
+    if (type === ConfigType.DROPDOWN || type === ConfigType.COMBOBOX) {
       newSelected[label] = value;
-    } else if (type === "textarea") {
+    } else if (type === ConfigType.TEXTAREA) {
       newTextarea[label] = value;
-    } else if (type === "array") {
+    } else if (type === ConfigType.ARRAY) {
       try {
         const parsedArray = JSON.parse(value);
         if (Array.isArray(parsed)) {

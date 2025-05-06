@@ -1,3 +1,4 @@
+import Container from "@/components/container";
 import UserAbout from "@/components/details/user-detail-comps/about";
 // import UserAchievements from "@/components/details/user-detail-comps/achievements";
 // import UserExpertise from "@/components/details/user-detail-comps/expertise";
@@ -8,8 +9,8 @@ import TagsList from "@/components/marketplace/tags-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
-import { getPromptsServer } from "@/services/prompt/action";
-import { getUserServer } from "@/services/user/action";
+import { getUser } from "@/services/user";
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Mail, Zap } from "lucide-react";
 import { Suspense } from "react";
 
@@ -22,7 +23,7 @@ interface ProfilePageProps {
   };
 }
 
-export default async function Page({ params, searchParams }: ProfilePageProps) {
+export default function Page({ params, searchParams }: ProfilePageProps) {
   const { id } = params;
 
   const { tagId, search, sort } = searchParams || {
@@ -33,12 +34,20 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
   const userDataId = id;
   const filter = { tagId, search, userDataId, sort };
 
-  const initialPrompt = await getPromptsServer({
-    pageParam: "",
-    filter: filter,
+  const { data: userData } = useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUser(id),
+    staleTime: 1000 * 60 * 5,
+    initialData: {
+      id: "",
+      avatarUrl: null,
+      bio: null,
+      username: "unknown",
+      email: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   });
-
-  const userData = await getUserServer(id);
 
   return (
     <>
@@ -51,7 +60,7 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
       ></div>
 
       {/* Main Content */}
-      <div className="max-w-screen-xl mx-auto">
+      <Container>
         <div className="min-h-screen px-4">
           {/* Profile Header */}
           <div className="relative bg-background rounded-lg shadow-sm -mt-20 p-6 mb-6">
@@ -128,11 +137,11 @@ export default async function Page({ params, searchParams }: ProfilePageProps) {
                 <TagsList />
               </Suspense>
 
-              <PromptsList initialPrompt={initialPrompt} filter={filter} />
+              <PromptsList filter={filter} />
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </>
   );
 }
