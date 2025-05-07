@@ -10,6 +10,7 @@ export default function UserExpertise() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
+            Not yet available
             {/* {userData.expertise.map((skill) => ( */}
             {/*   <Badge key={skill} variant="secondary"> */}
             {/*     {skill} */}

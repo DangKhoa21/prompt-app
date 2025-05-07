@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
-import { getPrompt } from "@/services/prompt";
-import { useQueryClient } from "@tanstack/react-query";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
+import { getPrompt } from "@/services/prompt";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
-import { Star, ChartColumn } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChartColumn, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
@@ -60,7 +60,6 @@ export function MarketplacePromptCard({
     queryClient.prefetchQuery({
       queryKey: ["prompt", id],
       queryFn: () => getPrompt(id),
-      staleTime: 1000 * 60 * 5, // optional: cache for 5 mins
     });
   };
 

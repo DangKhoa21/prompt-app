@@ -35,6 +35,7 @@ export function LoginForm({
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Add "Enter" key to login button
   useEffect(() => {
     const handleEnterPress = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -53,6 +54,7 @@ export function LoginForm({
 
   const emailRef = useRef<HTMLInputElement>(null);
 
+  // Auto focus email when navigated
   useEffect(() => {
     if (emailRef.current) {
       emailRef.current.focus();

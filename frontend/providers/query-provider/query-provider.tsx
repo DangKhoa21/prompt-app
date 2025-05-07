@@ -14,9 +14,12 @@ export default function QueryProvider({ children }: Props) {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false, // default: true
+            refetchOnMount: false,
+            retry: 1,
+            staleTime: 1000 * 60 * 5,
           },
         },
-      })
+      }),
   );
 
   return (

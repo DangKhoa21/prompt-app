@@ -25,12 +25,12 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   const { data: tagsData } = useQuery({
     queryKey: ["tags", id],
     queryFn: () => getTagsForTemplate(id),
-    initialData: [],
+    placeholderData: [],
   });
   const { data: allTags } = useQuery({
     queryKey: ["tags"],
     queryFn: () => getTags(),
-    initialData: [],
+    placeholderData: [],
   });
 
   if (isTemplateLoading) {
@@ -50,9 +50,12 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     return <div>This template does not exist, please try again</div>;
   }
 
-  promptTemplateData.tags = tagsData;
+  promptTemplateData.tags = tagsData ?? [];
 
   return (
-    <TemplateEditSection initialPrompt={promptTemplateData} allTags={allTags} />
+    <TemplateEditSection
+      initialPrompt={promptTemplateData}
+      allTags={allTags ?? []}
+    />
   );
 }

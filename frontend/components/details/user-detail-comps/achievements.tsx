@@ -9,6 +9,7 @@ export default function UserAchievements() {
           <CardTitle>Achievements</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          Not yet available
           {/* {userData.achievements.map((achievement) => ( */}
           {/*   <div */}
           {/*     key={achievement.id} */}

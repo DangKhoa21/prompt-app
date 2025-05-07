@@ -27,7 +27,6 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
     queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    staleTime: 1000 * 60 * 5,
   });
 
   React.useEffect(() => {

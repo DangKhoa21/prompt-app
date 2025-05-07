@@ -1,7 +1,9 @@
+"use client";
+
 import Container from "@/components/container";
 import UserAbout from "@/components/details/user-detail-comps/about";
-// import UserAchievements from "@/components/details/user-detail-comps/achievements";
-// import UserExpertise from "@/components/details/user-detail-comps/expertise";
+import UserAchievements from "@/components/details/user-detail-comps/achievements";
+import UserExpertise from "@/components/details/user-detail-comps/expertise";
 import { LoadingSpinner } from "@/components/icons";
 import { MarketSearch } from "@/components/marketplace/market-search";
 import PromptsList from "@/components/marketplace/prompts-list";
@@ -37,8 +39,7 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
   const { data: userData } = useQuery({
     queryKey: ["user", id],
     queryFn: () => getUser(id),
-    staleTime: 1000 * 60 * 5,
-    initialData: {
+    placeholderData: {
       id: "",
       avatarUrl: null,
       bio: null,
@@ -48,6 +49,8 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
       updatedAt: new Date(),
     },
   });
+
+  if (!userData) return <div>This user is not exist</div>;
 
   return (
     <>
@@ -113,33 +116,32 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
             </div>
           </div>
 
-          {/* Main Content */}
+          {/* Bio, stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Sidebar */}
-            <div className="space-y-6">
+            <div className="lg:col-span-2">
               {/* About */}
               <UserAbout userData={userData} />
+            </div>
 
+            <div className="space-y-6">
               {/* Expertise */}
-              {/* <UserExpertise /> */}
+              <UserExpertise />
 
               {/* Achievements */}
-              {/* <UserAchievements /> */}
+              <UserAchievements />
 
               {/* Stats */}
             </div>
-
-            {/* Main Content Area */}
-            <div className="lg:col-span-2">
-              <MarketSearch showTitle={false} />
-
-              <Suspense fallback={<LoadingSpinner />}>
-                <TagsList />
-              </Suspense>
-
-              <PromptsList filter={filter} />
-            </div>
           </div>
+
+          {/* Main Content Area */}
+          <MarketSearch showTitle={false} />
+
+          <Suspense fallback={<LoadingSpinner />}>
+            <TagsList />
+          </Suspense>
+
+          <PromptsList filter={filter} />
         </div>
       </Container>
     </>

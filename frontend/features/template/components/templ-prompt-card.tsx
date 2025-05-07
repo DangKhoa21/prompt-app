@@ -13,7 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
-import { getPromptTemplate } from "@/services/prompt";
+import { getPrompt, getPromptTemplate } from "@/services/prompt";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChartColumn, Star } from "lucide-react";
@@ -53,7 +53,11 @@ export function PromptTemplateCard({
     queryClient.prefetchQuery({
       queryKey: ["template", id],
       queryFn: () => getPromptTemplate(id),
-      staleTime: 1000 * 60 * 5, // optional: cache for 5 mins
+    });
+
+    queryClient.prefetchQuery({
+      queryKey: ["prompt", id],
+      queryFn: () => getPrompt(id),
     });
   };
 

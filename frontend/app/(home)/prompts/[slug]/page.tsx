@@ -12,6 +12,16 @@ import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+const fallbackUser = {
+  id: "",
+  avatarUrl: null,
+  bio: null,
+  username: "unknown",
+  email: "",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
 export default function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const promptId = getIdFromDetailURL(slug);
@@ -25,11 +35,22 @@ export default function Page({ params }: { params: { slug: string } }) {
   } = useQuery({
     queryKey: ["prompt", promptId],
     queryFn: () => getPrompt(promptId),
-    staleTime: 1000 * 60 * 5,
+    // placeholderData: {
+    //   id: "",
+    //   title: "",
+    //   description: "",
+    //   stringTemplate: "",
+    //   systemInstruction: null,
+    //   exampleResult: null,
+    //   usageCount: 0,
+    //   creatorId: "",
+    //   createdAt: new Date(),
+    //   updatedAt: new Date(),
+    // },
   });
 
   const {
-    data: userData,
+    data: fetchedUserData,
     // isLoading,
     // isError,
     // error,
@@ -38,20 +59,10 @@ export default function Page({ params }: { params: { slug: string } }) {
     queryKey: ["user", promptData?.creatorId],
     queryFn: () => getUser(promptData!.creatorId),
     enabled: !!promptData?.creatorId,
-    staleTime: 1000 * 60 * 5,
-    initialData: {
-      id: "",
-      avatarUrl: null,
-      bio: null,
-      username: "unknown",
-      email: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
   });
 
   const {
-    data: tagsData,
+    data: fetchedTagsData,
     // isLoading,
     // isError,
     // error,
@@ -60,8 +71,6 @@ export default function Page({ params }: { params: { slug: string } }) {
     queryKey: ["tags", promptData?.id],
     queryFn: () => getTagsForTemplate(promptData!.id),
     enabled: !!promptData?.id,
-    staleTime: 1000 * 60 * 5,
-    initialData: [],
   });
 
   if (isPromptLoading) {
@@ -80,6 +89,9 @@ export default function Page({ params }: { params: { slug: string } }) {
   if (!promptData) {
     return <div>Prompt does not exist, please try another prompt</div>;
   }
+
+  const userData = fetchedUserData ?? fallbackUser;
+  const tagsData = fetchedTagsData ?? [];
 
   return (
     <>

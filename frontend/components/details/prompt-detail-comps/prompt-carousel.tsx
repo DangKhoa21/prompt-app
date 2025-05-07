@@ -40,7 +40,6 @@ export default function PromptCarousel({
         }
       : undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    staleTime: 1000 * 60 * 5,
   });
 
   const { open } = useSidebar();
