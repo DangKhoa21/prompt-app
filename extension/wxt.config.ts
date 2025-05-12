@@ -3,7 +3,7 @@ import { defineConfig } from "wxt";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   manifest: {
-    permissions: ["sidePanel", "storage"],
+    permissions: ["sidePanel", "storage", "tabs"],
     action: {},
     name: "Prompt App",
     description: "A helpful tool for quicker prompting",

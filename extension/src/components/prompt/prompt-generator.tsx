@@ -37,7 +37,7 @@ import {
   RotateCcw,
   Share2,
 } from "lucide-react";
-//import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "@/hooks/useSearchParams";
 import { use, useEffect, useState } from "react";
 //import { toast } from "sonner";
 
@@ -53,32 +53,13 @@ export function PromptGeneratorSidebar() {
     Record<string, { id: string; values: string[] }[]>
   >({});
 
-  //const searchParams = useSearchParams();
-  //const promptId = searchParams.get("promptId");
-  const promptId = "01946512-d39f-7c1f-b983-c6c1b3a9a3d7"; // TODO: remove this line and uncomment the above line
+  const searchParams = useSearchParams();
+  const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
     queryFn: () => getPromptWithConfigs(promptId),
   });
-
-  useEffect(() => {
-    const setRandomStorage = async () => {
-      await storage.setItem("local:random", Math.random());
-    };
-    setRandomStorage();
-  }, []);
-
-  // const { isPending, isError, data, error, refetch } = useQuery({
-  //   queryKey: ["prompts", promptId],
-  //   queryFn: async () => {
-  //     const response = await axios.get(
-  //       "https://jsonplaceholder.typicode.com/todos/1"
-  //     );
-  //     const data = await response.data.json();
-  //     return data;
-  //   },
-  // });
 
   // const createShareOptionMutation = useMutation({
   //   mutationFn: createShareOption,

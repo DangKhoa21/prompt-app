@@ -18,14 +18,15 @@ import { LoadingSpinner } from "@/components/icons";
 
 import { getPrompts } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
-//import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "@/hooks/useSearchParams";
 import { useInView } from "react-intersection-observer";
 import { useDebounceCallback } from "usehooks-ts";
+import { sendMessage } from "@/lib/messaging";
 
 export function PromptSearch() {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const searchParams = window.location.href;
+  //const searchParams = useSearchParams();
 
   const { ref, inView } = useInView();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
@@ -44,9 +45,20 @@ export function PromptSearch() {
   );
 
   const handlePromptChange = (promptId: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("promptId", promptId);
-    window.history.replaceState(null, "", `?${params.toString()}`);
+    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const currentTab = tabs[0];
+      const url = new URL(currentTab.url || "");
+      const params = new URLSearchParams(url.search);
+      params.set("promptId", promptId);
+      if (currentTab) {
+        sendMessage(
+          "replaceCurrentUrl",
+          { url: `${url.origin}${url.pathname}?${params.toString()}` },
+          currentTab.id
+        );
+      }
+    });
+    // window.history.replaceState(null, "", `?${params.toString()}`);
     setOpen(false);
   };
 
