@@ -68,7 +68,7 @@ export function PromptTemplateCard({
       onMouseEnter={prefetchPrompt}
     >
       <Link href={detailURL}>
-        <Card className="bg-card rounded-3xl h-56 flex flex-col transition-all hover:scale-105">
+        <Card className="bg-card rounded-3xl w-80 h-52 flex flex-col transition-all hover:scale-105">
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">
             <CardTitle className="flex items-start justify-between mt-2 text-xl">
               <div className="pl-1 line-clamp-2">{title}</div>

@@ -1,12 +1,12 @@
-import { Suspense } from "react";
-
+import Container from "@/components/container";
+import { LoadingSpinner } from "@/components/icons";
 import TagsList from "@/components/marketplace/tags-list";
 import {
-  TemplatesSearch,
   TemplateGridWrapper,
+  TemplatesHeader,
+  TemplatesSearch,
 } from "@/features/template";
-import { LoadingSpinner } from "@/components/icons";
-import Container from "@/components/container";
+import { Suspense } from "react";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -25,8 +25,10 @@ export default async function Page(props: {
   const tab = searchParams?.tab || "";
 
   return (
-    <Container>
-        <TemplatesSearch />
+    <>
+      <TemplatesHeader />
+      <Container>
+        <TemplatesSearch filter={filter} />
 
         <Suspense fallback={<LoadingSpinner />}>
           <TagsList />
@@ -35,6 +37,7 @@ export default async function Page(props: {
         <Suspense fallback={<LoadingSpinner />}>
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
-    </Container>
+      </Container>
+    </>
   );
 }

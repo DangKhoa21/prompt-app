@@ -63,7 +63,7 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
         )}
       />
 
-      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
+      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_20rem)] ">
         {data &&
           data.pages.map((group, i) => (
             <React.Fragment key={i}>

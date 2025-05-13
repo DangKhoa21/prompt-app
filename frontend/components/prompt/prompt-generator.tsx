@@ -51,6 +51,7 @@ export function PromptGeneratorSidebar() {
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
   >({});
+  const [remainConfigs, setRemainConfigs] = useState(0);
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
@@ -74,6 +75,7 @@ export function PromptGeneratorSidebar() {
     },
   });
 
+  // Set share configs
   useEffect(() => {
     if (!data) return;
 
@@ -124,6 +126,18 @@ export function PromptGeneratorSidebar() {
     }
   }, [data, systemInstruction, setSystemInstruction]);
 
+  useEffect(() => {
+    if (!data) return;
+    const noConfigs = data.configs.length;
+
+    const noSetConfigs =
+      Object.entries(selectedValues).length +
+      Object.entries(textareaValues).length +
+      Object.entries(arrayValues).length;
+
+    setRemainConfigs(noSetConfigs - noConfigs);
+  }, [data, selectedValues, textareaValues, arrayValues]);
+
   const pinPromptMutation = usePinPrompt();
 
   if (isPending) {
@@ -172,6 +186,8 @@ export function PromptGeneratorSidebar() {
   };
 
   const handlePrompt = (isSending: boolean) => {
+    if (remainConfigs) return;
+
     const template = data.stringTemplate;
     let prompt = template;
 
@@ -370,7 +386,6 @@ export function PromptGeneratorSidebar() {
                   onChange={(e) =>
                     handleTextareaChange(config.label, e.target.value)
                   }
-                  // className={config.className}
                 />
               ) : config.type === "array" ? (
                 <>
@@ -392,10 +407,18 @@ export function PromptGeneratorSidebar() {
       {data.id !== "1" && (
         <SidebarFooter>
           <div className="flex justify-around gap-4 p-2">
-            <Button className="w-1/2" onClick={() => handlePrompt(false)}>
+            <Button
+              className="w-1/2"
+              disabled={!remainConfigs}
+              onClick={() => handlePrompt(false)}
+            >
               Generate
             </Button>
-            <Button className="w-1/2" onClick={() => handlePrompt(true)}>
+            <Button
+              className="w-1/2"
+              disabled={!remainConfigs}
+              onClick={() => handlePrompt(true)}
+            >
               Send
             </Button>
           </div>

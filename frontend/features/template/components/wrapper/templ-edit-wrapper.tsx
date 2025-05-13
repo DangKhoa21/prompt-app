@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { TemplateEditSection } from "@/features/template";
 import {
   getPromptTemplate,
@@ -8,7 +9,6 @@ import {
   getTagsForTemplate,
 } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export function TemplateEditWrapper({ id }: { id: string }) {
   const {
@@ -38,16 +38,23 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   }
 
   if (isTemplateError) {
-    toast.error(templateError.message);
+    console.error(`Test error ${templateError}`);
     return (
-      <div>
-        <Button onClick={() => templateRefetch()}>Refetching</Button>
+      <div className="flex h-full items-center justify-center gap-4">
+        <p>An error has occured, please try again!</p>
+        <BetterTooltip content="Refetching prompt">
+          <Button onClick={() => templateRefetch()}>Reload</Button>
+        </BetterTooltip>
       </div>
     );
   }
 
   if (!promptTemplateData) {
-    return <div>This template does not exist, please try again</div>;
+    return (
+      <div className="flex h-full justify-center gap-4">
+        This template does not exist, please try again
+      </div>
+    );
   }
 
   promptTemplateData.tags = tagsData ?? [];

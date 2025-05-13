@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { ConfigType, useCreatePromptTemplate } from "@/features/template";
 import { generateUUID } from "@/lib/utils";
 import {
@@ -66,9 +67,11 @@ export function AddNewTemplateButton() {
 
   return (
     <>
-      <Button className="h-10" onClick={handleNewTemplate}>
-        {isMobile ? <Plus className="h-4 w-4" /> : "Add"}
-      </Button>
+      <BetterTooltip content="Add new template">
+        <Button className="h-10" onClick={handleNewTemplate}>
+          {isMobile ? <Plus className="h-4 w-4" /> : "Add"}
+        </Button>
+      </BetterTooltip>
     </>
   );
 }

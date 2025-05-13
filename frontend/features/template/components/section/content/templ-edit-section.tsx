@@ -157,7 +157,7 @@ export function TemplateEditSection({
   };
 
   return (
-    <div className="w-full bg-background/90 px-2 pt-2">
+    <div className="w-full bg-background/90 p-2">
       <div className="w-full max-w-5xl bg-background mx-auto space-y-6">
         <div className="flex flex-col gap-4">
           <TemplateEditTextField
@@ -249,7 +249,7 @@ export function TemplateEditSection({
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="evaluate" className="p-1 space-y-6">
+          <TabsContent value="evaluate" className="p-1 pb-12 space-y-6">
             <EvaluatePrompt></EvaluatePrompt>
           </TabsContent>
         </Tabs>

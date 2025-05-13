@@ -48,7 +48,7 @@ export function MarketSearch({ showTitle = true }: MarketSearchProps) {
         transition={{ delay: 0.3 }}
         className="sticky top-2.5 z-20 text-center w-3/5 max-w-screen-lg mx-auto"
       >
-        <div className="inline-flex relative mb-6 w-full justify-center">
+        <div className="inline-flex relative w-full justify-center">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search"

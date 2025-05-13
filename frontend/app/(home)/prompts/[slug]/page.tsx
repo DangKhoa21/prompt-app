@@ -6,11 +6,11 @@ import PromptCarousels from "@/components/details/prompt-detail-comps/prompt-car
 import PromptOverview from "@/components/details/prompt-detail-comps/prompt-overview";
 import UserOverviewCard from "@/components/details/user-detail-comps/user-overview-card";
 import { Button } from "@/components/ui/button";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { getIdFromDetailURL } from "@/lib/utils";
 import { getPrompt, getTagsForTemplate } from "@/services/prompt";
 import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 const fallbackUser = {
   id: "",
@@ -78,10 +78,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   }
 
   if (isPromptError) {
-    toast.error(promptError.message);
+    console.error(`Error: ${promptError.message}`);
     return (
-      <div>
-        <Button onClick={() => promptRefetch()}>Refetching</Button>
+      <div className="flex h-full items-center justify-center gap-4">
+        <p>An error has occured, please try again!</p>
+        <BetterTooltip content="Refetching prompt">
+          <Button onClick={() => promptRefetch()}>Reload</Button>
+        </BetterTooltip>
       </div>
     );
   }
@@ -103,7 +106,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             tagsData={tagsData}
             className="lg:col-span-2 space-y-6"
           />
-          <div className="space-y-6">
+          <div className="space-y-6 h-fit md:sticky md:top-20">
             <PromptOverview promptData={promptData} />
             <UserOverviewCard userData={userData} />
           </div>

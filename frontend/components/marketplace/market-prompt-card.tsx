@@ -107,7 +107,7 @@ export function MarketplacePromptCard({
     return (
       <>
         <div className="p-1" ref={triggerRef} onMouseEnter={prefetchPrompt}>
-          <Card className="bg-card rounded-3xl w-48 h-36 md:w-64 md:h-48 flex flex-col">
+          <Card className="bg-card rounded-3xl max-w-80 h-52 md:w-64 md:h-48 flex flex-col">
             <Link href={detailURL} className="h-full">
               <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
                 <CardTitle className="flex relative h-full w-full mt-2 text-xl">
@@ -159,7 +159,7 @@ export function MarketplacePromptCard({
   return (
     <div ref={triggerRef} onMouseEnter={prefetchPrompt}>
       <Link href={detailURL}>
-        <Card className="bg-card rounded-3xl h-56 flex flex-col transition-all hover:scale-105">
+        <Card className="bg-card rounded-3xl max-w-80 h-52 flex flex-col transition-all hover:scale-105">
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">
             <CardTitle className="flex items-start justify-between mt-2 text-xl">
               <div className="pl-1 line-clamp-2">{title}</div>

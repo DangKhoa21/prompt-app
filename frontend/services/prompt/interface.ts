@@ -26,6 +26,7 @@ export interface PromptConfig {
   id: string;
   label: string;
   type: string;
+  info?: string;
   promptId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -86,6 +87,7 @@ export interface TemplateConfig {
   id: string;
   label: string;
   type: ConfigType;
+  info?: string;
   promptId: string;
   values: TemplateConfigValue[];
 }

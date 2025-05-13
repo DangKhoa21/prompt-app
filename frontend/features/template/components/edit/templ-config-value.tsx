@@ -49,6 +49,8 @@ export function TemplatesConfigVariable({
   const [addingError, setAddingError] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
+  // const [isMandatory, setIsMandatory] = useState(true);
+  // const [description, setDescription] = useState("");
 
   const { template, setTemplate } = useTemplate();
 
@@ -61,7 +63,7 @@ export function TemplatesConfigVariable({
               ...config,
               type: ConfigType[type.toUpperCase() as keyof typeof ConfigType],
             }
-          : config
+          : config,
       ),
     };
 
@@ -70,7 +72,7 @@ export function TemplatesConfigVariable({
 
   const handleAddConfigValue = (
     event: React.FormEvent | React.KeyboardEvent,
-    configId: string
+    configId: string,
   ) => {
     event.preventDefault();
 
@@ -97,7 +99,7 @@ export function TemplatesConfigVariable({
                 { id: v7(), value: value, promptConfigId: id },
               ],
             }
-          : config
+          : config,
       ),
     };
 

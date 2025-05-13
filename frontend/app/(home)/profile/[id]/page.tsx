@@ -50,7 +50,12 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
     },
   });
 
-  if (!userData) return <div>This user is not exist</div>;
+  if (!userData)
+    return (
+      <div className="flex h-full items-center justify-center">
+        This user is not exist
+      </div>
+    );
 
   return (
     <>
@@ -64,7 +69,7 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
 
       {/* Main Content */}
       <Container>
-        <div className="min-h-screen px-4">
+        <div className="min-h-screen mx-auto px-4 w-11/12 space-y-6 md:space-y-10">
           {/* Profile Header */}
           <div className="relative bg-background rounded-lg shadow-sm -mt-20 p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-end gap-6">

@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { useTemplate } from "@/context/template-context";
 import {
   useEvaluatePrompt,
@@ -297,9 +298,11 @@ export function EvaluatePrompt() {
                     <Label htmlFor={config.label.toLowerCase()}>
                       {config.label}
                     </Label>
-                    <Button variant="ghost" className="h-8 w-8 mr-2">
-                      <FileQuestion></FileQuestion>
-                    </Button>
+                    <BetterTooltip content="...">
+                      <Button variant="ghost" className="h-8 w-8 mr-2">
+                        <FileQuestion></FileQuestion>
+                      </Button>
+                    </BetterTooltip>
                   </div>
 
                   <div className="px-2">
@@ -464,22 +467,26 @@ export function EvaluatePrompt() {
                       {new Date(result.timestamp).toLocaleString()}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => handleCopyResult(result.result)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant={result.selected ? "default" : "ghost"}
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => handleSelectResult(result.id)}
-                      >
-                        <Check className="h-3 w-3" />
-                      </Button>
+                      <BetterTooltip content="Copy result to clipboard">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => handleCopyResult(result.result)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </BetterTooltip>
+                      <BetterTooltip content="Update the display example in the prompt page">
+                        <Button
+                          variant={result.selected ? "default" : "ghost"}
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => handleSelectResult(result.id)}
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
+                      </BetterTooltip>
                     </div>
                   </div>
                 </CardHeader>
