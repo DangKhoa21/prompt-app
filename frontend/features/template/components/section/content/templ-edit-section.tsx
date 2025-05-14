@@ -158,7 +158,7 @@ export function TemplateEditSection({
 
   return (
     <div className="w-full bg-background/90 p-2">
-      <div className="w-full max-w-5xl bg-background mx-auto space-y-6">
+      <div className="w-full bg-background mx-auto space-y-6">
         <div className="flex flex-col gap-4">
           <TemplateEditTextField
             label="title"
@@ -256,7 +256,7 @@ export function TemplateEditSection({
       </div>
       {activeTab === "edit" && (
         <div className="bg-background/90 sticky bottom-0 py-2 flex justify-center items-center">
-          <div className="grid w-full max-w-5xl items-center justify-end md:grid-cols-2">
+          <div className="grid w-full max-w-screen-xl items-center justify-end md:grid-cols-2">
             {!isMobile && (
               <div className="flex">
                 <ConfirmDialog

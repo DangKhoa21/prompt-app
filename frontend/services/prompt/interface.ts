@@ -92,6 +92,11 @@ export interface TemplateConfig {
   values: TemplateConfigValue[];
 }
 
+export interface TemplateConfigInfo {
+  description: string;
+  isRequired: boolean; // default true
+}
+
 export interface TemplateWithConfigs extends PromptTemplate {
   tags: TemplateTag[];
   configs: TemplateConfig[];

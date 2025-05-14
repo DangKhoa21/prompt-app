@@ -11,7 +11,10 @@ import { twMerge } from "tailwind-merge";
 import type { Message as DBMessage } from "@/services/chat/interface";
 import { v7 } from "uuid";
 import {
+  PromptConfig,
   PromptWithConfigs,
+  TemplateConfig,
+  TemplateConfigInfo,
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 import { ConfigType } from "@/features/template";
@@ -358,4 +361,61 @@ export function deserializeResultConfigData(
     textareaValues: newTextarea,
     arrayValues: newArray,
   };
+}
+
+export function stringifyInfo(infoObj: TemplateConfigInfo): string {
+  return JSON.stringify(infoObj);
+}
+
+export function parseInfo(info?: string): TemplateConfigInfo {
+  try {
+    if (!info) return { description: "", isRequired: true };
+    const parsed = JSON.parse(info);
+    return {
+      description: parsed.description || "",
+      isRequired: parsed.isRequired !== false, // default to true
+    };
+  } catch (err) {
+    console.log(err);
+    // Fallback for legacy plain description string
+    return {
+      description: info || "",
+      isRequired: true,
+    };
+  }
+}
+
+// TODO: Modify to match "NONE"
+export function areRequiredConfigsFilled(
+  configs: PromptConfig[] | TemplateConfig[],
+  selectedValues: Record<string, string>,
+  textareaValues: Record<string, string>,
+  arrayValues: Record<string, { id: string; values: string[] }[]>,
+): boolean {
+  return configs.every((config) => {
+    const { isRequired } = parseInfo(config.info);
+    if (!isRequired) return true;
+
+    const value =
+      config.type === ConfigType.TEXTAREA
+        ? textareaValues[config.label]
+        : config.type === ConfigType.ARRAY
+          ? arrayValues[config.label]
+          : selectedValues[config.label];
+
+    // Determine "filled" by type
+    if (config.type === ConfigType.ARRAY) {
+      // At least one non-empty value in any item
+      return (
+        Array.isArray(value) &&
+        value.length > 0 &&
+        value.every(
+          (item) =>
+            item.values.length > 0 && item.values.some((v) => v.trim() !== ""),
+        )
+      );
+    } else {
+      return typeof value === "string" && value.trim() !== "";
+    }
+  });
 }

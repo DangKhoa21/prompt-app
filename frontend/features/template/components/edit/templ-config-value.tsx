@@ -23,13 +23,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useTemplate } from "@/context/template-context";
 import { ConfigType } from "@/features/template";
-import { cn } from "@/lib/utils";
+import { cn, parseInfo, stringifyInfo } from "@/lib/utils";
 import { TemplateConfig } from "@/services/prompt/interface";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { v7 } from "uuid";
 import ConfigDnD from "./config-variable/config-item";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 
 interface ConfigVariableProps extends TemplateConfig {
   index: number;
@@ -41,6 +42,7 @@ export function TemplatesConfigVariable({
   // index,
   label,
   type,
+  info,
   values,
   isSidebarOpen,
 }: ConfigVariableProps) {
@@ -49,8 +51,11 @@ export function TemplatesConfigVariable({
   const [addingError, setAddingError] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
-  // const [isMandatory, setIsMandatory] = useState(true);
-  // const [description, setDescription] = useState("");
+
+  const extractedInfo = parseInfo(info);
+
+  const [isMandatory, setIsMandatory] = useState(extractedInfo.isRequired);
+  // const [description, setDescription] = useState(extractedInfo.description);
 
   const { template, setTemplate } = useTemplate();
 
@@ -107,6 +112,25 @@ export function TemplatesConfigVariable({
 
     setLatestAdded(value);
     setNewConfigValue("");
+  };
+
+  const handleRequiredChange = () => {
+    const newState = !isMandatory;
+
+    const newTemplate = {
+      ...template,
+      configs: template.configs.map((config) =>
+        config.id === id
+          ? {
+              ...config,
+              info: stringifyInfo({ isRequired: newState, description: "" }),
+            }
+          : config,
+      ),
+    };
+
+    setTemplate(newTemplate);
+    setIsMandatory(newState);
   };
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)
@@ -167,13 +191,13 @@ export function TemplatesConfigVariable({
               {type === ConfigType.DROPDOWN ||
               type === ConfigType.ARRAY ||
               type === ConfigType.COMBOBOX ? (
-                <div className="flex flex-col">
-                  <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center h-10">
                     <p className="text-sm text-gray-600">[{label}] values</p>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="flex justify-end p-2">
-                          <Button variant="ghost" size="icon" className="mr-1">
+                        <div className="flex justify-end">
+                          <Button variant="ghost" size="icon" className="-mr-2">
                             <Plus className="w-4 h-4" />
                           </Button>
                         </div>
@@ -229,6 +253,16 @@ export function TemplatesConfigVariable({
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
+                  </div>
+                  <div className="flex justify-between items-center h-10">
+                    <div>Adding Description</div>
+                    <div className="flex gap-4">
+                      Is required?
+                      <Switch
+                        checked={isMandatory}
+                        onCheckedChange={handleRequiredChange}
+                      />
+                    </div>
                   </div>
                   <ScrollArea className="h-[300px] border rounded-md p-2">
                     <ConfigDnD key={id} id={id} values={values}></ConfigDnD>

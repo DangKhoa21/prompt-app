@@ -25,7 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
-import { generateUUID, serializeConfigData } from "@/lib/utils";
+import {
+  areRequiredConfigsFilled,
+  generateUUID,
+  serializeConfigData,
+} from "@/lib/utils";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -51,10 +55,10 @@ export function PromptGeneratorSidebar() {
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
   >({});
-  const [remainConfigs, setRemainConfigs] = useState(0);
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
+  const [isFilled, setIsFilled] = useState(false);
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
@@ -128,15 +132,15 @@ export function PromptGeneratorSidebar() {
 
   useEffect(() => {
     if (!data) return;
-    const noConfigs = data.configs.length;
-
-    const noSetConfigs =
-      Object.entries(selectedValues).length +
-      Object.entries(textareaValues).length +
-      Object.entries(arrayValues).length;
-
-    setRemainConfigs(noSetConfigs - noConfigs);
-  }, [data, selectedValues, textareaValues, arrayValues]);
+    setIsFilled(
+      areRequiredConfigsFilled(
+        data.configs,
+        selectedValues,
+        textareaValues,
+        arrayValues,
+      ),
+    );
+  }, [arrayValues, data, selectedValues, textareaValues]);
 
   const pinPromptMutation = usePinPrompt();
 
@@ -186,8 +190,6 @@ export function PromptGeneratorSidebar() {
   };
 
   const handlePrompt = (isSending: boolean) => {
-    if (remainConfigs) return;
-
     const template = data.stringTemplate;
     let prompt = template;
 
@@ -409,14 +411,14 @@ export function PromptGeneratorSidebar() {
           <div className="flex justify-around gap-4 p-2">
             <Button
               className="w-1/2"
-              disabled={!remainConfigs}
+              disabled={!isFilled}
               onClick={() => handlePrompt(false)}
             >
               Generate
             </Button>
             <Button
               className="w-1/2"
-              disabled={!remainConfigs}
+              disabled={!isFilled}
               onClick={() => handlePrompt(true)}
             >
               Send
