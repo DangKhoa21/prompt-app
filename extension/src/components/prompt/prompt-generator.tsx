@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { use, useEffect, useState } from "react";
+import { sendMessage } from "@/lib/messaging";
 //import { toast } from "sonner";
 
 export function PromptGeneratorSidebar() {
@@ -227,6 +228,19 @@ export function PromptGeneratorSidebar() {
     //   value: prompt,
     //   isSending,
     // });
+    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const currentTab = tabs[0];
+
+      sendMessage(
+        "setPrompt",
+        {
+          id: data.id,
+          value: prompt,
+          isSending,
+        },
+        currentTab.id
+      );
+    });
   };
 
   // const handleShare = () => {
@@ -268,7 +282,7 @@ export function PromptGeneratorSidebar() {
   // };
 
   return (
-    <>
+    <div className="flex h-full w-full flex-col">
       <SidebarHeader className="pb-0">
         <div className="flex justify-between items-center p-2">
           <div className="flex items-center">
@@ -391,17 +405,17 @@ export function PromptGeneratorSidebar() {
       </SidebarContent>
 
       {data.id !== "1" && (
-        <SidebarFooter>
+        <SidebarFooter className="sticky bottom-0 bg-background">
           <div className="flex justify-around gap-4 p-2">
-            <Button className="w-1/2" onClick={() => handlePrompt(false)}>
+            <Button className="w-full" onClick={() => handlePrompt(false)}>
               Generate
             </Button>
-            <Button className="w-1/2" onClick={() => handlePrompt(true)}>
+            {/* <Button className="w-1/2" onClick={() => handlePrompt(true)}>
               Send
-            </Button>
+            </Button> */}
           </div>
         </SidebarFooter>
       )}
-    </>
+    </div>
   );
 }
