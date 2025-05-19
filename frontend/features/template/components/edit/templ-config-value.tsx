@@ -31,6 +31,7 @@ import { v7 } from "uuid";
 import ConfigDnD from "./config-variable/config-item";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ConfigVariableProps extends TemplateConfig {
   index: number;
@@ -55,7 +56,7 @@ export function TemplatesConfigVariable({
   const extractedInfo = parseInfo(info);
 
   const [isMandatory, setIsMandatory] = useState(extractedInfo.isRequired);
-  // const [description, setDescription] = useState(extractedInfo.description);
+  const [description, setDescription] = useState(extractedInfo.description);
 
   const { template, setTemplate } = useTemplate();
 
@@ -145,7 +146,7 @@ export function TemplatesConfigVariable({
 
           {!isOpen ? (
             <div className="italic text-sm font-thin cursor-default">
-              Click to add
+              Click for details
             </div>
           ) : (
             <div className="italic text-sm font-thin cursor-default">
@@ -192,6 +193,21 @@ export function TemplatesConfigVariable({
               type === ConfigType.ARRAY ||
               type === ConfigType.COMBOBOX ? (
                 <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center h-10">
+                    <div className="font-medium">Description</div>
+                    <div className="flex gap-4">
+                      <p className="font-medium">Required?</p>
+                      <Switch
+                        checked={isMandatory}
+                        onCheckedChange={handleRequiredChange}
+                      />
+                    </div>
+                  </div>
+                  <Textarea
+                    placeholder="Adding your description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                   <div className="flex justify-between items-center h-10">
                     <p className="text-sm text-gray-600">[{label}] values</p>
                     <Dialog>
@@ -253,16 +269,6 @@ export function TemplatesConfigVariable({
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                  </div>
-                  <div className="flex justify-between items-center h-10">
-                    <div>Adding Description</div>
-                    <div className="flex gap-4">
-                      Is required?
-                      <Switch
-                        checked={isMandatory}
-                        onCheckedChange={handleRequiredChange}
-                      />
-                    </div>
                   </div>
                   <ScrollArea className="h-[300px] border rounded-md p-2">
                     <ConfigDnD key={id} id={id} values={values}></ConfigDnD>

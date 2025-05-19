@@ -6,6 +6,7 @@ import { CreatableCombobox } from "@/components/prompt/generator-items/creatable
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -22,15 +23,19 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
+import { fillPromptTemplate } from "@/lib/generatePrompt";
 import {
-  areRequiredConfigsFilled,
+  cn,
   generateUUID,
   serializeConfigData,
+  validateFilledConfigs,
 } from "@/lib/utils";
 import { getPromptWithConfigs } from "@/services/prompt";
+import { PromptConfig } from "@/services/prompt/interface";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -58,7 +63,12 @@ export function PromptGeneratorSidebar() {
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
-  const [isFilled, setIsFilled] = useState(false);
+  const [isFilled, setIsFilled] = useState({
+    isValid: false,
+    unfilledConfigs: [""],
+    filledCount: 0,
+    totalCount: 0,
+  });
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
@@ -130,10 +140,12 @@ export function PromptGeneratorSidebar() {
     }
   }, [data, systemInstruction, setSystemInstruction]);
 
+  // Check filled configs
   useEffect(() => {
     if (!data) return;
+
     setIsFilled(
-      areRequiredConfigsFilled(
+      validateFilledConfigs(
         data.configs,
         selectedValues,
         textareaValues,
@@ -191,54 +203,15 @@ export function PromptGeneratorSidebar() {
 
   const handlePrompt = (isSending: boolean) => {
     const template = data.stringTemplate;
-    let prompt = template;
-
-    data.configs.forEach((config) => {
-      prompt = prompt.replace("$", "");
-      if (config.type === "dropdown" || config.type === "combobox") {
-        if (
-          selectedValues[config.label] &&
-          selectedValues[config.label] !== "None"
-        ) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            selectedValues[config.label],
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "textarea") {
-        if (textareaValues[config.label]) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            textareaValues[config.label],
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "array") {
-        const replaceValue = arrayValues[config.label]
-          ? arrayValues[config.label]
-              .map((item, index) =>
-                item.values
-                  .map(
-                    (value, labelIndex) =>
-                      `\n\t${config.values[labelIndex].value} ${
-                        index + 1
-                      }: ${value}`,
-                  )
-                  .join(""),
-              )
-              .join("\n")
-          : "";
-
-        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
-      }
+    const configs = data.configs;
+    const prompt = fillPromptTemplate({
+      template,
+      configs,
+      selectedValues,
+      textareaValues,
+      arrayValues,
     });
 
-    // Remove only excessive spaces, not newlines "\n"
-    prompt = prompt.replace(/ {2,}/g, " ");
-    prompt = prompt.replace(/\\n/g, "\n");
     setPrompt({
       id: data.id,
       value: prompt,
@@ -283,6 +256,98 @@ export function PromptGeneratorSidebar() {
       },
     });
   };
+
+  function renderConfigInput(config: PromptConfig) {
+    const isUnfilled = isFilled.unfilledConfigs.includes(config.label);
+    const label = (
+      <SidebarGroupLabel className="flex justify-between">
+        <div className="flex gap-2">
+          <Label>{config.label}</Label>
+          {isFilled.unfilledConfigs.includes(config.label) && (
+            <p className={cn("text-xs", isUnfilled ? "text-red-400" : "")}>
+              Required
+            </p>
+          )}
+        </div>
+        <Button variant="ghost" className="h-8 w-8 mr-2">
+          <FileQuestion />
+        </Button>
+      </SidebarGroupLabel>
+    );
+
+    const content = (() => {
+      switch (config.type) {
+        case "dropdown":
+          return (
+            <Select
+              onValueChange={(value) => handleSelectChange(config.label, value)}
+            >
+              <SelectTrigger id={config.label}>
+                <SelectValue
+                  placeholder={
+                    selectedValues[config.label] ??
+                    `Select a ${config.label.toLowerCase()}`
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="None">None</SelectItem>
+                {config.values.map((value) => (
+                  <SelectItem key={value.id} value={value.value}>
+                    {value.value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+
+        case "combobox":
+          return (
+            <CreatableCombobox
+              options={config.values}
+              value={selectedValues[config.label]}
+              onChange={(value) => handleSelectChange(config.label, value)}
+              placeholder={`Select a ${config.label.toLowerCase()}`}
+              onCreateOption={(inputValue) =>
+                handleCreateOption(config.label, inputValue)
+              }
+            />
+          );
+
+        case "textarea":
+          return (
+            <Textarea
+              id={config.label}
+              placeholder="Input your content"
+              value={textareaValues[config.label]}
+              onChange={(e) =>
+                handleTextareaChange(config.label, e.target.value)
+              }
+            />
+          );
+
+        case "array":
+          return (
+            <ArrayConfig
+              id={config.label}
+              labels={config.values.map((v) => v.value)}
+              values={arrayValues[config.label]}
+              setArrayValues={setArrayValues}
+            />
+          );
+
+        default:
+          return null;
+      }
+    })();
+
+    return (
+      <SidebarGroup key={config.label}>
+        {label}
+        <SidebarGroupContent className="px-2">{content}</SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
 
   return (
     <>
@@ -337,88 +402,37 @@ export function PromptGeneratorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {data.configs?.map((config) => (
-          <SidebarGroup key={config.label}>
-            <SidebarGroupLabel className="flex justify-between">
-              <Label htmlFor={config.label.toLowerCase()}>{config.label}</Label>
-              <Button variant="ghost" className="h-8 w-8 mr-2">
-                <FileQuestion></FileQuestion>
-              </Button>
-            </SidebarGroupLabel>
-
-            <SidebarGroupContent className="px-2">
-              {config.type === "combobox" ? (
-                <CreatableCombobox
-                  options={config.values}
-                  value={selectedValues[config.label]}
-                  onChange={(value) => handleSelectChange(config.label, value)}
-                  placeholder={`Select a ${config.label.toLowerCase()}`}
-                  onCreateOption={(inputValue) =>
-                    handleCreateOption(config.label, inputValue)
-                  }
-                />
-              ) : config.type === "dropdown" ? (
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(config.label, value)
-                  }
-                >
-                  <SelectTrigger id={config.label}>
-                    <SelectValue
-                      placeholder={
-                        selectedValues[config.label] ??
-                        `Select a ${config.label.toLowerCase()}`
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None</SelectItem>
-                    {config.values.map((value) => (
-                      <SelectItem key={value.id} value={value.value}>
-                        {value.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : config.type === "textarea" ? (
-                <Textarea
-                  id={config.label}
-                  placeholder={`Input your content`}
-                  value={textareaValues[config.label]}
-                  onChange={(e) =>
-                    handleTextareaChange(config.label, e.target.value)
-                  }
-                />
-              ) : config.type === "array" ? (
-                <>
-                  <ArrayConfig
-                    id={config.label}
-                    labels={config.values.map((value) => {
-                      return value.value;
-                    })}
-                    values={arrayValues[config.label]}
-                    setArrayValues={setArrayValues}
-                  ></ArrayConfig>
-                </>
-              ) : null}
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {data.configs?.map(renderConfigInput)}
       </SidebarContent>
 
       {data.id !== "1" && (
         <SidebarFooter>
+          <BetterTooltip
+            content={`Unfilled required config(s): ${isFilled.unfilledConfigs
+              .map((configName) => `${configName}`)
+              .join(", ")}`}
+          >
+            <div className="flex flex-col gap-1 px-2">
+              <Progress
+                value={(isFilled.filledCount / isFilled.totalCount) * 100}
+                className="w-full h-2 mt-2 bg-muted"
+              />
+              <p className="text-xs text-muted-foreground mt-1 text-right">
+                {isFilled.filledCount} / {isFilled.totalCount} fields filled
+              </p>
+            </div>
+          </BetterTooltip>
           <div className="flex justify-around gap-4 p-2">
             <Button
               className="w-1/2"
-              disabled={!isFilled}
+              disabled={!isFilled.isValid}
               onClick={() => handlePrompt(false)}
             >
               Generate
             </Button>
             <Button
               className="w-1/2"
-              disabled={!isFilled}
+              disabled={!isFilled.isValid}
               onClick={() => handlePrompt(true)}
             >
               Send

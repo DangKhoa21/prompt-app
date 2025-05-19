@@ -8,7 +8,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   return (
     <Container>
-      <div className="flex-1 bg-background">
+      <div className="w-11/12 mx-auto bg-background">
         <Suspense fallback={<LoadingSpinner />}>
           <TemplateEditWrapper id={id} />
         </Suspense>

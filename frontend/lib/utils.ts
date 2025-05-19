@@ -386,15 +386,25 @@ export function parseInfo(info?: string): TemplateConfigInfo {
 }
 
 // TODO: Modify to match "NONE"
-export function areRequiredConfigsFilled(
+export function validateFilledConfigs(
   configs: PromptConfig[] | TemplateConfig[],
   selectedValues: Record<string, string>,
   textareaValues: Record<string, string>,
   arrayValues: Record<string, { id: string; values: string[] }[]>,
-): boolean {
-  return configs.every((config) => {
+): {
+  isValid: boolean;
+  unfilledConfigs: string[];
+  filledCount: number;
+  totalCount: number;
+} {
+  const unfilledConfigs: string[] = [];
+  let totalCount = 0;
+
+  configs.forEach((config) => {
     const { isRequired } = parseInfo(config.info);
-    if (!isRequired) return true;
+    if (!isRequired) return;
+
+    totalCount += 1;
 
     const value =
       config.type === ConfigType.TEXTAREA
@@ -403,19 +413,32 @@ export function areRequiredConfigsFilled(
           ? arrayValues[config.label]
           : selectedValues[config.label];
 
-    // Determine "filled" by type
-    if (config.type === ConfigType.ARRAY) {
-      // At least one non-empty value in any item
-      return (
-        Array.isArray(value) &&
-        value.length > 0 &&
-        value.every(
-          (item) =>
-            item.values.length > 0 && item.values.some((v) => v.trim() !== ""),
-        )
-      );
-    } else {
-      return typeof value === "string" && value.trim() !== "";
+    const isFilled =
+      config.type === ConfigType.ARRAY
+        ? Array.isArray(value) &&
+          value.length > 0 &&
+          value.every(
+            (item) =>
+              Array.isArray(item.values) &&
+              item.values.length > 0 &&
+              item.values.some((v) => v.trim() !== ""),
+          )
+        : typeof value === "string" &&
+          value.trim() !== "" &&
+          (config.type !== ConfigType.COMBOBOX ||
+            value.trim().toLowerCase() !== "none");
+
+    if (!isFilled) {
+      unfilledConfigs.push(config.label);
     }
   });
+
+  const filledCount = totalCount - unfilledConfigs.length;
+
+  return {
+    isValid: unfilledConfigs.length === 0,
+    unfilledConfigs,
+    filledCount,
+    totalCount,
+  };
 }
