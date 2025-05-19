@@ -1,0 +1,24 @@
+name: DigitalOcean Deploy
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to DigitalOcean
+        uses: digitalocean/app_action/deploy@v2
+        with:
+          project_id: 5bbdc803-145b-4bd0-a18f-d00da3461eff
+          app_name: prompt-app-be
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}

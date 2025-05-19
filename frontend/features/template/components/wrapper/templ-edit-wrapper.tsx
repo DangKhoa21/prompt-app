@@ -8,9 +8,14 @@ import {
   getTags,
   getTagsForTemplate,
 } from "@/services/prompt";
+import { getUserProfile } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function TemplateEditWrapper({ id }: { id: string }) {
+  const router = useRouter();
+
   const {
     data: promptTemplateData,
     isLoading: isTemplateLoading,
@@ -27,11 +32,23 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     queryFn: () => getTagsForTemplate(id),
     placeholderData: [],
   });
+
   const { data: allTags } = useQuery({
     queryKey: ["tags"],
     queryFn: () => getTags(),
     placeholderData: [],
   });
+
+  const { data: user } = useQuery({
+    queryKey: ["user", "profile"],
+    queryFn: getUserProfile,
+  });
+
+  useEffect(() => {
+    if (user?.id !== promptTemplateData?.creatorId) {
+      router.push("/templates");
+    }
+  }, [user, promptTemplateData, router]);
 
   if (isTemplateLoading) {
     return <div>Loading ...</div>;

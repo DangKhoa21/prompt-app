@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import localFont from "next/font/local";
 import "./globals.css";
+import { IS_PRODUCTION } from "@/config";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,7 +39,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Toaster position="top-center" />
             {children}
-            <ReactQueryDevtools />
+            {!IS_PRODUCTION && <ReactQueryDevtools />}
           </ThemeProvider>
         </AppProviders>
       </body>

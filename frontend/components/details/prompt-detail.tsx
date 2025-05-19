@@ -3,13 +3,13 @@
 import PromptHeadDetail from "@/components/details/prompt-detail-comps/prompt-head-detail";
 import PromptResults from "@/components/details/prompt-detail-comps/prompt-results";
 import { cn } from "@/lib/utils";
-import { Prompt, TemplateTag } from "@/services/prompt/interface";
+import { Prompt, PromptStats, TemplateTag } from "@/services/prompt/interface";
 import { User } from "@/services/user/interface";
 import { motion } from "framer-motion";
 import CommentSection from "./comment-section";
 
 interface PromptDetailProps {
-  promptData: Prompt;
+  promptData: Prompt & Partial<PromptStats>;
   userData: User;
   tagsData: TemplateTag[];
   className?: string;

@@ -4,6 +4,7 @@ import { PromptConfigRepository } from './config.repository';
 import { ConfigValueRepository } from './value.repository';
 import { TagService } from '../tag/tag.service';
 import { StarService } from '../star/star.service';
+import { PromptPinService } from '../prompt-pin/prompt-pin.service';
 import {
   ErrPromptNotFound,
   Prompt,
@@ -23,6 +24,7 @@ import {
   TemplateCard,
   PromptUpdateResultDTO,
   promptUpdateResultDTOSchema,
+  PromptStats,
 } from './model';
 import {
   AppError,
@@ -33,7 +35,6 @@ import {
   PromptFilterDTO,
   promptFilterDTOSchema,
 } from 'src/shared';
-import { PromptPinService } from '../prompt-pin/prompt-pin.service';
 
 @Injectable()
 export class PromptService {
@@ -145,6 +146,28 @@ export class PromptService {
       throw AppError.from(ErrPromptNotFound, 404);
     }
     return prompt;
+  }
+
+  async findStats(
+    userId: string | null,
+    promptId: string,
+  ): Promise<PromptStats> {
+    const data = await this.promptRepo.findByIdWithStats(promptId);
+    if (!data) {
+      throw AppError.from(ErrPromptNotFound, 404);
+    }
+
+    const hasStarred = userId
+      ? data.stars.some((star) => star.userId === userId)
+      : false;
+
+    const result: PromptStats = {
+      hasStarred,
+      starCount: data.stars.length,
+      commentCount: data.comments.length,
+    };
+
+    return result;
   }
 
   async list(
