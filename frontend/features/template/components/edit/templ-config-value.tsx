@@ -8,10 +8,11 @@ import { ConfigType } from "@/features/template";
 import { cn, parseInfo, stringifyInfo } from "@/lib/utils";
 import { TemplateConfig } from "@/services/prompt/interface";
 import { ChangeEvent, useCallback, useState } from "react";
-import ConfigDnD from "./config-component/config-dnd-item";
-import DescriptionEditor from "./config-component/description-editor";
-import ConfigTypeSelector from "./config-component/config-type-selector";
+import { useDebounceCallback } from "usehooks-ts";
 import AddConfigDialog from "./config-component/add-config-dialog";
+import ConfigDnD from "./config-component/config-dnd-item";
+import ConfigTypeSelector from "./config-component/config-type-selector";
+import DescriptionEditor from "./config-component/description-editor";
 
 interface ConfigVariableProps extends TemplateConfig {
   isSidebarOpen?: boolean;
@@ -51,14 +52,18 @@ export function TemplatesConfigVariable({
 
   const handleRequiredChange = () => {
     const newState = !isMandatory;
-    updateTemplateInfo(description, newState);
     setIsMandatory(newState);
+    updateTemplateInfo(description, newState);
   };
+
+  const debouncedUpdate = useDebounceCallback((desc: string) => {
+    updateTemplateInfo(desc, isMandatory);
+  }, 500);
 
   const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newDesc = e.target.value;
-    updateTemplateInfo(newDesc, isMandatory);
     setDescription(newDesc);
+    debouncedUpdate(newDesc);
   };
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)

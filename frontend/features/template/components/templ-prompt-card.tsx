@@ -62,11 +62,7 @@ export function PromptTemplateCard({
   };
 
   return (
-    <div
-      className="bg-card overflow-hidden"
-      ref={triggerRef}
-      onMouseEnter={prefetchPrompt}
-    >
+    <div ref={triggerRef} onMouseEnter={prefetchPrompt}>
       <Link href={detailURL}>
         <Card className="bg-card rounded-3xl w-80 h-52 flex flex-col transition-all hover:scale-105">
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">

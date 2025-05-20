@@ -13,9 +13,10 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { BetterTooltip } from "@/components/ui/tooltip";
+import { cn, parseInfo } from "@/lib/utils";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
-import { FileQuestion } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { ArrayConfig } from "./array-config";
 import { CreatableCombobox } from "./creatable-combobox";
@@ -56,6 +57,8 @@ export default function RenderConfigInput({
   setTextareaValues,
   setArrayValues,
 }: RenderConfigInputProps) {
+  const extractedInfo = parseInfo(config.info);
+
   const handleSelectChange = (configLabel: string, value: string) => {
     setSelectedValues((prevState) => ({
       ...prevState,
@@ -86,15 +89,23 @@ export default function RenderConfigInput({
     <SidebarGroupLabel className="flex justify-between">
       <div className="flex gap-2">
         <Label>{config.label}</Label>
-        {isFilled.unfilledConfigs.includes(config.label) && (
+        {isUnfilled && (
           <p className={cn("text-xs", isUnfilled ? "text-red-400" : "")}>
             Required
           </p>
         )}
       </div>
-      <Button variant="ghost" className="h-8 w-8 mr-2">
-        <FileQuestion />
-      </Button>
+      <BetterTooltip
+        content={
+          extractedInfo.description
+            ? `${extractedInfo.description}`
+            : "Description is not available"
+        }
+      >
+        <Button variant="ghost" className="h-8 w-8 mr-2">
+          <CircleHelp />
+        </Button>
+      </BetterTooltip>
     </SidebarGroupLabel>
   );
 

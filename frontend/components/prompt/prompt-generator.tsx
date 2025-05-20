@@ -43,15 +43,15 @@ export function PromptGeneratorSidebar() {
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
   >({});
-
-  const searchParams = useSearchParams();
-  const promptId = searchParams.get("promptId");
   const [isFilled, setIsFilled] = useState({
     isValid: false,
     unfilledConfigs: [""],
     filledCount: 0,
     totalCount: 0,
   });
+
+  const searchParams = useSearchParams();
+  const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],

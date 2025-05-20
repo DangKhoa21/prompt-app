@@ -1,8 +1,7 @@
 "use client";
 
 import { Markdown } from "@/components/markdown";
-import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
-import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
+import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,15 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { useTemplate } from "@/context/template-context";
 import {
@@ -27,8 +17,13 @@ import {
   useGeneratePromptResult,
   useUpdatePromptResult,
 } from "@/features/template";
-import { cn, serializeResultConfigData } from "@/lib/utils";
-import { Check, Copy, FileQuestion, Play } from "lucide-react";
+import { fillPromptTemplate } from "@/lib/generatePrompt";
+import {
+  cn,
+  serializeResultConfigData,
+  validateFilledConfigs,
+} from "@/lib/utils";
+import { Check, Copy, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -51,7 +46,6 @@ export function EvaluatePrompt() {
   const [previewPrompt, setPreviewPrompt] = useState("");
   const [openPreview, setOpenPreview] = useState(true);
   const [improvementSuggestions, setImprovementSuggestions] = useState("");
-  const [noRemainingConfigs, setNoRemainingConfigs] = useState(0);
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {},
   );
@@ -64,6 +58,13 @@ export function EvaluatePrompt() {
   const [evaluationResults, setEvaluationResults] = useState<
     EvaluationResult[]
   >([]);
+  const [isFilled, setIsFilled] = useState({
+    isValid: false,
+    unfilledConfigs: [""],
+    filledCount: 0,
+    totalCount: 0,
+  });
+
   const promptResultsRef = useRef<Record<string, HTMLDivElement | null>>({});
   const suggestImprovePromptRef = useRef<HTMLDivElement>(null);
 
@@ -73,86 +74,19 @@ export function EvaluatePrompt() {
   );
   const { mutateAsync: mutateUpdatePromptResult } = useUpdatePromptResult();
 
-  const handleSelectChange = (configLabel: string, value: string) => {
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
-  const handleCreateOption = (configLabel: string, inputValue: string) => {
-    const newOption = {
-      value: inputValue,
-    };
-
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: newOption.value,
-    }));
-  };
-
-  const handleTextareaChange = (configLabel: string, value: string) => {
-    setTextareaValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
   // For update Prompt Preview
   useEffect(() => {
     const handlePreviewPrompt = () => {
-      let prompt = template.stringTemplate;
-      let remainingConfigs = 0;
-      template.configs.forEach((config) => {
-        if (config.type === "dropdown" || config.type === "combobox") {
-          if (
-            selectedValues[config.label] &&
-            selectedValues[config.label] !== "None"
-          ) {
-            prompt = prompt.replace(
-              `\${${config.label}}`,
-              selectedValues[config.label],
-            );
-          } else {
-            remainingConfigs += 1;
-          }
-        } else if (config.type === "textarea") {
-          if (textareaValues[config.label]) {
-            prompt = prompt.replace(
-              `\${${config.label}}`,
-              textareaValues[config.label],
-            );
-          } else {
-            remainingConfigs += 1;
-          }
-        } else if (config.type === "array") {
-          if (arrayValues[config.label] && arrayValues[config.label].length) {
-            const replaceValue = arrayValues[config.label]
-              .map((item, index) =>
-                item.values
-                  .map(
-                    (value, labelIndex) =>
-                      `\n\t${config.values[labelIndex].value} ${
-                        index + 1
-                      }: ${value}`,
-                  )
-                  .join(""),
-              )
-              .join("\n");
-
-            prompt = prompt.replace(`\${${config.label}}`, `${replaceValue}`);
-          } else {
-            remainingConfigs += 1;
-          }
-        }
+      const configs = template.configs;
+      const prompt = fillPromptTemplate({
+        template: template.stringTemplate,
+        configs,
+        selectedValues,
+        textareaValues,
+        arrayValues,
       });
 
-      // Remove only excessive spaces, not newlines "\n"
-      prompt = prompt.replace(/ {2,}/g, " ");
-      prompt = prompt.replace(/\\n/g, "\n");
-
       setPreviewPrompt(prompt);
-      setNoRemainingConfigs(remainingConfigs);
     };
 
     handlePreviewPrompt();
@@ -163,6 +97,20 @@ export function EvaluatePrompt() {
     template.stringTemplate,
     textareaValues,
   ]);
+
+  // Check filled configs
+  useEffect(() => {
+    if (!template) return;
+
+    setIsFilled(
+      validateFilledConfigs(
+        template.configs,
+        selectedValues,
+        textareaValues,
+        arrayValues,
+      ),
+    );
+  }, [arrayValues, template, selectedValues, textareaValues]);
 
   // Scroll to the improve suggestion if have
   useEffect(() => {
@@ -178,24 +126,28 @@ export function EvaluatePrompt() {
 
   const handleGenerateResult = async () => {
     setLoadingStates((prev) => ({ ...prev, evaluating: true }));
+    const FALLBACK_CONFIG = "Not selected";
 
     const configValues: Record<string, string> = {};
     template.configs.forEach((config) => {
       if (config.type === "dropdown" || config.type === "combobox") {
-        configValues[config.label] = selectedValues[config.label];
+        configValues[config.label] =
+          selectedValues[config.label] ?? FALLBACK_CONFIG;
       } else if (config.type === "textarea") {
-        configValues[config.label] = textareaValues[config.label];
+        configValues[config.label] =
+          textareaValues[config.label] ?? FALLBACK_CONFIG;
       } else if (config.type === "array") {
-        configValues[config.label] = arrayValues[config.label]
-          .map((item, index) =>
-            item.values
-              .map(
-                (value, labelIndex) =>
-                  `${config.values[labelIndex].value} ${index + 1}: ${value}`,
-              )
-              .join("\n"),
-          )
-          .join("\n\n");
+        configValues[config.label] =
+          arrayValues[config.label]
+            .map((item, index) =>
+              item.values
+                .map(
+                  (value, labelIndex) =>
+                    `${config.values[labelIndex].value} ${index + 1}: ${value}`,
+                )
+                .join("\n"),
+            )
+            .join("\n\n") ?? FALLBACK_CONFIG;
       }
     });
 
@@ -282,97 +234,45 @@ export function EvaluatePrompt() {
             <CardHeader>
               <CardTitle className="text-md font-semibold flex justify-between">
                 <div>Configuration Values</div>
-                <div
-                  className={cn(
-                    noRemainingConfigs ? "text-red-500" : "text-green-500",
-                  )}
+                <BetterTooltip
+                  content={
+                    !isFilled.isValid
+                      ? `Unfilled required config(s): ${isFilled.unfilledConfigs
+                          .map((configName) => `${configName}`)
+                          .join(", ")}`
+                      : "All required configs are filled"
+                  }
                 >
-                  Remaining configs: {noRemainingConfigs}
-                </div>
+                  <div
+                    className={cn(
+                      !isFilled.isValid ? "text-red-500" : "text-green-500",
+                    )}
+                  >
+                    Configs status: {isFilled.filledCount}/{isFilled.totalCount}
+                  </div>
+                </BetterTooltip>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {template.configs?.map((config) => (
-                <div key={config.label}>
-                  <div className="flex justify-between">
-                    <Label htmlFor={config.label.toLowerCase()}>
-                      {config.label}
-                    </Label>
-                    <BetterTooltip content="...">
-                      <Button variant="ghost" className="h-8 w-8 mr-2">
-                        <FileQuestion></FileQuestion>
-                      </Button>
-                    </BetterTooltip>
-                  </div>
-
-                  <div className="px-2">
-                    {config.type === "combobox" ? (
-                      <CreatableCombobox
-                        options={config.values}
-                        value={selectedValues[config.label]}
-                        onChange={(value) =>
-                          handleSelectChange(config.label, value)
-                        }
-                        placeholder={`Select a ${config.label.toLowerCase()}`}
-                        onCreateOption={(inputValue) =>
-                          handleCreateOption(config.label, inputValue)
-                        }
-                      />
-                    ) : config.type === "dropdown" ? (
-                      <Select
-                        onValueChange={(value) =>
-                          handleSelectChange(config.label, value)
-                        }
-                      >
-                        <SelectTrigger id={config.label}>
-                          <SelectValue
-                            placeholder={
-                              selectedValues[config.label] ??
-                              `Select a ${config.label.toLowerCase()}`
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="None">None</SelectItem>
-                          {config.values.map((value) => (
-                            <SelectItem key={value.id} value={value.value}>
-                              {value.value}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : config.type === "textarea" ? (
-                      <Textarea
-                        id={config.label}
-                        placeholder={`Input your content`}
-                        value={textareaValues[config.label]}
-                        onChange={(e) =>
-                          handleTextareaChange(config.label, e.target.value)
-                        }
-                        // className={config.className}
-                      />
-                    ) : config.type === "array" ? (
-                      <>
-                        <ArrayConfig
-                          id={config.label}
-                          labels={config.values.map((value) => {
-                            return value.value;
-                          })}
-                          values={arrayValues[config.label]}
-                          setArrayValues={setArrayValues}
-                        ></ArrayConfig>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
+              {template.configs?.map((config, i) => (
+                <RenderConfigInput
+                  key={`config-${i}`}
+                  config={config}
+                  isFilled={isFilled}
+                  selectedValues={selectedValues}
+                  textareaValues={textareaValues}
+                  arrayValues={arrayValues}
+                  setSelectedValues={setSelectedValues}
+                  setTextareaValues={setTextareaValues}
+                  setArrayValues={setArrayValues}
+                />
               ))}
             </CardContent>
             <CardFooter className="flex w-full gap-2">
               <Button
                 className="flex-1"
                 onClick={handleGenerateResult}
-                // disabled={loadingStates.evaluating || noRemainingConfigs !== 0}
-                disabled={loadingStates.evaluating}
+                disabled={loadingStates.evaluating || !isFilled.isValid}
               >
                 {loadingStates.evaluating ? (
                   <>Running...</>
@@ -383,19 +283,21 @@ export function EvaluatePrompt() {
                   </>
                 )}
               </Button>
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={handleSuggestImprovements}
-                // disabled={loadingStates.suggesting}
-                disabled={true}
-              >
-                {loadingStates.suggesting ? (
-                  <>Analyzing...</>
-                ) : (
-                  <>Analyze Prompt</>
-                )}
-              </Button>
+              <BetterTooltip content={"Not available right now!"}>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleSuggestImprovements}
+                  // disabled={loadingStates.suggesting}
+                  disabled={true}
+                >
+                  {loadingStates.suggesting ? (
+                    <>Analyzing...</>
+                  ) : (
+                    <>Analyze Prompt</>
+                  )}
+                </Button>
+              </BetterTooltip>
             </CardFooter>
           </Card>
 
@@ -415,7 +317,7 @@ export function EvaluatePrompt() {
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 h-fit md:sticky md:top-28">
           <Card>
             <CardHeader
               className="group cursor-pointer hover:bg-accent"
@@ -467,7 +369,7 @@ export function EvaluatePrompt() {
                       {new Date(result.timestamp).toLocaleString()}
                     </div>
                     <div className="flex items-center gap-2">
-                      <BetterTooltip content="Copy result to clipboard">
+                      <BetterTooltip content="Copy to clipboard">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -477,7 +379,7 @@ export function EvaluatePrompt() {
                           <Copy className="h-3 w-3" />
                         </Button>
                       </BetterTooltip>
-                      <BetterTooltip content="Update the display example in the prompt page">
+                      <BetterTooltip content="Update example result">
                         <Button
                           variant={result.selected ? "default" : "ghost"}
                           size="icon"
