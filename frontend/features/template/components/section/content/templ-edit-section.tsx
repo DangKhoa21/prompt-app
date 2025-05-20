@@ -172,10 +172,7 @@ export function TemplateEditSection({
             className="text-muted-foreground"
           />
 
-          <TemplateEditTag
-            tags={template.tags}
-            allTags={allTags}
-          ></TemplateEditTag>
+          <TemplateEditTag tags={template.tags} allTags={allTags} />
         </div>
 
         <Tabs
@@ -237,10 +234,9 @@ export function TemplateEditSection({
                 </div>
 
                 <div className="space-y-4 h-fit border rounded-md p-4">
-                  {template.configs.map((config, i) => (
+                  {template.configs.map((config) => (
                     <TemplatesConfigVariable
                       key={config.id}
-                      index={i}
                       {...config}
                       isSidebarOpen={open}
                     />

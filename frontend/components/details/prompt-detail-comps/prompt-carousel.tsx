@@ -50,7 +50,6 @@ export default function PromptCarousel({
 
   const carouselData = data.pages[0].data.filter((p) => p.id !== promptId);
 
-  // TODO: Modify the width to match responsive design (check the prompt detail first)
   return (
     <motion.div
       key="promptcarousel"

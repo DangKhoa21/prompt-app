@@ -1,19 +1,10 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
-import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
-import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   SidebarContent,
   SidebarFooter,
@@ -22,32 +13,24 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { Textarea } from "@/components/ui/textarea";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
 import { fillPromptTemplate } from "@/lib/generatePrompt";
 import {
-  cn,
   generateUUID,
   serializeConfigData,
   validateFilledConfigs,
 } from "@/lib/utils";
 import { getPromptWithConfigs } from "@/services/prompt";
-import { PromptConfig } from "@/services/prompt/interface";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  ChevronLeft,
-  FileQuestion,
-  Pin,
-  RotateCcw,
-  Share2,
-} from "lucide-react";
+import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import RenderConfigInput from "./generator-items/generator-config-item";
 
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
@@ -176,31 +159,6 @@ export function PromptGeneratorSidebar() {
     );
   }
 
-  const handleSelectChange = (configLabel: string, value: string) => {
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
-  const handleCreateOption = (configLabel: string, inputValue: string) => {
-    const newOption = {
-      value: inputValue,
-    };
-
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: newOption.value,
-    }));
-  };
-
-  const handleTextareaChange = (configLabel: string, value: string) => {
-    setTextareaValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
   const handlePrompt = (isSending: boolean) => {
     const template = data.stringTemplate;
     const configs = data.configs;
@@ -257,98 +215,6 @@ export function PromptGeneratorSidebar() {
     });
   };
 
-  function renderConfigInput(config: PromptConfig) {
-    const isUnfilled = isFilled.unfilledConfigs.includes(config.label);
-    const label = (
-      <SidebarGroupLabel className="flex justify-between">
-        <div className="flex gap-2">
-          <Label>{config.label}</Label>
-          {isFilled.unfilledConfigs.includes(config.label) && (
-            <p className={cn("text-xs", isUnfilled ? "text-red-400" : "")}>
-              Required
-            </p>
-          )}
-        </div>
-        <Button variant="ghost" className="h-8 w-8 mr-2">
-          <FileQuestion />
-        </Button>
-      </SidebarGroupLabel>
-    );
-
-    const content = (() => {
-      switch (config.type) {
-        case "dropdown":
-          return (
-            <Select
-              onValueChange={(value) => handleSelectChange(config.label, value)}
-            >
-              <SelectTrigger id={config.label}>
-                <SelectValue
-                  placeholder={
-                    selectedValues[config.label] ??
-                    `Select a ${config.label.toLowerCase()}`
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="None">None</SelectItem>
-                {config.values.map((value) => (
-                  <SelectItem key={value.id} value={value.value}>
-                    {value.value}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          );
-
-        case "combobox":
-          return (
-            <CreatableCombobox
-              options={config.values}
-              value={selectedValues[config.label]}
-              onChange={(value) => handleSelectChange(config.label, value)}
-              placeholder={`Select a ${config.label.toLowerCase()}`}
-              onCreateOption={(inputValue) =>
-                handleCreateOption(config.label, inputValue)
-              }
-            />
-          );
-
-        case "textarea":
-          return (
-            <Textarea
-              id={config.label}
-              placeholder="Input your content"
-              value={textareaValues[config.label]}
-              onChange={(e) =>
-                handleTextareaChange(config.label, e.target.value)
-              }
-            />
-          );
-
-        case "array":
-          return (
-            <ArrayConfig
-              id={config.label}
-              labels={config.values.map((v) => v.value)}
-              values={arrayValues[config.label]}
-              setArrayValues={setArrayValues}
-            />
-          );
-
-        default:
-          return null;
-      }
-    })();
-
-    return (
-      <SidebarGroup key={config.label}>
-        {label}
-        <SidebarGroupContent className="px-2">{content}</SidebarGroupContent>
-      </SidebarGroup>
-    );
-  }
-
   return (
     <>
       <SidebarHeader className="pb-0">
@@ -402,7 +268,19 @@ export function PromptGeneratorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {data.configs?.map(renderConfigInput)}
+        {data.configs?.map((config, i) => (
+          <RenderConfigInput
+            key={`config-${i}`}
+            config={config}
+            isFilled={isFilled}
+            selectedValues={selectedValues}
+            textareaValues={textareaValues}
+            arrayValues={arrayValues}
+            setSelectedValues={setSelectedValues}
+            setTextareaValues={setTextareaValues}
+            setArrayValues={setArrayValues}
+          />
+        ))}
       </SidebarContent>
 
       {data.id !== "1" && (

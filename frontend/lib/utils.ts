@@ -385,7 +385,6 @@ export function parseInfo(info?: string): TemplateConfigInfo {
   }
 }
 
-// TODO: Modify to match "NONE"
 export function validateFilledConfigs(
   configs: PromptConfig[] | TemplateConfig[],
   selectedValues: Record<string, string>,
@@ -425,8 +424,7 @@ export function validateFilledConfigs(
           )
         : typeof value === "string" &&
           value.trim() !== "" &&
-          (config.type !== ConfigType.COMBOBOX ||
-            value.trim().toLowerCase() !== "none");
+          value.trim().toLowerCase() !== "none";
 
     if (!isFilled) {
       unfilledConfigs.push(config.label);
