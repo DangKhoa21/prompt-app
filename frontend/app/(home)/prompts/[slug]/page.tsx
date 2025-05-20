@@ -8,7 +8,11 @@ import UserOverviewCard from "@/components/details/user-detail-comps/user-overvi
 import { Button } from "@/components/ui/button";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { getIdFromDetailURL } from "@/lib/utils";
-import { getPrompt, getTagsForTemplate } from "@/services/prompt";
+import {
+  getPrompt,
+  getPromptStats,
+  getTagsForTemplate,
+} from "@/services/prompt";
 import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
 
@@ -27,13 +31,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   const promptId = getIdFromDetailURL(slug);
 
   const {
-    data: promptData,
+    data: fetchedPromptData,
     isLoading: isPromptLoading,
     isError: isPromptError,
     error: promptError,
     refetch: promptRefetch,
   } = useQuery({
-    queryKey: ["prompt", promptId],
+    queryKey: ["prompts", promptId],
     queryFn: () => getPrompt(promptId),
     // placeholderData: {
     //   id: "",
@@ -56,9 +60,9 @@ export default function Page({ params }: { params: { slug: string } }) {
     // error,
     // refetch,
   } = useQuery({
-    queryKey: ["user", promptData?.creatorId],
-    queryFn: () => getUser(promptData!.creatorId),
-    enabled: !!promptData?.creatorId,
+    queryKey: ["user", fetchedPromptData?.creatorId],
+    queryFn: () => getUser(fetchedPromptData!.creatorId),
+    enabled: !!fetchedPromptData?.creatorId,
   });
 
   const {
@@ -68,9 +72,15 @@ export default function Page({ params }: { params: { slug: string } }) {
     // error,
     // refetch,
   } = useQuery({
-    queryKey: ["tags", promptData?.id],
-    queryFn: () => getTagsForTemplate(promptData!.id),
-    enabled: !!promptData?.id,
+    queryKey: ["tags", fetchedPromptData?.id],
+    queryFn: () => getTagsForTemplate(fetchedPromptData!.id),
+    enabled: !!fetchedPromptData?.id,
+  });
+
+  const { data: fetchedPromptStatsData } = useQuery({
+    queryKey: ["prompts", "stats", fetchedPromptData?.id],
+    queryFn: () => getPromptStats(fetchedPromptData!.id),
+    enabled: !!fetchedPromptData?.id,
   });
 
   if (isPromptLoading) {
@@ -89,12 +99,16 @@ export default function Page({ params }: { params: { slug: string } }) {
     );
   }
 
-  if (!promptData) {
+  if (!fetchedPromptData) {
     return <div>Prompt does not exist, please try another prompt</div>;
   }
 
   const userData = fetchedUserData ?? fallbackUser;
   const tagsData = fetchedTagsData ?? [];
+  const promptData = {
+    ...fetchedPromptData,
+    ...fetchedPromptStatsData,
+  };
 
   return (
     <>
@@ -114,7 +128,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className="flex flex-col px-auto py-6 gap-4 bg-background rounded-md">
           <PromptCarousels
             promptId={promptId}
-            creatorId={promptData.creatorId}
+            creatorId={fetchedPromptData.creatorId}
             tagsData={tagsData}
           />
         </div>

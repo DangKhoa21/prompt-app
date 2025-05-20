@@ -111,8 +111,12 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        },
+        }
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["prompts", "stats", promptId],
+      });
     },
     onError: (e) => {
       console.error(e);
@@ -148,8 +152,12 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        },
+        }
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["prompts", "stats", promptId],
+      });
     },
     onError: (e) => {
       console.error(e);

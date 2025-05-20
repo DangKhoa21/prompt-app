@@ -91,6 +91,18 @@ export class PromptController {
     return { data };
   }
 
+  @Get(':id/stats')
+  @UseGuards(JwtAuthGuardOptional)
+  async findStats(
+    @Request() req: ReqWithRequesterOpt,
+    @Param('id') promptId: string,
+  ) {
+    const requester = req.user;
+    const userId = requester ? requester.sub : null;
+    const data = await this.promptService.findStats(userId, promptId);
+    return { data };
+  }
+
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(

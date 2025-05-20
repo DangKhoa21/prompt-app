@@ -122,3 +122,9 @@ export interface PromptFilter {
   creatorId?: string;
   sort?: "newest" | "oldest" | "most-starred";
 }
+
+export interface PromptStats {
+  hasStarred: boolean;
+  starCount: number;
+  commentCount: number;
+}

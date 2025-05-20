@@ -35,6 +35,17 @@ export type PromptCard = Prompt & {
   starCount: number;
 };
 
+export type PromptStatsRepo = Prompt & {
+  stars: Array<{ userId: string }>;
+  comments: Array<{ creatorId: string }>;
+};
+
+export type PromptStats = {
+  hasStarred: boolean;
+  starCount: number;
+  commentCount: number;
+};
+
 export type TemplateCard = Prompt;
 
 export const promptUpdateDTOSchema = promptSchema.pick({

@@ -128,10 +128,14 @@ export function PromptTemplateCard({
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    router.push(`/templates/${id}`);
+                    if (filter?.creatorId == creator.id) {
+                      router.push(`/templates/${id}`);
+                    } else {
+                      router.push(`/?promptId=${id}`);
+                    }
                   }}
                 >
-                  Edit
+                  {filter?.creatorId == creator.id ? "Edit" : "Try it now"}
                 </Button>
               </Button>
             </CardFooter>
