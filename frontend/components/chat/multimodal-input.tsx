@@ -66,13 +66,13 @@ export function MultimodalInput({
   setMessages: Dispatch<SetStateAction<Array<Message>>>;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions
+    chatRequestOptions?: ChatRequestOptions,
   ) => Promise<string | null | undefined>;
   handleSubmit: (
     event?: {
       preventDefault?: () => void;
     },
-    chatRequestOptions?: ChatRequestOptions
+    chatRequestOptions?: ChatRequestOptions,
   ) => void;
   className?: string;
 }) {
@@ -193,7 +193,7 @@ export function MultimodalInput({
         const uploadPromises = files.map((file) => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined
+          (attachment) => attachment !== undefined,
         );
 
         setAttachments((currentAttachments) => [
@@ -206,7 +206,7 @@ export function MultimodalInput({
         setUploadQueue([]);
       }
     },
-    [setAttachments]
+    [setAttachments],
   );
 
   const enhancePromptMutation = useMutation({
@@ -302,7 +302,7 @@ export function MultimodalInput({
         onChange={handleInput}
         className={cx(
           "min-h-[24px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted",
-          className
+          className,
         )}
         rows={3}
         autoFocus
@@ -355,7 +355,7 @@ export function MultimodalInput({
         <PaperclipIcon size={14} />
       </Button>
 
-      <BetterTooltip content="Enhance">
+      <BetterTooltip content="Enhance Prompt">
         <Button
           className="rounded-full p-1.5 h-fit absolute bottom-2 right-20 m-0.5 dark:border-zinc-700"
           onClick={(event) => {

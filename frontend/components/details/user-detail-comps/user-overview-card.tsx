@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/services/user/interface";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 interface UserOverviewCardProps {
@@ -47,7 +47,7 @@ export default function UserOverviewCard({ userData }: UserOverviewCardProps) {
             <Button variant="outline" className="w-full" asChild>
               <Link href={`/profile/${userData.id}`}>
                 View Profile
-                <ArrowUpRight className="h-4 w-4 ml-2" />
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Link>
             </Button>
           </CardContent>

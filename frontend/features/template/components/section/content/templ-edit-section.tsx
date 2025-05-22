@@ -157,8 +157,8 @@ export function TemplateEditSection({
   };
 
   return (
-    <div className="w-full bg-background/90 px-2 pt-2">
-      <div className="w-full max-w-5xl bg-background mx-auto space-y-6">
+    <div className="w-full bg-background/90 p-2">
+      <div className="w-full bg-background mx-auto space-y-6">
         <div className="flex flex-col gap-4">
           <TemplateEditTextField
             label="title"
@@ -172,10 +172,7 @@ export function TemplateEditSection({
             className="text-muted-foreground"
           />
 
-          <TemplateEditTag
-            tags={template.tags}
-            allTags={allTags}
-          ></TemplateEditTag>
+          <TemplateEditTag tags={template.tags} allTags={allTags} />
         </div>
 
         <Tabs
@@ -237,10 +234,9 @@ export function TemplateEditSection({
                 </div>
 
                 <div className="space-y-4 h-fit border rounded-md p-4">
-                  {template.configs.map((config, i) => (
+                  {template.configs.map((config) => (
                     <TemplatesConfigVariable
                       key={config.id}
-                      index={i}
                       {...config}
                       isSidebarOpen={open}
                     />
@@ -249,14 +245,14 @@ export function TemplateEditSection({
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="evaluate" className="p-1 space-y-6">
+          <TabsContent value="evaluate" className="p-1 pb-12 space-y-6">
             <EvaluatePrompt></EvaluatePrompt>
           </TabsContent>
         </Tabs>
       </div>
       {activeTab === "edit" && (
         <div className="bg-background/90 sticky bottom-0 py-2 flex justify-center items-center">
-          <div className="grid w-full max-w-5xl items-center justify-end md:grid-cols-2">
+          <div className="grid w-full max-w-screen-xl items-center justify-end md:grid-cols-2">
             {!isMobile && (
               <div className="flex">
                 <ConfirmDialog

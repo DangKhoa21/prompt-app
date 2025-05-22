@@ -1,5 +1,3 @@
-import { Compass, PencilRuler, Plus } from "lucide-react";
-
 import { ModelSelector } from "@/components/model-selector";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -7,7 +5,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
+import { getPrompts } from "@/services/prompt";
+import { PromptCard } from "@/services/prompt/interface";
+import { Paginated } from "@/services/shared";
+import { User } from "@/services/user/interface";
+import { useQueryClient } from "@tanstack/react-query";
+import { Compass, PencilRuler, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
@@ -15,6 +20,49 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   const { isAuthenticated } = useAuth();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
+
+  const queryClient = useQueryClient();
+  const triggerMarketplaceRef = useRef<HTMLDivElement>(null);
+  const triggerTemplateRef = useRef<HTMLDivElement>(null);
+
+  const tagId = "";
+  const search = "";
+  const sort: "newest" | "oldest" | "most-starred" | undefined = "newest";
+  const filter = { tagId, search, sort };
+
+  const prefetchPrompts = () => {
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["prompts", filter],
+      queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
+      initialPageParam: "",
+      getNextPageParam: (lastPage: Paginated<PromptCard>) =>
+        lastPage.nextCursor,
+    });
+  };
+
+  const prefetchTemplates = () => {
+    const user: User | undefined = queryClient.getQueryData([
+      "user",
+      "profile",
+    ]);
+
+    if (!user) return;
+
+    const tab = "";
+
+    const creatorId = user.id;
+
+    const updatedFilter = { ...filter, creatorId };
+
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["prompts", updatedFilter, tab],
+      queryFn: ({ pageParam }) =>
+        getPrompts({ pageParam, filter: updatedFilter }),
+      initialPageParam: "",
+      getNextPageParam: (lastPage: Paginated<PromptCard>) =>
+        lastPage.nextCursor,
+    });
+  };
 
   return (
     <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
@@ -43,31 +91,36 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <div className="flex items-center gap-2 ml-auto">
           {isAuthenticated && (
             <>
-              <Button
-                variant="ghost"
-                className="h-8 p-2"
-                onClick={() => {
-                  router.push("/templates");
-                  router.refresh();
-                }}
-              >
-                <PencilRuler />
-                {!isMobile && "Templates"}
-              </Button>
+              <div ref={triggerTemplateRef} onMouseEnter={prefetchTemplates}>
+                <Button
+                  variant="ghost"
+                  className="h-8 p-2"
+                  onClick={() => {
+                    router.push("/templates");
+                    router.refresh();
+                  }}
+                >
+                  <PencilRuler />
+                  {!isMobile && "Templates"}
+                </Button>
+              </div>
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
-          <Button
-            variant="ghost"
-            className="h-8 p-2"
-            onClick={() => {
-              router.push("/marketplace");
-              router.refresh();
-            }}
-          >
-            <Compass />
-            {!isMobile && "Marketplace"}
-          </Button>
+          <div ref={triggerMarketplaceRef} onMouseEnter={prefetchPrompts}>
+            {/* <div> */}
+            <Button
+              variant="ghost"
+              className="h-8 p-2"
+              onClick={() => {
+                router.push("/marketplace");
+                router.refresh();
+              }}
+            >
+              <Compass />
+              {!isMobile && "Marketplace"}
+            </Button>
+          </div>
           <Separator orientation="vertical" className="h-4" />
           {!isAuthenticated && (
             <>

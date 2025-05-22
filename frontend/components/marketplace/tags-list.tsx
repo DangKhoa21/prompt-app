@@ -116,6 +116,7 @@ export default function TagsList() {
     return <span>Error: {tagsError.message}</span>;
   }
 
+  // TODO:Responsive for tag list
   return (
     <motion.div
       key="taglist"
@@ -128,7 +129,7 @@ export default function TagsList() {
       })}
     >
       <div className="flex justify-between items-center px-3">
-        <div className="flex-1 max-w-xl sm:max-w-4xl mr-auto relative">
+        <div className="flex-1 max-w-[300px] md:max-w-[25rem] lg:max-w-[40rem] xl:max-w-[60rem] 2xl:max-w-[75rem] mr-auto relative">
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
 
           <Carousel

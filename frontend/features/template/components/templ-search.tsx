@@ -3,12 +3,20 @@
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddNewTemplateButton } from "@/features/template";
+import { getStarredPrompts } from "@/services/prompt";
+import { PromptCard, PromptFilter } from "@/services/prompt/interface";
+import { Paginated } from "@/services/shared";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounceCallback, useWindowSize } from "usehooks-ts";
 
-export function TemplatesSearch() {
+interface TemplatesSearchProp {
+  filter: PromptFilter;
+}
+
+export function TemplatesSearch({ filter }: TemplatesSearchProp) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { width } = useWindowSize();
@@ -26,6 +34,17 @@ export function TemplatesSearch() {
     if (tab == "starred") params.set("tab", tab);
     else params.delete("tab");
     router.push(`?${params.toString()}`);
+  };
+  const queryClient = useQueryClient();
+
+  const prefetchPrompts = () => {
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["prompts", filter],
+      queryFn: ({ pageParam }) => getStarredPrompts({ pageParam, filter }),
+      initialPageParam: "",
+      getNextPageParam: (lastPage: Paginated<PromptCard>) =>
+        lastPage.nextCursor,
+    });
   };
 
   return (
@@ -58,7 +77,7 @@ export function TemplatesSearch() {
           <TabsTrigger value="created">
             {isMobile ? "Cr" : "Created"}
           </TabsTrigger>
-          <TabsTrigger value="starred">
+          <TabsTrigger value="starred" onMouseEnter={prefetchPrompts}>
             {isMobile ? "St" : "Starred"}
           </TabsTrigger>
         </TabsList>

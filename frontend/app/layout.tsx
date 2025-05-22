@@ -3,9 +3,11 @@ import { Toaster } from "sonner";
 
 import AppProviders from "@/providers/app-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import localFont from "next/font/local";
 import "./globals.css";
+import { IS_PRODUCTION } from "@/config";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,12 +33,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
         <AppProviders>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Toaster position="top-center" />
             {children}
+            {!IS_PRODUCTION && <ReactQueryDevtools />}
           </ThemeProvider>
         </AppProviders>
       </body>

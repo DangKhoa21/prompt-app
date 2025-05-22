@@ -80,7 +80,7 @@ export function TemplateGridWrapper({
       exit={{ opacity: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_280px)] ">
+      <div className="px-0 py-8 md:px-4 bg-background-primary grid gap-6 justify-evenly justify-items-center grid-cols-[repeat(auto-fit,_20rem)] ">
         {templatesData.map((template, index) => (
           <PromptTemplateCard
             key={index}

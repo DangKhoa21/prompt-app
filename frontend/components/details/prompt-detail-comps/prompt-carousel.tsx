@@ -40,7 +40,6 @@ export default function PromptCarousel({
         }
       : undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    staleTime: 1000 * 60 * 5,
   });
 
   const { open } = useSidebar();
@@ -51,7 +50,6 @@ export default function PromptCarousel({
 
   const carouselData = data.pages[0].data.filter((p) => p.id !== promptId);
 
-  // TODO: Modify the width to match responsive design (check the prompt detail first)
   return (
     <motion.div
       key="promptcarousel"
@@ -67,8 +65,8 @@ export default function PromptCarousel({
           className={cn(
             "w-full max-w-[359px]",
             open
-              ? "md:max-w-[28rem] lg:max-w-[44rem] xl:max-w-[60rem] 2xl:max-w-[75rem]"
-              : "md:max-w-[41rem] lg:max-w-[57rem] xl:max-w-[73rem] 2xl:max-w-[80rem]",
+              ? "md:max-w-[28rem] lg:max-w-[42rem] xl:max-w-[60rem] 2xl:max-w-[75rem]"
+              : "md:max-w-[41rem] lg:max-w-[55rem] xl:max-w-[73rem] 2xl:max-w-[80rem]",
           )}
           opts={{
             align: "start",

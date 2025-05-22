@@ -4,6 +4,7 @@ import {
   Prompt,
   PromptCardRepo,
   PromptCondDTO,
+  PromptStatsRepo,
   PromptUpdateDTO,
   PromptUpdateResultDTO,
   PromptWithConfigs,
@@ -68,6 +69,24 @@ export class PromptRepository {
     });
   }
 
+  async findByIdWithStats(id: string): Promise<PromptStatsRepo | null> {
+    return this.prisma.prompt.findUnique({
+      where: { id },
+      include: {
+        stars: {
+          select: {
+            userId: true,
+          },
+        },
+        comments: {
+          select: {
+            creatorId: true,
+          },
+        },
+      },
+    });
+  }
+
   async findByIds(ids: string[]): Promise<TemplateCard[]> {
     return this.prisma.prompt.findMany({
       where: { id: { in: ids } },
@@ -92,6 +111,7 @@ export class PromptRepository {
       },
     });
   }
+
   async list(
     paging: PagingDTO,
     cond: PromptCondDTO,

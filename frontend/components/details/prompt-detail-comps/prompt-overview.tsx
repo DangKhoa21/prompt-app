@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
-import { Prompt } from "@/services/prompt/interface";
+import { Prompt, PromptStats } from "@/services/prompt/interface";
 import { motion } from "framer-motion";
 import { Clock, MessageSquare, Star, Zap } from "lucide-react";
 
 interface PromptOverviewProps {
-  promptData: Prompt;
+  promptData: Prompt & Partial<PromptStats>;
 }
 
 export default function PromptOverview({ promptData }: PromptOverviewProps) {
@@ -39,7 +39,7 @@ export default function PromptOverview({ promptData }: PromptOverviewProps) {
               <Star className="h-4 w-4 text-red-500" />
               <span>Stars</span>
             </div>
-            <span className="font-medium">...</span>
+            <span className="font-medium">{promptData.starCount}</span>
           </div>
 
           <div className="flex justify-between items-center">
@@ -47,7 +47,7 @@ export default function PromptOverview({ promptData }: PromptOverviewProps) {
               <MessageSquare className="h-4 w-4 text-blue-500" />
               <span>Comments</span>
             </div>
-            <span className="font-medium">...</span>
+            <span className="font-medium">{promptData.commentCount}</span>
           </div>
 
           <div className="flex justify-between items-center">

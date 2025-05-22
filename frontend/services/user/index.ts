@@ -1,6 +1,11 @@
 import axiosInstance from "@/lib/axios";
 import { User } from "./interface";
 
+export async function getUser(userId: string): Promise<User> {
+  const response = await axiosInstance.get(`/users/${userId}`);
+  return response.data.data;
+}
+
 export async function getUserProfile(): Promise<User> {
   const response = await axiosInstance.get(`/users/profile`);
   return response.data.data;

@@ -1,14 +1,12 @@
-import { Suspense } from "react";
-
-// import { LoadingSpinner } from "@/components/icons";
-
-import TagsList from "@/components/tags-list";
+import Container from "@/components/container";
+import { LoadingSpinner } from "@/components/icons";
+import TagsList from "@/components/marketplace/tags-list";
 import {
+  TemplateGridWrapper,
   TemplatesHeader,
   TemplatesSearch,
-  TemplateGridWrapper,
 } from "@/features/template";
-import { LoadingSpinner } from "@/components/icons";
+import { Suspense } from "react";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -27,11 +25,10 @@ export default async function Page(props: {
   const tab = searchParams?.tab || "";
 
   return (
-    <div className="flex-1">
+    <>
       <TemplatesHeader />
-
-      <div className="max-w-6xl mx-auto">
-        <TemplatesSearch />
+      <Container>
+        <TemplatesSearch filter={filter} />
 
         <Suspense fallback={<LoadingSpinner />}>
           <TagsList />
@@ -40,7 +37,7 @@ export default async function Page(props: {
         <Suspense fallback={<LoadingSpinner />}>
           <TemplateGridWrapper filter={filter} tab={tab} />
         </Suspense>
-      </div>
-    </div>
+      </Container>
+    </>
   );
 }

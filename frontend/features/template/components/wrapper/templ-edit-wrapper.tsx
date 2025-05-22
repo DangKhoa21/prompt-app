@@ -1,32 +1,85 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { TemplateEditSection } from "@/features/template";
 import {
-  getPromptTemplateServer,
-  getTagsForTemplateServer,
-  getTagsServer,
-} from "@/services/prompt/action";
+  getPromptTemplate,
+  getTags,
+  getTagsForTemplate,
+} from "@/services/prompt";
+import { getUserProfile } from "@/services/user";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export async function TemplateEditWrapper({ id }: { id: string }) {
-  try {
-    const [promptTemplateData, tagsData, allTags] = await Promise.all([
-      getPromptTemplateServer(id),
-      getTagsForTemplateServer(id),
-      getTagsServer(),
-    ]);
+export function TemplateEditWrapper({ id }: { id: string }) {
+  const router = useRouter();
 
-    promptTemplateData.tags = tagsData;
+  const {
+    data: promptTemplateData,
+    isLoading: isTemplateLoading,
+    isError: isTemplateError,
+    error: templateError,
+    refetch: templateRefetch,
+  } = useQuery({
+    queryKey: ["template", id],
+    queryFn: () => getPromptTemplate(id),
+  });
 
+  const { data: tagsData } = useQuery({
+    queryKey: ["tags", id],
+    queryFn: () => getTagsForTemplate(id),
+    placeholderData: [],
+  });
+
+  const { data: allTags } = useQuery({
+    queryKey: ["tags"],
+    queryFn: () => getTags(),
+    placeholderData: [],
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ["user", "profile"],
+    queryFn: getUserProfile,
+  });
+
+  useEffect(() => {
+    if (user?.id !== promptTemplateData?.creatorId) {
+      router.push("/templates");
+    }
+  }, [user, promptTemplateData, router]);
+
+  if (isTemplateLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (isTemplateError) {
+    console.error(`Test error ${templateError}`);
     return (
-      <TemplateEditSection
-        initialPrompt={promptTemplateData}
-        allTags={allTags}
-      />
-    );
-  } catch (error) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center text-red-400">
-        <h2 className="text-xl font-bold">Failed to load template.</h2>
-        <p>{(error as Error).message}</p>
+      <div className="flex h-full items-center justify-center gap-4">
+        <p>An error has occured, please try again!</p>
+        <BetterTooltip content="Refetching prompt">
+          <Button onClick={() => templateRefetch()}>Reload</Button>
+        </BetterTooltip>
       </div>
     );
   }
+
+  if (!promptTemplateData) {
+    return (
+      <div className="flex h-full justify-center gap-4">
+        This template does not exist, please try again
+      </div>
+    );
+  }
+
+  promptTemplateData.tags = tagsData ?? [];
+
+  return (
+    <TemplateEditSection
+      initialPrompt={promptTemplateData}
+      allTags={allTags ?? []}
+    />
+  );
 }

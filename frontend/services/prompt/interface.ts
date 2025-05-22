@@ -7,7 +7,7 @@ export interface Prompt {
   description: string;
   stringTemplate: string;
   systemInstruction: string | null;
-  exampleResult: JSON | null;
+  exampleResult: string | null;
   usageCount: number;
   creatorId: string;
   createdAt: Date;
@@ -26,6 +26,7 @@ export interface PromptConfig {
   id: string;
   label: string;
   type: string;
+  info?: string;
   promptId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -86,8 +87,14 @@ export interface TemplateConfig {
   id: string;
   label: string;
   type: ConfigType;
+  info?: string;
   promptId: string;
   values: TemplateConfigValue[];
+}
+
+export interface TemplateConfigInfo {
+  description: string;
+  isRequired: boolean; // default true
 }
 
 export interface TemplateWithConfigs extends PromptTemplate {
@@ -114,4 +121,10 @@ export interface PromptFilter {
   tagId?: string;
   creatorId?: string;
   sort?: "newest" | "oldest" | "most-starred";
+}
+
+export interface PromptStats {
+  hasStarred: boolean;
+  starCount: number;
+  commentCount: number;
 }

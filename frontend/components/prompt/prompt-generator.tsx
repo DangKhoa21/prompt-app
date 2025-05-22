@@ -1,18 +1,10 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
-import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
-import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import {
   SidebarContent,
   SidebarFooter,
@@ -21,73 +13,108 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { Textarea } from "@/components/ui/textarea";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
-import { getPrompt } from "@/services/prompt";
-import { useQuery } from "@tanstack/react-query";
+import axios from "@/lib/axios";
+import { fillPromptTemplate } from "@/lib/generatePrompt";
 import {
-  ChevronLeft,
-  FileQuestion,
-  Pin,
-  RotateCcw,
-  Share2,
-} from "lucide-react";
+  generateUUID,
+  serializeConfigData,
+  validateFilledConfigs,
+} from "@/lib/utils";
+import { getPromptWithConfigs } from "@/services/prompt";
+import { createShareOption } from "@/services/share-option";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import RenderConfigInput from "./generator-items/generator-config-item";
 
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [textareaValues, setTextareaValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [arrayValues, setArrayValues] = useState<
     Record<string, { id: string; values: string[] }[]>
   >({});
+  const [isFilled, setIsFilled] = useState({
+    isValid: false,
+    unfilledConfigs: [""],
+    filledCount: 0,
+    totalCount: 0,
+  });
 
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
     queryKey: ["prompts", promptId],
-    queryFn: () => getPrompt(promptId),
+    queryFn: () => getPromptWithConfigs(promptId),
   });
 
+  const createShareOptionMutation = useMutation({
+    mutationFn: createShareOption,
+    onSuccess: () => {
+      toast.success("Create share option successfully");
+    },
+    onError: (e) => {
+      if (e.message) {
+        toast.error(e.message);
+      } else {
+        toast.error("Something went wrong, please try again!");
+      }
+    },
+  });
+
+  // Set share configs
   useEffect(() => {
     if (!data) return;
 
-    const newSelected: Record<string, string> = {};
-    const newTextarea: Record<string, string> = {};
-    const newArray: Record<string, { id: string; values: string[] }[]> = {};
+    const optionId = searchParams.get("optionId");
+    if (!optionId) return;
 
-    data.configs.forEach((config) => {
-      const paramValue = searchParams.get(config.label);
-      if (!paramValue) return;
+    (async () => {
+      try {
+        const response = await axios.get(`/option/${optionId}`);
+        const optionData = response.data.data;
+        const parsedData = JSON.parse(optionData.option);
 
-      if (config.type === "dropdown" || config.type === "combobox") {
-        newSelected[config.label] = paramValue;
-      } else if (config.type === "textarea") {
-        newTextarea[config.label] = paramValue;
-      } else if (config.type === "array") {
-        try {
-          const parsed = JSON.parse(paramValue);
-          if (Array.isArray(parsed)) {
-            newArray[config.label] = parsed;
-          }
-        } catch (e) {
-          console.log(e);
-          console.error("Invalid array param:", paramValue);
-        }
+        const newSelected: Record<string, string> = {};
+        const newTextarea: Record<string, string> = {};
+        const newArray: Record<string, { id: string; values: string[] }[]> = {};
+
+        parsedData.configs.forEach(
+          (config: { label: string; type: string; value: string }) => {
+            if (!config || config.value === undefined || config.value === null)
+              return;
+
+            if (config.type === "dropdown" || config.type === "combobox") {
+              newSelected[config.label] = config.value;
+            } else if (config.type === "textarea") {
+              newTextarea[config.label] = config.value;
+            } else if (config.type === "array") {
+              const parsedArray = JSON.parse(config.value) as {
+                id: string;
+                values: string[];
+              }[];
+              newArray[config.label] = parsedArray;
+            }
+          },
+        );
+
+        setSelectedValues(newSelected);
+        setTextareaValues(newTextarea);
+        setArrayValues(newArray);
+      } catch (error) {
+        console.error("Failed to fetch option data:", error);
       }
-    });
-
-    setSelectedValues(newSelected);
-    setTextareaValues(newTextarea);
-    setArrayValues(newArray);
+    })();
   }, [data, searchParams]);
 
   useEffect(() => {
@@ -95,6 +122,20 @@ export function PromptGeneratorSidebar() {
       setSystemInstruction(data.systemInstruction as string | null);
     }
   }, [data, systemInstruction, setSystemInstruction]);
+
+  // Check filled configs
+  useEffect(() => {
+    if (!data) return;
+
+    setIsFilled(
+      validateFilledConfigs(
+        data.configs,
+        selectedValues,
+        textareaValues,
+        arrayValues,
+      ),
+    );
+  }, [arrayValues, data, selectedValues, textareaValues]);
 
   const pinPromptMutation = usePinPrompt();
 
@@ -118,81 +159,17 @@ export function PromptGeneratorSidebar() {
     );
   }
 
-  const handleSelectChange = (configLabel: string, value: string) => {
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
-  const handleCreateOption = (configLabel: string, inputValue: string) => {
-    const newOption = {
-      value: inputValue,
-    };
-
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: newOption.value,
-    }));
-  };
-
-  const handleTextareaChange = (configLabel: string, value: string) => {
-    setTextareaValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
   const handlePrompt = (isSending: boolean) => {
     const template = data.stringTemplate;
-    let prompt = template;
-
-    data.configs.forEach((config) => {
-      prompt = prompt.replace("$", "");
-      if (config.type === "dropdown" || config.type === "combobox") {
-        if (
-          selectedValues[config.label] &&
-          selectedValues[config.label] !== "None"
-        ) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            selectedValues[config.label]
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "textarea") {
-        if (textareaValues[config.label]) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            textareaValues[config.label]
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "array") {
-        const replaceValue = arrayValues[config.label]
-          ? arrayValues[config.label]
-              .map((item, index) =>
-                item.values
-                  .map(
-                    (value, labelIndex) =>
-                      `\n\t${config.values[labelIndex].value} ${
-                        index + 1
-                      }: ${value}`
-                  )
-                  .join("")
-              )
-              .join("\n")
-          : "";
-
-        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
-      }
+    const configs = data.configs;
+    const prompt = fillPromptTemplate({
+      template,
+      configs,
+      selectedValues,
+      textareaValues,
+      arrayValues,
     });
 
-    // Remove only excessive spaces, not newlines "\n"
-    prompt = prompt.replace(/ {2,}/g, " ");
-    prompt = prompt.replace(/\\n/g, "\n");
     setPrompt({
       id: data.id,
       value: prompt,
@@ -201,33 +178,41 @@ export function PromptGeneratorSidebar() {
   };
 
   const handleShare = () => {
+    if (!promptId) return;
+
     const url = new URL(window.location.href);
     const params = new URLSearchParams();
 
-    params.set("promptId", promptId || "");
+    params.set("promptId", promptId);
 
-    data.configs.forEach((config) => {
-      const key = config.label;
-
-      if (config.type === "dropdown" || config.type === "combobox") {
-        if (selectedValues[key]) {
-          params.set(key, selectedValues[key]);
-        }
-      } else if (config.type === "textarea") {
-        if (textareaValues[key]) {
-          params.set(key, textareaValues[key]);
-        }
-      } else if (config.type === "array") {
-        const arrayData = arrayValues[key];
-        if (arrayData) {
-          params.set(key, JSON.stringify(arrayData));
-        }
-      }
+    const serializedData = serializeConfigData({
+      promptId: promptId,
+      data,
+      selectedValues,
+      textareaValues,
+      arrayValues,
     });
 
-    url.search = params.toString();
-    navigator.clipboard.writeText(url.toString());
-    toast.success("Shareable URL copied to clipboard!");
+    const createOptionPromisePromise = createShareOptionMutation.mutateAsync({
+      optionId: generateUUID(),
+      option: serializedData,
+    });
+
+    toast.promise(createOptionPromisePromise, {
+      loading: "Creating share option...",
+      success: (optionId) => {
+        params.set("optionId", optionId);
+        url.search = params.toString();
+
+        navigator.clipboard.writeText(url.toString());
+
+        return "Creating share option successfully, shareable URL copied to clipboard!";
+      },
+      error: (e) => {
+        console.error(e);
+        return "Failed to create share option";
+      },
+    });
   };
 
   return (
@@ -283,83 +268,51 @@ export function PromptGeneratorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {data.configs?.map((config) => (
-          <SidebarGroup key={config.label}>
-            <SidebarGroupLabel className="flex justify-between">
-              <Label htmlFor={config.label.toLowerCase()}>{config.label}</Label>
-              <Button variant="ghost" className="h-8 w-8 mr-2">
-                <FileQuestion></FileQuestion>
-              </Button>
-            </SidebarGroupLabel>
-
-            <SidebarGroupContent className="px-2">
-              {config.type === "combobox" ? (
-                <CreatableCombobox
-                  options={config.values}
-                  value={selectedValues[config.label]}
-                  onChange={(value) => handleSelectChange(config.label, value)}
-                  placeholder={`Select a ${config.label.toLowerCase()}`}
-                  onCreateOption={(inputValue) =>
-                    handleCreateOption(config.label, inputValue)
-                  }
-                />
-              ) : config.type === "dropdown" ? (
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(config.label, value)
-                  }
-                >
-                  <SelectTrigger id={config.label}>
-                    <SelectValue
-                      placeholder={
-                        selectedValues[config.label] ??
-                        `Select a ${config.label.toLowerCase()}`
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None</SelectItem>
-                    {config.values.map((value) => (
-                      <SelectItem key={value.id} value={value.value}>
-                        {value.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : config.type === "textarea" ? (
-                <Textarea
-                  id={config.label}
-                  placeholder={`Input your content`}
-                  value={textareaValues[config.label]}
-                  onChange={(e) =>
-                    handleTextareaChange(config.label, e.target.value)
-                  }
-                  // className={config.className}
-                />
-              ) : config.type === "array" ? (
-                <>
-                  <ArrayConfig
-                    id={config.label}
-                    labels={config.values.map((value) => {
-                      return value.value;
-                    })}
-                    values={arrayValues[config.label]}
-                    setArrayValues={setArrayValues}
-                  ></ArrayConfig>
-                </>
-              ) : null}
-            </SidebarGroupContent>
-          </SidebarGroup>
+        {data.configs?.map((config, i) => (
+          <RenderConfigInput
+            key={`config-${i}`}
+            config={config}
+            isFilled={isFilled}
+            selectedValues={selectedValues}
+            textareaValues={textareaValues}
+            arrayValues={arrayValues}
+            setSelectedValues={setSelectedValues}
+            setTextareaValues={setTextareaValues}
+            setArrayValues={setArrayValues}
+          />
         ))}
       </SidebarContent>
 
       {data.id !== "1" && (
         <SidebarFooter>
+          <BetterTooltip
+            content={`Unfilled required config(s): ${isFilled.unfilledConfigs
+              .map((configName) => `${configName}`)
+              .join(", ")}`}
+          >
+            <div className="flex flex-col gap-1 px-2">
+              <Progress
+                value={(isFilled.filledCount / isFilled.totalCount) * 100}
+                className="w-full h-2 mt-2 bg-muted"
+              />
+              <p className="text-xs text-muted-foreground mt-1 text-right">
+                {isFilled.filledCount} / {isFilled.totalCount} fields filled
+              </p>
+            </div>
+          </BetterTooltip>
           <div className="flex justify-around gap-4 p-2">
-            <Button className="w-1/2" onClick={() => handlePrompt(false)}>
+            <Button
+              className="w-1/2"
+              disabled={!isFilled.isValid}
+              onClick={() => handlePrompt(false)}
+            >
               Generate
             </Button>
-            <Button className="w-1/2" onClick={() => handlePrompt(true)}>
+            <Button
+              className="w-1/2"
+              disabled={!isFilled.isValid}
+              onClick={() => handlePrompt(true)}
+            >
               Send
             </Button>
           </div>
