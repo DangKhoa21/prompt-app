@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { AvatarUpload, SettingsEditTextField } from "@/features/settings";
+import {
+  AvatarUpload,
+  SettingsEditTextField,
+  useUpdateUserProfile,
+} from "@/features/settings";
 import { getUserProfile } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
-import { useUpdateUserProfile } from "../../hooks";
 
 export function ProfileSettings() {
   const {

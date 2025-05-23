@@ -10,14 +10,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  cn,
-  deserializeResultConfigData,
-  ExampleResultOutput,
-} from "@/lib/utils";
+import { cn, deserializeResultConfigData } from "@/lib/utils";
 import { Prompt } from "@/services/prompt/interface";
 import { Copy } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface PromptResultsProps {
@@ -31,13 +27,25 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
     ? "h-[692px] md:h-[812px]"
     : "h-[180px] md:h-[300px]";
 
-  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
   const [activeTab, setActiveTab] = useState("prompt");
+  const itemRefs = useRef(new Map<string, HTMLDivElement>());
 
+  const setItemRef = (key: string) => (el: HTMLDivElement | null) => {
+    if (el) itemRefs.current.set(key, el);
+  };
+
+  // Set tab with hash URL
   useEffect(() => {
-    if (expanded && itemRefs.current[expanded]) {
-      const el = itemRefs.current[expanded];
+    const hash = window.location.hash?.replace("#", "");
+    if (hash && ["prompt", "system", "examples"].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
+
+  // Scroll into the selected example result
+  useEffect(() => {
+    if (expanded && itemRefs.current.get(expanded)) {
+      const el = itemRefs.current.get(expanded);
 
       const timeout = setTimeout(() => {
         el?.scrollIntoView({
@@ -51,58 +59,72 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
   }, [expanded]);
 
   const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(promptData.stringTemplate);
+    navigator?.clipboard?.writeText(promptData.stringTemplate);
     toast.success("Prompt copied to clipboard!");
   };
 
   const handleCopySystemInstruction = () => {
-    navigator.clipboard.writeText(promptData.systemInstruction as string);
+    navigator?.clipboard?.writeText(promptData.systemInstruction as string);
     toast.success("System instruction copied to clipboard!");
   };
 
-  let deserializedData: ExampleResultOutput | null = null;
+  const deserializedData = useMemo(() => {
+    if (!promptData.exampleResult) return null;
+    return deserializeResultConfigData(promptData.exampleResult);
+  }, [promptData.exampleResult]);
 
-  const configValues: Record<string, string> = {};
+  const configValues = useMemo(() => {
+    if (!deserializedData) return [];
 
-  if (promptData.exampleResult) {
-    deserializedData = deserializeResultConfigData(promptData.exampleResult);
+    const entries: { label: string; value: string }[] = [];
 
     Object.entries(deserializedData.selectedValues).forEach(([key, value]) => {
-      configValues[key] = value;
+      entries.push({ label: key, value });
     });
 
     Object.entries(deserializedData.textareaValues).forEach(([key, value]) => {
-      configValues[key] = value;
+      entries.push({ label: key, value });
     });
 
-    Object.entries(deserializedData.arrayValues).forEach(([key, value]) => {
-      configValues[key] = value
-        .map((item, index) =>
-          item.values
-            .map((value) => `${key} ${index + 1}: ${value}`)
-            .join("\n"),
-        )
-        .join("\n\n");
+    Object.entries(deserializedData.arrayValues).forEach(([key, array]) => {
+      array.forEach((item, index) => {
+        entries.push({
+          label: `${key} ${index + 1}`,
+          value: item.values.join(", "),
+        });
+      });
     });
-  }
+
+    return entries;
+  }, [deserializedData]);
 
   return (
     <div className="bg-background rounded-lg">
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(val) => {
+          setActiveTab(val);
+          window.location.hash = val;
+        }}
         className="rounded-lg shadow-sm p-6"
       >
-        <TabsList className="grid grid-cols-3 mb-4 h-fit">
+        <TabsList
+          className={cn(
+            "grid mb-4 h-fit",
+            deserializedData ? "grid-cols-3" : "grid-cols-2",
+          )}
+        >
           <TabsTrigger value="prompt" className="text-wrap h-full">
             Prompt
           </TabsTrigger>
           <TabsTrigger value="system" className="text-wrap h-full">
             System Instruction
           </TabsTrigger>
-          <TabsTrigger value="examples" className="text-wrap h-full">
-            Examples
-          </TabsTrigger>
+          {deserializedData && (
+            <TabsTrigger value="examples" className="text-wrap h-full">
+              Examples
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="prompt" className="space-y-4">
@@ -111,6 +133,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </div>
           <Button
             variant="outline"
+            aria-label="Copy Prompt"
             onClick={handleCopyPrompt}
             className="w-full"
           >
@@ -135,42 +158,44 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </Button>
         </TabsContent>
 
-        <TabsContent value="examples" className="space-y-6">
-          <ScrollArea
-            className={cn(
-              "transition-all duration-300 md:p-4",
-              scrollAreaMaxHeight,
-            )}
-          >
-            <Accordion
-              type="single"
-              collapsible
-              value={expanded || ""}
-              onValueChange={(val) => setExpanded(val || null)}
+        {deserializedData && (
+          <TabsContent value="examples" className="space-y-6">
+            <ScrollArea
+              className={cn(
+                "transition-all duration-300 md:p-4",
+                scrollAreaMaxHeight,
+              )}
             >
-              {deserializedData && (
+              <Accordion
+                type="single"
+                collapsible
+                value={expanded || ""}
+                onValueChange={(val) => setExpanded(val || null)}
+              >
                 <AccordionItem
                   key={`example-result-${deserializedData.promptId}`}
                   value={deserializedData.promptId}
                 >
-                  <div
-                    ref={(el) => {
-                      itemRefs.current[deserializedData.promptId] = el;
-                    }}
-                  >
+                  <div ref={setItemRef(deserializedData.promptId)}>
                     <AccordionTrigger>Example Result</AccordionTrigger>
                   </div>
                   <AccordionContent className="space-y-4">
                     <div>
                       <p className="text-sm font-medium mb-2">Input:</p>
-                      <div className="p-4 rounded-md border text-sm grid grid-cols-2 gap-2">
-                        {Object.entries(configValues).map(([key, value]) => {
-                          return (
-                            <div key={`${key}`}>
-                              {key}: {value}
-                            </div>
-                          );
-                        })}
+                      <div className="p-4 rounded-md border text-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        {configValues.map(({ label, value }) => (
+                          <>
+                            <dt className="font-semibold">{label}</dt>
+                            <dd
+                              className={cn(
+                                "md:col-span-2",
+                                value ? "" : "text-red-400",
+                              )}
+                            >
+                              {value ?? "Not selected"}
+                            </dd>
+                          </>
+                        ))}
                       </div>
                     </div>
 
@@ -182,29 +207,10 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-              )}
-            </Accordion>
-          </ScrollArea>
-          {/* {promptData.examples.map((example) => ( */}
-          {/*   <div key={example.id} className="space-y-4"> */}
-          {/*     <h3 className="font-medium">{example.title}</h3> */}
-          {/**/}
-          {/*     <div> */}
-          {/*       <p className="text-sm font-medium mb-2">Input:</p> */}
-          {/*       <div className="bg-slate-50 p-4 rounded-md border text-sm">{example.input}</div> */}
-          {/*     </div> */}
-          {/**/}
-          {/*     <div> */}
-          {/*       <p className="text-sm font-medium mb-2">Output:</p> */}
-          {/*       <div className="bg-slate-50 p-4 rounded-md border text-sm max-h-96 overflow-y-auto whitespace-pre-wrap"> */}
-          {/*         {example.output} */}
-          {/*       </div> */}
-          {/*     </div> */}
-          {/**/}
-          {/*     <Separator /> */}
-          {/*   </div> */}
-          {/* ))} */}
-        </TabsContent>
+              </Accordion>
+            </ScrollArea>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

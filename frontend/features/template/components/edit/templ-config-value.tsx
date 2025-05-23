@@ -74,7 +74,10 @@ export function TemplatesConfigVariable({
         onClick={() => setIsOpen(!isOpen)}
       >
         <CardTitle className="text-base font-semibold flex justify-between items-center">
-          <div>Config {label}</div>
+          <div className="flex gap-2">
+            {label}{" "}
+            {isMandatory && <div className="text-lg text-red-400">*</div>}
+          </div>
 
           <div className="italic text-sm font-thin cursor-default">
             {!isOpen ? "Click for details" : "Click to hide"}

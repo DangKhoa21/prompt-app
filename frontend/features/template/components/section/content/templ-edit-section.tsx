@@ -71,7 +71,7 @@ export function TemplateEditSection({
       type: ConfigType,
       values: ConfigValue[],
     ): TemplateConfig => ({
-      id: id,
+      id,
       label,
       type,
       promptId: template.id,
@@ -194,8 +194,8 @@ export function TemplateEditSection({
             >
               <div
                 className={cn(
-                  "lg:sticky lg:top-3 h-fit",
-                  open ? "" : "sm:sticky sm:top-3",
+                  "lg:sticky lg:top-28 h-fit",
+                  open ? "" : "sm:sticky sm:top-28",
                 )}
               >
                 <TemplatesConfigTextarea

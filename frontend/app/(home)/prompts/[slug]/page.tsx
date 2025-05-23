@@ -37,7 +37,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     error: promptError,
     refetch: promptRefetch,
   } = useQuery({
-    queryKey: ["prompts", promptId],
+    queryKey: ["prompt", promptId],
     queryFn: () => getPrompt(promptId),
     // placeholderData: {
     //   id: "",
@@ -78,7 +78,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   });
 
   const { data: fetchedPromptStatsData } = useQuery({
-    queryKey: ["prompts", "stats", fetchedPromptData?.id],
+    queryKey: ["prompt", "stats", fetchedPromptData?.id],
     queryFn: () => getPromptStats(fetchedPromptData!.id),
     enabled: !!fetchedPromptData?.id,
   });
@@ -100,14 +100,22 @@ export default function Page({ params }: { params: { slug: string } }) {
   }
 
   if (!fetchedPromptData) {
-    return <div>Prompt does not exist, please try another prompt</div>;
+    return (
+      <div className="flex h-full items-center justify-center">
+        Prompt does not exist, please try another prompt
+      </div>
+    );
   }
 
   const userData = fetchedUserData ?? fallbackUser;
   const tagsData = fetchedTagsData ?? [];
   const promptData = {
     ...fetchedPromptData,
-    ...fetchedPromptStatsData,
+    ...(fetchedPromptStatsData ?? {
+      hasStarred: false,
+      starCount: 0,
+      commentCount: 0,
+    }),
   };
 
   return (

@@ -1,16 +1,14 @@
 "use client";
 
-import React from "react";
-
-import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/icons";
-
-import { getUserProfile } from "@/services/user";
+import { PromptTemplateCard } from "@/features/template";
 import { getPrompts, getStarredPrompts } from "@/services/prompt";
 import { PromptFilter } from "@/services/prompt/interface";
+import { getUserProfile } from "@/services/user";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { PromptTemplateCard } from "@/features/template";
 
 export function TemplateGridWrapper({
   filter,
@@ -47,7 +45,7 @@ export function TemplateGridWrapper({
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
     }

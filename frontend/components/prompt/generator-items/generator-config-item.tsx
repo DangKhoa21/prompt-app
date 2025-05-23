@@ -60,6 +60,8 @@ export default function RenderConfigInput({
   const extractedInfo = parseInfo(config.info);
 
   const handleSelectChange = (configLabel: string, value: string) => {
+    if (!value) return;
+
     setSelectedValues((prevState) => ({
       ...prevState,
       [configLabel]: value,
@@ -102,7 +104,11 @@ export default function RenderConfigInput({
             : "Description is not available"
         }
       >
-        <Button variant="ghost" className="h-8 w-8 mr-2">
+        <Button
+          variant="ghost"
+          className="h-8 w-8 mr-2"
+          aria-label="View description"
+        >
           <CircleHelp />
         </Button>
       </BetterTooltip>
@@ -114,6 +120,7 @@ export default function RenderConfigInput({
       case "dropdown":
         return (
           <Select
+            value={selectedValues[config.label] ?? ""}
             onValueChange={(value) => handleSelectChange(config.label, value)}
           >
             <SelectTrigger id={config.label}>
@@ -163,7 +170,7 @@ export default function RenderConfigInput({
           <ArrayConfig
             id={config.label}
             labels={config.values.map((v) => v.value)}
-            values={arrayValues[config.label]}
+            values={arrayValues[config.label] ?? []}
             setArrayValues={setArrayValues}
           />
         );

@@ -54,7 +54,7 @@ export function PromptGeneratorSidebar() {
   const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
-    queryKey: ["prompts", promptId],
+    queryKey: ["prompt", promptId],
     queryFn: () => getPromptWithConfigs(promptId),
   });
 
