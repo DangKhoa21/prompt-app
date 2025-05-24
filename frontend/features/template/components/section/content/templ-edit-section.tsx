@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmDialog from "@/components/confirm-dialog";
+import HighlightedTextarea from "@/components/highlighted-textarea";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTemplate } from "@/context/template-context";
@@ -211,6 +212,8 @@ export function TemplateEditSection({
                   placeholder="Enter your Prompt Template..."
                   value={template.stringTemplate}
                 />
+
+                <HighlightedTextarea />
 
                 {isMobile && (
                   <div className="flex my-2 justify-end">
