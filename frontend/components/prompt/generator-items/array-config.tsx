@@ -14,7 +14,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { v7 } from "uuid";
 
 function ArrayAccordionItem({
@@ -35,6 +35,21 @@ function ArrayAccordionItem({
 }) {
   const [localIsOpen, setIsOpen] = useState(false);
   const isOpen = !isDraging && localIsOpen;
+
+  const inputRef = useRef<Record<string, HTMLTextAreaElement | null>>({});
+
+  // Auto focus the first input fields
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current["el_0"]?.setSelectionRange(
+          values[0].length,
+          values[0].length,
+        );
+        inputRef.current["el_0"]?.focus();
+      }, 300);
+    }
+  }, [isOpen, values]);
 
   return (
     <div className={cn(isOpen && "border-2 rounded-md p-1")}>
@@ -97,6 +112,9 @@ function ArrayAccordionItem({
                     {labels[index].slice(1)}:
                   </div>
                   <Textarea
+                    ref={(el) => {
+                      inputRef.current[`el_${index}`] = el;
+                    }}
                     placeholder={labels[index]}
                     className="min-h-[100px] border border-slate-500"
                     value={value}

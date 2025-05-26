@@ -344,13 +344,13 @@ export function deserializeResultConfigData(
     } else if (type === ConfigType.ARRAY) {
       try {
         const parsedArray = JSON.parse(value);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsedArray)) {
           newArray[label] = parsedArray;
         }
       } catch (e) {
         console.log(e);
+        console.error("Invalid array param:", value);
       }
-      console.error("Invalid array param:", value);
     }
   });
 

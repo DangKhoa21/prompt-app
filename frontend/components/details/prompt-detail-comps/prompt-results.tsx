@@ -182,9 +182,12 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                   <AccordionContent className="space-y-4">
                     <div>
                       <p className="text-sm font-medium mb-2">Input:</p>
-                      <div className="p-4 rounded-md border text-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                      <div className="p-4 rounded-md border text-sm flex flex-col gap-2">
                         {configValues.map(({ label, value }) => (
-                          <>
+                          <div
+                            key={`${label}-${value}`}
+                            className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
+                          >
                             <dt className="font-semibold">{label}</dt>
                             <dd
                               className={cn(
@@ -194,7 +197,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                             >
                               {value ?? "Not selected"}
                             </dd>
-                          </>
+                          </div>
                         ))}
                       </div>
                     </div>
