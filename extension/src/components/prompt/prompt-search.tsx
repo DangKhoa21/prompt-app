@@ -1,9 +1,7 @@
 "use client";
 
 import * as React from "react";
-
 import { PencilRuler, Search } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,18 +13,19 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { LoadingSpinner } from "@/components/icons";
-
 import { getPrompts } from "@/services/prompt";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useSearchParams } from "@/hooks/useSearchParams";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useDebounceCallback } from "usehooks-ts";
 import { sendMessage } from "@/lib/messaging";
+import { PromptPinItem } from "@/services/prompt-pin/interface";
+import { getPinnedPrompts } from "@/services/prompt-pin";
+import { useAuth } from "@/context/auth-context";
 
 export function PromptSearch() {
+  const { isAuthenticated } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
-  //const searchParams = useSearchParams();
 
   const { ref, inView } = useInView();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
@@ -38,10 +37,24 @@ export function PromptSearch() {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
 
+  const {
+    data: pinnedPrompts,
+    isPending,
+    isError,
+  } = useQuery<Array<PromptPinItem>>({
+    queryKey: ["users", "pinned-prompts"],
+    queryFn: getPinnedPrompts,
+    enabled: isAuthenticated,
+  });
+
   const filteredPrompts = data?.pages.flatMap((page) =>
     page.data.filter((prompt) =>
       prompt.title.toLowerCase().includes(searchQuery.toLowerCase())
     )
+  );
+
+  const filteredPinnedPrompts = pinnedPrompts?.filter((prompt) =>
+    prompt.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handlePromptChange = (promptId: string) => {
@@ -58,7 +71,6 @@ export function PromptSearch() {
         );
       }
     });
-    // window.history.replaceState(null, "", `?${params.toString()}`);
     setOpen(false);
   };
 
@@ -108,14 +120,37 @@ export function PromptSearch() {
         />
         <CommandList>
           <CommandEmpty>
-            {status === "error"
+            {status === "error" || isError
               ? "Failed to search prompts."
-              : searchQuery.length === 0 || filteredPrompts?.length === 0
+              : searchQuery.length === 0 ||
+                (filteredPinnedPrompts?.length === 0 &&
+                  filteredPrompts?.length === 0)
               ? "No results found."
-              : status === "pending"
+              : status === "pending" || isPending
               ? "Loading..."
               : null}
           </CommandEmpty>
+
+          {filteredPinnedPrompts && filteredPinnedPrompts?.length > 0 && (
+            <CommandGroup heading="Pinned">
+              {filteredPinnedPrompts.map((prompt) => (
+                <CommandItem
+                  key={prompt.id}
+                  value={prompt.id}
+                  onSelect={() => handlePromptChange(prompt.id)}
+                >
+                  <PencilRuler className="mr-2 h-4 w-4" />
+                  <div>
+                    <div className="line-clamp-2">{prompt.title}</div>
+                    <div className="text-xs line-clamp-2">
+                      {prompt.description}
+                    </div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+
           {filteredPrompts && filteredPrompts?.length > 0 && (
             <CommandGroup heading="Prompts">
               {filteredPrompts.map((prompt) => (
@@ -133,11 +168,9 @@ export function PromptSearch() {
                   </div>
                 </CommandItem>
               ))}
-
               <div className="flex justify-center">
                 {isFetchingNextPage ? <LoadingSpinner /> : null}
               </div>
-
               <div ref={ref} className="mt-5" />
             </CommandGroup>
           )}

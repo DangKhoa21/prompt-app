@@ -14,16 +14,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setTokenState] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    setTokenState(token);
+    const updateToken = async () => {
+      const token = await storage.getItem("local:token");
+      setTokenState(token as string | null);
+    };
+    updateToken();
   }, []);
 
-  const setToken = (newToken: string | null) => {
+  const setToken = async (newToken: string | null) => {
     setTokenState(newToken);
     if (newToken) {
-      sessionStorage.setItem("token", newToken);
+      await storage.setItem("local:token", newToken);
     } else {
-      sessionStorage.removeItem("token");
+      await storage.removeItem("local:token");
     }
   };
 

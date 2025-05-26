@@ -1,5 +1,3 @@
-"use client";
-
 import { LoadingSpinner } from "@/components/icons";
 import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
 import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
@@ -22,27 +20,25 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import { BetterTooltip } from "@/components/ui/tooltip";
+import { WebDropdown } from "@/components/web-dropdown";
 //import { usePrompt } from "@/context/prompt-context";
-//import { usePinPrompt } from "@/features/template";
+import { usePinPrompt, useUnpinPrompt } from "@/features/template";
 // import axios from "@/lib/axios";
-//import { generateUUID, serializeConfigData } from "@/lib/utils";
+import { generateUUID, serializeConfigData } from "@/lib/utils";
 import { getPromptWithConfigs } from "@/services/prompt";
-//import { createShareOption } from "@/services/share-option";
+import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import {
-  ChevronLeft,
-  FileQuestion,
-  Pin,
-  RotateCcw,
-  Share2,
-} from "lucide-react";
+import { FileQuestion, Pin, PinOff, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { use, useEffect, useState } from "react";
 import { sendMessage } from "@/lib/messaging";
-//import { toast } from "sonner";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth-context";
 
 export function PromptGeneratorSidebar() {
+  const { isAuthenticated } = useAuth();
   //const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {}
@@ -62,63 +58,63 @@ export function PromptGeneratorSidebar() {
     queryFn: () => getPromptWithConfigs(promptId),
   });
 
-  // const createShareOptionMutation = useMutation({
-  //   mutationFn: createShareOption,
-  //   onSuccess: () => {
-  //     toast.success("Create share option successfully");
-  //   },
-  //   onError: (e) => {
-  //     if (e.message) {
-  //       toast.error(e.message);
-  //     } else {
-  //       toast.error("Something went wrong, please try again!");
-  //     }
-  //   },
-  // });
+  const createShareOptionMutation = useMutation({
+    mutationFn: createShareOption,
+    onSuccess: () => {
+      toast.success("Create share option successfully");
+    },
+    onError: (e) => {
+      if (e.message) {
+        toast.error(e.message);
+      } else {
+        toast.error("Something went wrong, please try again!");
+      }
+    },
+  });
 
-  // useEffect(() => {
-  //   if (!data) return;
+  useEffect(() => {
+    if (!data) return;
 
-  //   const optionId = searchParams.get("optionId");
-  //   if (!optionId) return;
+    const optionId = searchParams.get("optionId");
+    if (!optionId) return;
 
-  //   (async () => {
-  //     try {
-  //       const response = await axios.get(`/option/${optionId}`);
-  //       const optionData = response.data.data;
-  //       const parsedData = JSON.parse(optionData.option);
+    (async () => {
+      try {
+        const response = await axios.get(`/option/${optionId}`);
+        const optionData = response.data.data;
+        const parsedData = JSON.parse(optionData.option);
 
-  //       const newSelected: Record<string, string> = {};
-  //       const newTextarea: Record<string, string> = {};
-  //       const newArray: Record<string, { id: string; values: string[] }[]> = {};
+        const newSelected: Record<string, string> = {};
+        const newTextarea: Record<string, string> = {};
+        const newArray: Record<string, { id: string; values: string[] }[]> = {};
 
-  //       parsedData.configs.forEach(
-  //         (config: { label: string; type: string; value: string }) => {
-  //           if (!config || config.value === undefined || config.value === null)
-  //             return;
+        parsedData.configs.forEach(
+          (config: { label: string; type: string; value: string }) => {
+            if (!config || config.value === undefined || config.value === null)
+              return;
 
-  //           if (config.type === "dropdown" || config.type === "combobox") {
-  //             newSelected[config.label] = config.value;
-  //           } else if (config.type === "textarea") {
-  //             newTextarea[config.label] = config.value;
-  //           } else if (config.type === "array") {
-  //             const parsedArray = JSON.parse(config.value) as {
-  //               id: string;
-  //               values: string[];
-  //             }[];
-  //             newArray[config.label] = parsedArray;
-  //           }
-  //         },
-  //       );
+            if (config.type === "dropdown" || config.type === "combobox") {
+              newSelected[config.label] = config.value;
+            } else if (config.type === "textarea") {
+              newTextarea[config.label] = config.value;
+            } else if (config.type === "array") {
+              const parsedArray = JSON.parse(config.value) as {
+                id: string;
+                values: string[];
+              }[];
+              newArray[config.label] = parsedArray;
+            }
+          }
+        );
 
-  //       setSelectedValues(newSelected);
-  //       setTextareaValues(newTextarea);
-  //       setArrayValues(newArray);
-  //     } catch (error) {
-  //       console.error("Failed to fetch option data:", error);
-  //     }
-  //   })();
-  // }, [data, searchParams]);
+        setSelectedValues(newSelected);
+        setTextareaValues(newTextarea);
+        setArrayValues(newArray);
+      } catch (error) {
+        console.error("Failed to fetch option data:", error);
+      }
+    })();
+  }, [data, searchParams]);
 
   // useEffect(() => {
   //   if (data && data.systemInstruction !== systemInstruction) {
@@ -126,7 +122,8 @@ export function PromptGeneratorSidebar() {
   //   }
   // }, [data, systemInstruction, setSystemInstruction]);
 
-  // const pinPromptMutation = usePinPrompt();
+  const pinPromptMutation = usePinPrompt();
+  const unpinPromptMutation = useUnpinPrompt();
 
   if (isPending) {
     return (
@@ -243,82 +240,104 @@ export function PromptGeneratorSidebar() {
     });
   };
 
-  // const handleShare = () => {
-  //   if (!promptId) return;
+  const handleShare = () => {
+    if (!promptId) return;
 
-  //   const url = new URL(window.location.href);
-  //   const params = new URLSearchParams();
+    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const currentTab = tabs[0];
+      const url = new URL(currentTab.url || "");
+      // clear existing search params
+      url.search = "";
+      const params = new URLSearchParams(url.search);
+      params.set("promptId", promptId);
+      if (currentTab) {
+        const serializedData = serializeConfigData({
+          promptId: promptId,
+          data,
+          selectedValues,
+          textareaValues,
+          arrayValues,
+        });
 
-  //   params.set("promptId", promptId);
+        const createOptionPromisePromise =
+          createShareOptionMutation.mutateAsync({
+            optionId: generateUUID(),
+            option: serializedData,
+          });
 
-  //   const serializedData = serializeConfigData({
-  //     promptId: promptId,
-  //     data,
-  //     selectedValues,
-  //     textareaValues,
-  //     arrayValues,
-  //   });
+        toast.promise(createOptionPromisePromise, {
+          loading: "Creating share option...",
+          success: (optionId) => {
+            params.set("optionId", optionId);
+            url.search = params.toString();
 
-  //   const createOptionPromisePromise = createShareOptionMutation.mutateAsync({
-  //     optionId: generateUUID(),
-  //     option: serializedData,
-  //   });
+            navigator.clipboard.writeText(url.toString());
 
-  //   toast.promise(createOptionPromisePromise, {
-  //     loading: "Creating share option...",
-  //     success: (optionId) => {
-  //       params.set("optionId", optionId);
-  //       url.search = params.toString();
-
-  //       navigator.clipboard.writeText(url.toString());
-
-  //       return "Creating share option successfully, shareable URL copied to clipboard!";
-  //     },
-  //     error: (e) => {
-  //       console.error(e);
-  //       return "Failed to create share option";
-  //     },
-  //   });
-  // };
+            return "Creating share option successfully, shareable URL copied to clipboard!";
+          },
+          error: (e) => {
+            console.error(e);
+            return "Failed to create share option";
+          },
+        });
+      }
+    });
+  };
 
   return (
     <div className="flex h-full w-full flex-col">
       <SidebarHeader className="pb-0">
         <div className="flex justify-between items-center p-2">
           <div className="flex items-center">
-            <Button
-              variant="ghost"
-              className="h-8 w-8"
-              onClick={() => window.history.back()}
-            >
-              <ChevronLeft />
-            </Button>
-            <div className="text-base leading-tight ml-2">
-              <span className="font-semibold">{data.title}</span>
-            </div>
+            <WebDropdown />
           </div>
           {data.id !== "1" && (
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                className="h-8 w-8"
-                // onClick={() => handleShare()}
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-8 w-8"
-                // onClick={() => pinPromptMutation.mutate(data.id)}
-              >
-                <Pin />
-              </Button>
+              <BetterTooltip content="Share & copy">
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => handleShare()}
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </BetterTooltip>
+              {isAuthenticated && (
+                <>
+                  <BetterTooltip content="Add to pins">
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8"
+                      onClick={() => pinPromptMutation.mutate(data.id)}
+                    >
+                      <Pin />
+                    </Button>
+                  </BetterTooltip>
+                  <BetterTooltip content="Remove from pins">
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8"
+                      onClick={() => unpinPromptMutation.mutate(data.id)}
+                    >
+                      <PinOff />
+                    </Button>
+                  </BetterTooltip>
+                </>
+              )}
             </div>
           )}
         </div>
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
+        <SidebarGroup>
+          <SidebarGroupContent className="px-4">
+            <div className="text-base leading-tight">
+              <span className="font-semibold">{data.title}</span>
+            </div>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupContent className="px-4">
             <p>{data.description}</p>
@@ -410,9 +429,6 @@ export function PromptGeneratorSidebar() {
             <Button className="w-full" onClick={() => handlePrompt(false)}>
               Generate
             </Button>
-            {/* <Button className="w-1/2" onClick={() => handlePrompt(true)}>
-              Send
-            </Button> */}
           </div>
         </SidebarFooter>
       )}
