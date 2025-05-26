@@ -17,12 +17,12 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
-import { fillPromptTemplate } from "@/lib/generatePrompt";
+import { generateUUID } from "@/lib/utils";
+import { serializeConfigData } from "@/lib/utils.details";
 import {
-  generateUUID,
-  serializeConfigData,
+  fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils";
+} from "@/lib/utils.generate-prompt";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";

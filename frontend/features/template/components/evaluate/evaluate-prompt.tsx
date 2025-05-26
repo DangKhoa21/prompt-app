@@ -17,12 +17,12 @@ import {
   useGeneratePromptResult,
   useUpdatePromptResult,
 } from "@/features/template";
-import { fillPromptTemplate } from "@/lib/generatePrompt";
+import { cn } from "@/lib/utils";
+import { serializeMultipleResultsConfigData } from "@/lib/utils.details";
 import {
-  cn,
-  serializeResultConfigData,
+  fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils";
+} from "@/lib/utils.generate-prompt";
 import { Check, Copy, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ import { toast } from "sonner";
 interface EvaluationResult {
   id: string;
   configValues: Record<string, string>;
-  prompt: string;
+  // prompt: string;
   result: string;
   timestamp: string;
   selected?: boolean;
@@ -180,7 +180,7 @@ export function EvaluatePrompt() {
   const handleSelectResult = (resultId: string) => {
     const updatedResults = evaluationResults.map((result) => ({
       ...result,
-      selected: result.id === resultId,
+      selected: result.id === resultId ? !result.selected : result.selected,
     }));
     setEvaluationResults(updatedResults);
 
@@ -188,13 +188,16 @@ export function EvaluatePrompt() {
       (result) => result.id === resultId,
     )!.result;
 
-    const serializedData = serializeResultConfigData({
+    const serializedData = serializeMultipleResultsConfigData({
       promptId: template.id,
-      data: template,
-      selectedValues,
-      textareaValues,
-      arrayValues,
-      exampleResult,
+      results: evaluationResults
+        .filter((result) => {
+          return result.selected;
+        })
+        .map((result) => ({
+          exampleResult: result.result,
+          configs: result.configValues,
+        })),
     });
 
     const updatePromptResultPromise = mutateUpdatePromptResult({

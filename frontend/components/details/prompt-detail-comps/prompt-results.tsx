@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn, deserializeResultConfigData } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { deserializeResultConfigData } from "@/lib/utils.details";
 import { Prompt } from "@/services/prompt/interface";
 import { Copy } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";

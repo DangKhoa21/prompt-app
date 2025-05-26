@@ -1,4 +1,6 @@
+import { ConfigType } from "@/features/template";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
+import { parseInfo } from "./utils.details";
 
 export function fillPromptTemplate({
   template,
@@ -52,4 +54,60 @@ export function fillPromptTemplate({
   });
 
   return prompt.replace(/ {2,}/g, " ").replace(/\\n/g, "\n");
+}
+
+export function validateFilledConfigs(
+  configs: PromptConfig[] | TemplateConfig[],
+  selectedValues: Record<string, string>,
+  textareaValues: Record<string, string>,
+  arrayValues: Record<string, { id: string; values: string[] }[]>,
+): {
+  isValid: boolean;
+  unfilledConfigs: string[];
+  filledCount: number;
+  totalCount: number;
+} {
+  const unfilledConfigs: string[] = [];
+  let totalCount = 0;
+
+  configs.forEach((config) => {
+    const { isRequired } = parseInfo(config.info);
+    if (!isRequired) return;
+
+    totalCount += 1;
+
+    const value =
+      config.type === ConfigType.TEXTAREA
+        ? textareaValues[config.label]
+        : config.type === ConfigType.ARRAY
+          ? arrayValues[config.label]
+          : selectedValues[config.label];
+
+    const isFilled =
+      config.type === ConfigType.ARRAY
+        ? Array.isArray(value) &&
+          value.length > 0 &&
+          value.every(
+            (item) =>
+              Array.isArray(item.values) &&
+              item.values.length > 0 &&
+              item.values.some((v) => v.trim() !== ""),
+          )
+        : typeof value === "string" &&
+          value.trim() !== "" &&
+          value.trim().toLowerCase() !== "none";
+
+    if (!isFilled) {
+      unfilledConfigs.push(config.label);
+    }
+  });
+
+  const filledCount = totalCount - unfilledConfigs.length;
+
+  return {
+    isValid: unfilledConfigs.length === 0,
+    unfilledConfigs,
+    filledCount,
+    totalCount,
+  };
 }
