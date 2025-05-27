@@ -1,5 +1,6 @@
 "use client";
-import React, {
+
+import {
   createContext,
   useContext,
   useState,
@@ -39,7 +40,7 @@ export const PromptProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [systemInstruction, setSystemInstruction] = useState<string | null>(
-    null
+    null,
   );
 
   return (

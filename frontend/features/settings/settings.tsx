@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -5,19 +6,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, Settings as SettingsIcon } from "lucide-react";
-import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { GeneralSettings, ProfileSettings } from "@/features/settings";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GeneralSettings, ProfileSettings } from "@/features/settings";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { ChevronDown, Settings as SettingsIcon } from "lucide-react";
+import { useState } from "react";
 
 export function Settings() {
   const [open, setOpen] = useState(false);

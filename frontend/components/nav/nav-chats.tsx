@@ -1,12 +1,5 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,10 +26,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { MoreHorizontal, Trash2 } from "lucide-react";
-
 import { deleteChatById, getHistory } from "@/services/chat";
 import { Chat } from "@/services/chat/interface";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isToday, isYesterday, subMonths, subWeeks } from "date-fns";
+import { MoreHorizontal, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 type GroupedChats = {
   today: Chat[];
@@ -221,7 +219,7 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
         lastWeek: [],
         lastMonth: [],
         older: [],
-      } as GroupedChats
+      } as GroupedChats,
     );
   };
 

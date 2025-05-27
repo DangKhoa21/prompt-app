@@ -1,6 +1,12 @@
 "use client";
 
-import React from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   token: string | null;
@@ -8,12 +14,12 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
-const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setTokenState] = React.useState<string | null>(null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [token, setTokenState] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const token = sessionStorage.getItem("token");
     setTokenState(token);
   }, []);
@@ -37,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }

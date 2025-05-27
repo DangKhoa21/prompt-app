@@ -1,12 +1,11 @@
 "use client";
 
-import { PencilRuler, Plus } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/auth-context";
+import { PencilRuler, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useWindowSize } from "usehooks-ts";
 

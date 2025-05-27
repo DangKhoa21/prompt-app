@@ -1,13 +1,26 @@
+import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { TemplateProvider } from "@/context/template-context";
 import { TemplatesIdHeader } from "@/features/template";
-import { Metadata } from "next";
+import { TemplateWithConfigs } from "@/services/prompt/interface";
+import axios from "axios";
 
-export const metadata: Metadata = {
-  title: "Prompt Template",
-  description: "Powerful UI for promptings",
-};
+async function getPromptTemplate(id: string): Promise<TemplateWithConfigs> {
+  const response = await axios.get(
+    `${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`,
+  );
+  return response.data.data;
+}
 
-export default function Layout({
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const template = await getPromptTemplate(params.id);
+
+  return {
+    title: `Template: ${template.title}`,
+    description: `Template for ${template.description}`,
+  };
+}
+
+export default function TemplateIdLayout({
   children,
   params,
 }: {

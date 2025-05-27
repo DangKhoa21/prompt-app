@@ -1,9 +1,12 @@
 "use client";
 
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
 import useWindowSize from "@/components/use-window-size";
+import { sanitizeUIMessages } from "@/lib/utils";
 import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
 import cx from "classnames";
 import { motion } from "framer-motion";
+import { Sparkle } from "lucide-react";
 import type React from "react";
 import {
   useCallback,
@@ -15,11 +18,6 @@ import {
   type SetStateAction,
 } from "react";
 import { toast } from "sonner";
-
-import { sanitizeUIMessages } from "@/lib/utils";
-
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
-import { Sparkle } from "lucide-react";
 // import { PreviewAttachment } from "./preview-attachment";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

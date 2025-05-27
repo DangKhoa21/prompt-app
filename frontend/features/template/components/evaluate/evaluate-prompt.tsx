@@ -13,12 +13,16 @@ import {
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { useTemplate } from "@/context/template-context";
 import {
+  ConfigType,
   useEvaluatePrompt,
   useGeneratePromptResult,
   useUpdatePromptResult,
 } from "@/features/template";
 import { cn } from "@/lib/utils";
-import { serializeMultipleResultsConfigData } from "@/lib/utils.details";
+import {
+  ConfigMapping,
+  serializeMultipleResultsConfigData,
+} from "@/lib/utils.details";
 import {
   fillPromptTemplate,
   validateFilledConfigs,
@@ -29,7 +33,7 @@ import { toast } from "sonner";
 
 interface EvaluationResult {
   id: string;
-  configValues: Record<string, string>;
+  configValues: ConfigMapping[];
   // prompt: string;
   result: string;
   timestamp: string;
@@ -128,26 +132,39 @@ export function EvaluatePrompt() {
     setLoadingStates((prev) => ({ ...prev, evaluating: true }));
     const FALLBACK_CONFIG = "Not selected";
 
-    const configValues: Record<string, string> = {};
+    const configValues: ConfigMapping[] = [];
     template.configs.forEach((config) => {
-      if (config.type === "dropdown" || config.type === "combobox") {
-        configValues[config.label] =
-          selectedValues[config.label] ?? FALLBACK_CONFIG;
-      } else if (config.type === "textarea") {
-        configValues[config.label] =
-          textareaValues[config.label] ?? FALLBACK_CONFIG;
-      } else if (config.type === "array") {
-        configValues[config.label] =
-          arrayValues[config.label]
-            .map((item, index) =>
-              item.values
-                .map(
-                  (value, labelIndex) =>
-                    `${config.values[labelIndex].value} ${index + 1}: ${value}`,
-                )
-                .join("\n"),
-            )
-            .join("\n\n") ?? FALLBACK_CONFIG;
+      if (
+        config.type === ConfigType.DROPDOWN ||
+        config.type === ConfigType.COMBOBOX
+      ) {
+        configValues.push({
+          label: config.label,
+          type: config.type,
+          value: selectedValues[config.label] ?? FALLBACK_CONFIG,
+        });
+      } else if (config.type === ConfigType.TEXTAREA) {
+        configValues.push({
+          label: config.label,
+          type: config.type,
+          value: textareaValues[config.label] ?? FALLBACK_CONFIG,
+        });
+      } else if (config.type === ConfigType.ARRAY) {
+        configValues.push({
+          label: config.label,
+          type: config.type,
+          value:
+            arrayValues[config.label]
+              .map((item, index) =>
+                item.values
+                  .map(
+                    (value, labelIndex) =>
+                      `${config.values[labelIndex].value} ${index + 1}: ${value}`,
+                  )
+                  .join("\n"),
+              )
+              .join("\n\n") ?? FALLBACK_CONFIG,
+        });
       }
     });
 
@@ -157,7 +174,6 @@ export function EvaluatePrompt() {
       const newResult: EvaluationResult = {
         id: Date.now().toString(),
         configValues,
-        prompt: previewPrompt,
         result,
         timestamp: new Date().toISOString(),
       };
@@ -184,14 +200,11 @@ export function EvaluatePrompt() {
     }));
     setEvaluationResults(updatedResults);
 
-    const exampleResult = updatedResults.find(
-      (result) => result.id === resultId,
-    )!.result;
-
     const serializedData = serializeMultipleResultsConfigData({
       promptId: template.id,
       results: evaluationResults
         .filter((result) => {
+          if (result.id === resultId) return !result.selected;
           return result.selected;
         })
         .map((result) => ({
@@ -399,16 +412,17 @@ export function EvaluatePrompt() {
                   <div className="text-xs space-y-2 mb-2">
                     <p className="font-medium">Configuration:</p>
                     <div className="grid grid-cols-2 gap-1">
-                      {Object.entries(result.configValues).map(
-                        ([key, value]) => (
+                      {result.configValues.map(({ label, type, value }) => {
+                        const key = `${label}-${type}`;
+                        return (
                           <div key={key} className="flex">
                             <span className="font-medium mr-1">{key}:</span>
                             <span className="overflow-auto whitespace-pre-wrap">
                               {value}
                             </span>
                           </div>
-                        ),
-                      )}
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="border-t pt-2">

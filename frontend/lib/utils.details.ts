@@ -1,11 +1,11 @@
 import { ConfigType } from "@/features/template";
 import {
-  PromptWithConfigs,
+  PromptConfig,
+  TemplateConfig,
   TemplateConfigInfo,
-  TemplateWithConfigs,
 } from "@/services/prompt/interface";
 
-type ConfigMapping = {
+export type ConfigMapping = {
   label: string;
   type: string;
   value: string;
@@ -16,23 +16,34 @@ type Serializing = {
 };
 
 type SerializingResult = Serializing & {
+  // Legacy: single result support
   configs?: ConfigMapping[];
   exampleResult?: string;
+
+  // New: Multiple results support
   exampleResults?: {
     exampleResult: string;
     configs: ConfigMapping[];
   }[];
 };
 
-export function serializeConfigData({
+export type ExampleResultOutput = {
+  promptId: string;
+  exampleResult: string;
+  selectedValues: Record<string, string>;
+  textareaValues: Record<string, string>;
+  arrayValues: Record<string, { id: string; values: string[] }[]>;
+};
+
+export function serializeOptionConfigData({
   promptId,
-  data,
+  configs,
   selectedValues,
   textareaValues,
   arrayValues,
 }: {
   promptId: string;
-  data: PromptWithConfigs;
+  configs: PromptConfig[];
   selectedValues: Record<string, string>;
   textareaValues: Record<string, string>;
   arrayValues: Record<string, { id: string; values: string[] }[]>;
@@ -44,7 +55,7 @@ export function serializeConfigData({
     configs: [],
   };
 
-  data.configs.forEach((config) => {
+  configs.forEach((config) => {
     const key = config.label;
     let value: string = "";
 
@@ -73,18 +84,18 @@ export function serializeConfigData({
 
 export function serializeResultConfigData({
   promptId,
-  data,
+  configs,
+  exampleResult,
   selectedValues,
   textareaValues,
   arrayValues,
-  exampleResult,
 }: {
   promptId: string;
-  data: TemplateWithConfigs;
+  configs: TemplateConfig[];
+  exampleResult: string;
   selectedValues: Record<string, string>;
   textareaValues: Record<string, string>;
   arrayValues: Record<string, { id: string; values: string[] }[]>;
-  exampleResult: string;
 }) {
   const serialized: SerializingResult = {
     promptId,
@@ -92,7 +103,7 @@ export function serializeResultConfigData({
     configs: [],
   };
 
-  data.configs.forEach((config) => {
+  configs.forEach((config) => {
     const key = config.label;
     let value: string = "";
 
@@ -105,32 +116,29 @@ export function serializeResultConfigData({
       value = textareaValues[key];
     } else if (config.type === ConfigType.ARRAY) {
       value = JSON.stringify(arrayValues[key]);
-    } else {
-      return;
     }
 
-    serialized.configs.push({
+    serialized.configs!.push({
       label: key,
       type: config.type,
       value,
     });
   });
 
-  return JSON.stringify(serialized);
+  return {
+    jsonstring: JSON.stringify(serialized),
+    configs: serialized.configs,
+  };
 }
 
 export function serializeMultipleResultsConfigData({
   promptId,
-  data,
   results,
 }: {
   promptId: string;
-  data: TemplateWithConfigs;
   results: {
     exampleResult: string;
-    selectedValues: Record<string, string>;
-    textareaValues: Record<string, string>;
-    arrayValues: Record<string, { id: string; values: string[] }[]>;
+    configs: ConfigMapping[];
   }[];
 }) {
   const serialized: SerializingResult = {
@@ -141,52 +149,76 @@ export function serializeMultipleResultsConfigData({
   return JSON.stringify(serialized);
 }
 
-export type ExampleResultOutput = {
-  promptId: string;
-  exampleResult: string;
-  selectedValues: Record<string, string>;
-  textareaValues: Record<string, string>;
-  arrayValues: Record<string, { id: string; values: string[] }[]>;
-};
-
-export function deserializeResultConfigData(
-  jsonString: string,
+function convertToExampleOutput(
+  promptId: string,
+  exampleResult: string,
+  configs: ConfigMapping[],
+  selectedValues?: Record<string, string>,
+  textareaValues?: Record<string, string>,
+  arrayValues?: Record<string, { id: string; values: string[] }[]>,
 ): ExampleResultOutput {
-  const parsed: SerializingResult = JSON.parse(jsonString);
+  const newSelected: Record<string, string> = selectedValues ?? {};
+  const newTextarea: Record<string, string> = textareaValues ?? {};
+  const newArray: Record<string, { id: string; values: string[] }[]> =
+    arrayValues ?? {};
 
-  const newSelected: Record<string, string> = {};
-  const newTextarea: Record<string, string> = {};
-  const newArray: Record<string, { id: string; values: string[] }[]> = {};
-
-  parsed.configs.forEach((config) => {
-    const { label, type, value } = config;
-
-    if (type === ConfigType.DROPDOWN || type === ConfigType.COMBOBOX) {
-      newSelected[label] = value;
-    } else if (type === ConfigType.TEXTAREA) {
-      newTextarea[label] = value;
-    } else if (type === ConfigType.ARRAY) {
-      try {
-        const parsedArray = JSON.parse(value);
-        if (Array.isArray(parsedArray)) {
-          newArray[label] = parsedArray;
+  // fallback: try parse values from configs (legacy)
+  if (!selectedValues || !textareaValues || !arrayValues) {
+    configs.forEach((config) => {
+      const { label, type, value } = config;
+      if (type === ConfigType.DROPDOWN || type === ConfigType.COMBOBOX) {
+        newSelected[label] = value;
+      } else if (type === ConfigType.TEXTAREA) {
+        newTextarea[label] = value;
+      } else if (type === ConfigType.ARRAY) {
+        try {
+          newArray[label] = JSON.parse(value);
+        } catch {
+          console.error("Invalid array param:", value);
         }
-      } catch (e) {
-        console.log(e);
-        console.error("Invalid array param:", value);
       }
-    }
-  });
+    });
+  }
 
   return {
-    promptId: parsed.promptId,
-    exampleResult: parsed.exampleResult,
+    promptId,
+    exampleResult,
     selectedValues: newSelected,
     textareaValues: newTextarea,
     arrayValues: newArray,
   };
 }
 
+export function deserializeResultConfigData(
+  jsonString: string,
+): ExampleResultOutput[] {
+  const parsed: SerializingResult = JSON.parse(jsonString);
+
+  // Legacy support: only one example result
+  if (parsed.exampleResult) {
+    const singleOutput = convertToExampleOutput(
+      parsed.promptId,
+      parsed.exampleResult,
+      parsed.configs!,
+    );
+    return [singleOutput];
+  }
+
+  // New: multiple example results
+  if (parsed.exampleResults) {
+    return parsed.exampleResults.map((result) =>
+      convertToExampleOutput(
+        parsed.promptId,
+        result.exampleResult,
+        result.configs,
+      ),
+    );
+  }
+
+  return []; // fallback
+}
+
+// For template description and required only
 export function stringifyInfo(infoObj: TemplateConfigInfo): string {
   return JSON.stringify(infoObj);
 }

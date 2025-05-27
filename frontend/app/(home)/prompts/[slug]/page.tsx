@@ -26,7 +26,11 @@ const fallbackUser = {
   updatedAt: new Date(),
 };
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function PromptDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const { slug } = params;
   const promptId = getIdFromDetailURL(slug);
 

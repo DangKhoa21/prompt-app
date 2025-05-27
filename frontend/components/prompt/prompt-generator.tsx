@@ -18,7 +18,7 @@ import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios";
 import { generateUUID } from "@/lib/utils";
-import { serializeConfigData } from "@/lib/utils.details";
+import { serializeOptionConfigData } from "@/lib/utils.details";
 import {
   fillPromptTemplate,
   validateFilledConfigs,
@@ -185,9 +185,9 @@ export function PromptGeneratorSidebar() {
 
     params.set("promptId", promptId);
 
-    const serializedData = serializeConfigData({
+    const serializedData = serializeOptionConfigData({
       promptId: promptId,
-      data,
+      configs: data.configs,
       selectedValues,
       textareaValues,
       arrayValues,

@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -21,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function TagsList() {
   const searchParams = useSearchParams();
@@ -44,7 +43,7 @@ export default function TagsList() {
     { id: "most-starred", name: "Most Starred" },
   ];
 
-  const updateParams = React.useCallback(
+  const updateParams = useCallback(
     (key: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value.length) {
@@ -57,24 +56,24 @@ export default function TagsList() {
     [router, searchParams],
   );
 
-  const updateTagId = React.useCallback(
+  const updateTagId = useCallback(
     (id: string) => {
       updateParams("tagId", id === tagId ? "" : id);
     },
     [tagId, updateParams],
   );
 
-  const updateSort = React.useCallback(
+  const updateSort = useCallback(
     (sort: string) => {
       updateParams("sort", sort);
     },
     [updateParams],
   );
 
-  const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();
-  const [scrollProgress, setScrollProgress] = React.useState(0);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!carouselApi) return;
 
     const onScroll = () => {
@@ -90,9 +89,9 @@ export default function TagsList() {
     };
   }, [carouselApi]);
 
-  const [scrolled, setScrolled] = React.useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 200;
       if (isScrolled !== scrolled) {

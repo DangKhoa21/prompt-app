@@ -1,22 +1,22 @@
 // edit
 export * from "./components/edit/templ-config-textarea";
 export * from "./components/edit/templ-config-value";
+export * from "./components/edit/templ-generator";
 export * from "./components/edit/templ-tag";
 export * from "./components/edit/templ-text";
-export * from "./components/edit/templ-generator";
 
 // evaluate
 export * from "./components/evaluate/evaluate-prompt";
 
 // section
+export * from "./components/section/content/templ-display-section";
+export * from "./components/section/content/templ-edit-section";
 export * from "./components/section/header/templ-header";
 export * from "./components/section/header/templ-id-header";
-export * from "./components/section/content/templ-edit-section";
-export * from "./components/section/content/templ-display-section";
 
 // wrapper
-export * from "./components/wrapper/templ-edit-wrapper";
 export * from "./components/wrapper/templ-display-wrapper";
+export * from "./components/wrapper/templ-edit-wrapper";
 
 // Misc
 export * from "./components/edit-desc-button";

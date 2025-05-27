@@ -1,22 +1,19 @@
 "use client";
 
-import type { Attachment, Message } from "ai";
-import { useState } from "react";
-
-import { PreviewMessage, ThinkingMessage } from "@/components/message";
-
 import { ChatHeader } from "@/components/chat/chat-header";
-import { useChat } from "ai/react";
 import { MultimodalInput } from "@/components/chat/multimodal-input";
-
+import { PreviewMessage, ThinkingMessage } from "@/components/message";
 import { Overview } from "@/components/overview";
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import { usePrompt } from "@/context/prompt-context";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Attachment, Message } from "ai";
+import { useChat } from "ai/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function Chat({
   id,

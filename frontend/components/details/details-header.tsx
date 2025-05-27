@@ -1,10 +1,9 @@
 "use client";
 
-import { ChevronLeft } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function DetailsHeader({ pageName }: { pageName: string }) {

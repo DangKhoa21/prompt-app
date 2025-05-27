@@ -3,10 +3,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Prompt Marketplace",
-  description: "Powerful UI for promptings",
+  description: "Shopping for your desire templates",
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function MarketplaceLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <MarketHeader />

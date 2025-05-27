@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,11 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth-context";
 import { formatDate } from "@/lib/utils";
 import { createComment, deleteAComment, getComments } from "@/services/comment";
 import { CommentItem } from "@/services/comment/interface";
+import { getUserProfile } from "@/services/user";
 import {
   useInfiniteQuery,
   useMutation,
@@ -26,17 +34,9 @@ import {
   ThumbsUp,
   Trash,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
-import { LoadingSpinner } from "@/components/icons";
-import { useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { getUserProfile } from "@/services/user";
 
 export default function Comment({
   comment,

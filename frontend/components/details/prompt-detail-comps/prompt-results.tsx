@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
 import { deserializeResultConfigData } from "@/lib/utils.details";
 import { Prompt } from "@/services/prompt/interface";
@@ -75,27 +76,33 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
   }, [promptData.exampleResult]);
 
   const configValues = useMemo(() => {
-    if (!deserializedData) return [];
+    if (!deserializedData) return {};
 
-    const entries: { label: string; value: string }[] = [];
+    const entries: Record<
+      string,
+      { label: string; type: string; value: string }[]
+    > = {};
 
-    Object.entries(deserializedData.selectedValues).forEach(([key, value]) => {
-      entries.push({ label: key, value });
-    });
+    deserializedData.forEach((result, index) => {
+      entries[index] = [];
+      Object.entries(result.selectedValues).forEach(([key, value]) => {
+        entries[index].push({ label: key, type: ConfigType.DROPDOWN, value });
+      });
 
-    Object.entries(deserializedData.textareaValues).forEach(([key, value]) => {
-      entries.push({ label: key, value });
-    });
+      Object.entries(result.textareaValues).forEach(([key, value]) => {
+        entries[index].push({ label: key, type: ConfigType.TEXTAREA, value });
+      });
 
-    Object.entries(deserializedData.arrayValues).forEach(([key, array]) => {
-      array.forEach((item, index) => {
-        entries.push({
-          label: `${key} ${index + 1}`,
-          value: item.values.join(", "),
+      Object.entries(result.arrayValues).forEach(([key, array]) => {
+        array.forEach((item, arrayIndex) => {
+          entries[index].push({
+            label: `${key} ${arrayIndex + 1}`,
+            type: ConfigType.ARRAY,
+            value: item.values.join(", "),
+          });
         });
       });
     });
-
     return entries;
   }, [deserializedData]);
 
@@ -167,51 +174,56 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
                 scrollAreaMaxHeight,
               )}
             >
-              <Accordion
-                type="single"
-                collapsible
-                value={expanded || ""}
-                onValueChange={(val) => setExpanded(val || null)}
-              >
-                <AccordionItem
-                  key={`example-result-${deserializedData.promptId}`}
-                  value={deserializedData.promptId}
+              {deserializedData.map((result, i) => (
+                <Accordion
+                  key={`result-${i}`}
+                  type="single"
+                  collapsible
+                  value={expanded || ""}
+                  onValueChange={(val) => setExpanded(val || null)}
                 >
-                  <div ref={setItemRef(deserializedData.promptId)}>
-                    <AccordionTrigger>Example Result</AccordionTrigger>
-                  </div>
-                  <AccordionContent className="space-y-4">
-                    <div>
-                      <p className="text-sm font-medium mb-2">Input:</p>
-                      <div className="p-4 rounded-md border text-sm flex flex-col gap-2">
-                        {configValues.map(({ label, value }) => (
-                          <div
-                            key={`${label}-${value}`}
-                            className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
-                          >
-                            <dt className="font-semibold">{label}</dt>
-                            <dd
-                              className={cn(
-                                "md:col-span-2",
-                                value ? "" : "text-red-400",
-                              )}
-                            >
-                              {value ?? "Not selected"}
-                            </dd>
-                          </div>
-                        ))}
+                  <AccordionItem
+                    key={`example-result-${result.exampleResult}`}
+                    value={result.exampleResult}
+                  >
+                    <div ref={setItemRef(i.toString())}>
+                      <AccordionTrigger>Example {i + 1}</AccordionTrigger>
+                    </div>
+                    <AccordionContent className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-2">Input:</p>
+                        <div className="p-4 rounded-md border text-sm flex flex-col gap-2">
+                          {configValues[i.toString()].map(
+                            ({ label, value }) => (
+                              <div
+                                key={`${label}-${value}`}
+                                className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
+                              >
+                                <dt className="font-semibold">{label}</dt>
+                                <dd
+                                  className={cn(
+                                    "md:col-span-2",
+                                    value ? "" : "text-red-400",
+                                  )}
+                                >
+                                  {value ?? "Not selected"}
+                                </dd>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <p className="text-sm font-medium mb-2">Output:</p>
-                      <ScrollArea className="border rounded-lg p-2 md:p-8 h-[32rem]">
-                        <Markdown>{deserializedData.exampleResult}</Markdown>
-                      </ScrollArea>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                      <div>
+                        <p className="text-sm font-medium mb-2">Output:</p>
+                        <ScrollArea className="border rounded-lg p-2 md:p-8 h-[32rem]">
+                          <Markdown>{result.exampleResult}</Markdown>
+                        </ScrollArea>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ))}
             </ScrollArea>
           </TabsContent>
         )}

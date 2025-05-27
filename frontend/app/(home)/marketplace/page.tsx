@@ -5,7 +5,7 @@ import PromptsList from "@/components/marketplace/prompts-list";
 import TagsList from "@/components/marketplace/tags-list";
 import Container from "@/components/container";
 
-export default async function Page(props: {
+export default async function MarketplacePage(props: {
   searchParams?: {
     tagId?: string;
     search?: string;

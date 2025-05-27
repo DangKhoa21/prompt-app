@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounceCallback } from "usehooks-ts";
+
 interface MarketSearchProps {
   showTitle?: boolean;
 }

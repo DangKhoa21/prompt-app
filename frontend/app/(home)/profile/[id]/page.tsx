@@ -25,7 +25,10 @@ interface ProfilePageProps {
   };
 }
 
-export default function Page({ params, searchParams }: ProfilePageProps) {
+export default function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
   const { id } = params;
 
   const { tagId, search, sort } = searchParams || {
