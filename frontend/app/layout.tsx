@@ -20,6 +20,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+// TODO: change metadataBase url to github link
 export const metadata: Metadata = {
   title: "Prompt App",
   description: "Powerful UI for promptings",
@@ -79,8 +80,6 @@ export const metadata: Metadata = {
     // shortcut: "/shortcut-icon.png",
     // apple: "/apple-touch-icon.png",
   },
-
-  themeColor: "#0ea5e9", // Tailwind blue-500 or your brand color
 };
 
 export default function RootLayout({

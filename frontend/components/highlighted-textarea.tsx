@@ -11,7 +11,7 @@ const config: Record<string, string> = {
 function highlightText(text: string) {
   return text.replace(/{{(.*?)}}/g, (_, key) => {
     const color = config[key] || "#e5e7eb";
-    return `<span class="rounded" style="color: ${color}">{{${key}}}</span>`;
+    return `<span class="rounded" style="background-color: ${color}">{{${key}}}</span>`;
   });
 }
 

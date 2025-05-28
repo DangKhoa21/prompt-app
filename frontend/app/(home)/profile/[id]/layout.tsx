@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 
 async function getUser(id: string): Promise<User> {
   const response = await axios.get(
-    `${SERVER_URL}/${VERSION_PREFIX}/user/${id}`,
+    `${SERVER_URL}/${VERSION_PREFIX}/users/${id}`,
   );
   return response.data.data;
 }
