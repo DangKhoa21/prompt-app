@@ -3,8 +3,9 @@
 import { convertToUIMessages } from "@/lib/utils";
 import { getMessagesByChatId } from "@/services/chat";
 import { useQuery } from "@tanstack/react-query";
+import { Message } from "ai";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Chat } from "./chat";
 
@@ -16,6 +17,7 @@ export function ChatWrapper({
   selectedModelId: string;
 }) {
   const router = useRouter();
+  const toastIdRef = useRef<string | number | null>(null);
 
   const {
     isLoading: messagesLoading,
@@ -28,24 +30,26 @@ export function ChatWrapper({
 
   useEffect(() => {
     if (messagesError) {
-      toast.error(
-        `Failed to load messages for chat ${id} (${messagesError?.message})`
+      toastIdRef.current = toast.error(
+        `Failed to load messages for chat ${id} (${messagesError.message})`,
       );
       router.replace("/");
-      toast.dismiss();
-    } else if (!messagesLoading) {
-      toast.dismiss();
+    } else if (!messagesLoading && toastIdRef.current) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
     }
   }, [messagesError, messagesLoading, id, router]);
 
   if (messagesLoading) {
-    return null;
+    return <div className="p-4 text-muted-foreground">Loading chat...</div>;
   }
 
   return (
     <Chat
       id={id}
-      initialMessages={convertToUIMessages(messagesFromDb || [])}
+      initialMessages={
+        convertToUIMessages(messagesFromDb || []) as Array<Message>
+      }
       selectedModelId={selectedModelId}
     />
   );

@@ -118,7 +118,7 @@ export function EvaluatePrompt() {
 
   // Scroll to the improve suggestion if have
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
         suggestImprovePromptRef.current.scrollIntoView({
           behavior: "smooth",
@@ -126,6 +126,10 @@ export function EvaluatePrompt() {
         });
       }
     }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   });
 
   const handleGenerateResult = async () => {

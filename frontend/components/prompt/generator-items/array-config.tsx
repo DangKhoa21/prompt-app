@@ -41,13 +41,17 @@ function ArrayAccordionItem({
   // Auto focus the first input fields
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         inputRef.current["el_0"]?.setSelectionRange(
           values[0].length,
           values[0].length,
         );
         inputRef.current["el_0"]?.focus();
       }, 300);
+
+      return () => {
+        clearTimeout(timeout);
+      };
     }
   }, [isOpen, values]);
 

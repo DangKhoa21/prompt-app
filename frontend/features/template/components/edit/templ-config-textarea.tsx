@@ -1,3 +1,4 @@
+import HighlightedTextarea from "@/components/highlighted-textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,6 +86,10 @@ export function TemplatesConfigTextarea({
           onChange={(e) => {
             handleTextareaChange(e.target.value);
           }}
+        />
+        <HighlightedTextarea
+          id="stringTemplate"
+          value={template.stringTemplate}
         />
       </CardContent>
     </Card>

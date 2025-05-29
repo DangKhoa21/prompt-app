@@ -213,7 +213,10 @@ export function TemplateEditSection({
                   value={template.stringTemplate}
                 />
 
-                <HighlightedTextarea />
+                <HighlightedTextarea
+                  id="stringTemplate"
+                  value={template.stringTemplate}
+                />
 
                 {isMobile && (
                   <div className="flex my-2 justify-end">
