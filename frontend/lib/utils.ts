@@ -49,7 +49,7 @@ export function formatDate(date: Date): string {
 }
 
 export function sanitizeResponseMessages(
-  messages: Array<CoreToolMessage | CoreAssistantMessage>,
+  messages: Array<CoreToolMessage | CoreAssistantMessage>
 ): Array<CoreToolMessage | CoreAssistantMessage> {
   const toolResultIds: Array<string> = [];
 
@@ -72,8 +72,8 @@ export function sanitizeResponseMessages(
       content.type === "tool-call"
         ? toolResultIds.includes(content.toolCallId)
         : content.type === "text"
-          ? content.text.length > 0
-          : true,
+        ? content.text.length > 0
+        : true
     );
 
     return {
@@ -83,7 +83,7 @@ export function sanitizeResponseMessages(
   });
 
   return messagesBySanitizedContent.filter(
-    (message) => message.content.length > 0,
+    (message) => message.content.length > 0
   );
 }
 
@@ -105,7 +105,7 @@ function addToolMessageToChat({
         ...message,
         toolInvocations: message.toolInvocations.map((toolInvocation) => {
           const toolResult = toolMessage.content.find(
-            (tool) => tool.toolCallId === toolInvocation.toolCallId,
+            (tool) => tool.toolCallId === toolInvocation.toolCallId
           );
 
           if (toolResult) {
@@ -126,7 +126,7 @@ function addToolMessageToChat({
 }
 
 export function convertToUIMessages(
-  messages: Array<DBMessage>,
+  messages: Array<DBMessage>
 ): Array<Message> {
   return messages.reduce((chatMessages: Array<Message>, message) => {
     if (message.role === "tool") {
@@ -184,7 +184,7 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
     const sanitizedToolInvocations = message.toolInvocations.filter(
       (toolInvocation) =>
         toolInvocation.state === "result" ||
-        toolResultIds.includes(toolInvocation.toolCallId),
+        toolResultIds.includes(toolInvocation.toolCallId)
     );
 
     return {
@@ -196,6 +196,43 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   return messagesBySanitizedToolInvocations.filter(
     (message) =>
       message.content.length > 0 ||
-      (message.toolInvocations && message.toolInvocations.length > 0),
+      (message.toolInvocations && message.toolInvocations.length > 0)
   );
+}
+
+export function openCenteredPopup(
+  url: string,
+  title: string,
+  w: number,
+  h: number
+) {
+  // Fix dual-screen position
+  const dualScreenLeft =
+    window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+  const dualScreenTop =
+    window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+  const width = window.innerWidth
+    ? window.innerWidth
+    : document.documentElement.clientWidth
+    ? document.documentElement.clientWidth
+    : screen.width;
+
+  const height = window.innerHeight
+    ? window.innerHeight
+    : document.documentElement.clientHeight
+    ? document.documentElement.clientHeight
+    : screen.height;
+
+  const left = width / 2 - w / 2 + dualScreenLeft;
+  const top = height / 2 - h / 2 + dualScreenTop;
+
+  const newWindow = window.open(
+    url,
+    title,
+    `scrollbars=yes, width=${w}, height=${h}, top=${top}, left=${left}`
+  );
+
+  if (newWindow?.focus) newWindow.focus();
+  return newWindow;
 }

@@ -15,6 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: TokenPayload): Promise<Requester> {
-    return this.authService.validateToken(payload); // will assign to user param in handlerRquest in JwtGuard
+    return this.authService.validateToken(payload); // will assign to user param in handlerRequest in JwtGuard
   }
 }

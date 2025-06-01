@@ -16,4 +16,15 @@ export const config = {
       bucketName: process.env.AWS_BUCKET_NAME || '',
     },
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    redirectUri:
+      process.env.GOOGLE_REDIRECT_URI ||
+      `http://localhost:${port}/api/${apiVersion}/auth/google/callback`,
+  },
+  frontend: {
+    webUrl: process.env.WEB_URL || `http://localhost:3000`,
+    extensionUrl: process.env.EXTENSION_URL || `http://localhost:3000`,
+  },
 };
