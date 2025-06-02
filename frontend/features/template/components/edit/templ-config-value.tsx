@@ -71,7 +71,7 @@ export function TemplatesConfigVariable({
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)
   return (
-    <Card key={id} className="border border-slate-500">
+    <Card key={id} className="">
       <CardHeader
         className={cn("pt-6 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
         onClick={() => setIsOpen(!isOpen)}

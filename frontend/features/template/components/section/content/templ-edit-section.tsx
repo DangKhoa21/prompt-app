@@ -1,7 +1,6 @@
 "use client";
 
 import ConfirmDialog from "@/components/confirm-dialog";
-import HighlightedTextarea from "@/components/highlighted-textarea";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTemplate } from "@/context/template-context";
@@ -210,11 +209,6 @@ export function TemplateEditSection({
                   id="stringTemplate"
                   label="Prompt Template"
                   placeholder="Enter your Prompt Template..."
-                  value={template.stringTemplate}
-                />
-
-                <HighlightedTextarea
-                  id="stringTemplate"
                   value={template.stringTemplate}
                 />
 

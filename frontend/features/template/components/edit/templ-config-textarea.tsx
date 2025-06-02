@@ -1,7 +1,6 @@
 import HighlightedTextarea from "@/components/highlighted-textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { useTemplate } from "@/context/template-context";
 import { cn } from "@/lib/utils";
 import { createEnhancePrompt } from "@/services/prompt";
@@ -79,17 +78,10 @@ export function TemplatesConfigTextarea({
         )}
       </CardHeader>
       <CardContent>
-        <Textarea
-          placeholder={placeholder}
-          className="min-h-[200px] border border-slate-500"
-          value={value}
-          onChange={(e) => {
-            handleTextareaChange(e.target.value);
-          }}
-        />
         <HighlightedTextarea
-          id="stringTemplate"
-          value={template.stringTemplate}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => handleTextareaChange(e.target.value)}
         />
       </CardContent>
     </Card>

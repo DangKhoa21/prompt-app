@@ -111,7 +111,7 @@ export function LoginForm({
       `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=web`,
       "googleLoginPopup",
       500,
-      600
+      600,
     );
 
     if (!popup) {

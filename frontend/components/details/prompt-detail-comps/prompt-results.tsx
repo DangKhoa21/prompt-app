@@ -107,7 +107,7 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
   }, [deserializedData]);
 
   return (
-    <div className="bg-background rounded-lg">
+    <div className="bg-background rounded-lg border">
       <Tabs
         value={activeTab}
         onValueChange={(val) => {

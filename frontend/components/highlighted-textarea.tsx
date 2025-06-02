@@ -2,9 +2,8 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
-import { useTemplate } from "@/context/template-context";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const config: Record<string, string> = {
   topic: "#fde68a",
@@ -28,7 +27,12 @@ function parseTemplateText(text: string): string {
     .replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`); // Replace the new {{}}
 }
 
-function renderHighlightedText(text: string): JSX.Element[] {
+function renderHighlightedText(
+  text: string,
+  isFocused: boolean,
+): JSX.Element[] {
+  if (isFocused) return [];
+
   const parts: JSX.Element[] = [];
   const regex = /{{(.*?)}}/g;
   let lastIndex = 0;
@@ -65,20 +69,21 @@ function renderHighlightedText(text: string): JSX.Element[] {
 }
 
 interface HighlightedTextareaProps {
-  id: string;
+  placeholder: string | undefined;
   value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
+// TODO: move the parse old config ${} to outside, reduce render time
 export default function HighlightedTextarea({
-  id,
+  placeholder,
   value,
+  onChange,
 }: HighlightedTextareaProps) {
   const parsedText = parseTemplateText(value);
   const backdropRef = useRef<HTMLDivElement>(null);
   const { textareaRef } = useAutoResizeTextarea(parsedText);
   const [focused, setFocused] = useState(false);
-
-  const { template, setTemplate } = useTemplate();
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -94,13 +99,6 @@ export default function HighlightedTextarea({
     return () => textarea.removeEventListener("scroll", syncScroll);
   }, [textareaRef]);
 
-  const handleTextareaChange = (newValue: string) => {
-    setTemplate({
-      ...template,
-      [id]: newValue,
-    });
-  };
-
   return (
     <div className="relative w-full font-normal text-base md:text-sm leading-loose tracking-wider">
       <div
@@ -111,11 +109,12 @@ export default function HighlightedTextarea({
         )}
         aria-hidden
       >
-        {renderHighlightedText(parsedText)}
+        {renderHighlightedText(parsedText, focused)}
       </div>
 
       <Textarea
         ref={textareaRef}
+        placeholder={placeholder}
         value={parsedText}
         className={cn(
           "relative z-10 bg-transparent transition-colors duration-200",
@@ -123,7 +122,7 @@ export default function HighlightedTextarea({
         )}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        onChange={(e) => handleTextareaChange(e.target.value)}
+        onChange={onChange}
         spellCheck={false}
       />
     </div>

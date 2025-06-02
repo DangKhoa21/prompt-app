@@ -137,7 +137,7 @@ export default function PromptDetailPage({
             <UserOverviewCard userData={userData} />
           </div>
         </div>
-        <div className="flex flex-col px-auto py-6 gap-4 bg-background rounded-md">
+        <div className="flex flex-col px-auto py-6 gap-4 bg-background rounded-md border">
           <PromptCarousels
             promptId={promptId}
             creatorId={fetchedPromptData.creatorId}
