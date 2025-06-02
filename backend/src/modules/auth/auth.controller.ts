@@ -32,7 +32,7 @@ export class AuthController {
   async googleCallback(@Req() req, @Res() res) {
     const token = await this.authService.createToken(req.user);
 
-    if (req.query.client === 'extension') {
+    if (req.user.client === 'extension') {
       res.redirect(
         `${config.frontend.extensionUrl}/auth/callback.html?token=${token}`,
       );

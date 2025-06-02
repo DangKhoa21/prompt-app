@@ -50,4 +50,12 @@ export class JwtAuthGuardOptional extends AuthGuard('jwt') {
 }
 
 @Injectable()
-export class GoogleAuthGuard extends AuthGuard('google') {}
+export class GoogleAuthGuard extends AuthGuard('google') {
+  getAuthenticateOptions(context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest();
+    const client = request.query.client;
+    return {
+      state: client,
+    };
+  }
+}
