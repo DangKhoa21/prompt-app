@@ -48,3 +48,6 @@ export class JwtAuthGuardOptional extends AuthGuard('jwt') {
     return user; // will assign to req.user
   }
 }
+
+@Injectable()
+export class GoogleAuthGuard extends AuthGuard('google') {}

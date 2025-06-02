@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn, openCenteredPopup } from "@/lib/utils";
+import { SERVER_URL, VERSION_PREFIX, WEB_URL } from "@/config";
 
 export function LoginForm({
   className,
@@ -61,8 +62,7 @@ export function LoginForm({
     }
   }, []);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     setLoading(true);
     setEmailError("");
     setPasswordError("");
@@ -106,6 +106,30 @@ export function LoginForm({
     }
   };
 
+  const handleGoogleLogin = () => {
+    const popup = openCenteredPopup(
+      `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=web`,
+      "googleLoginPopup",
+      500,
+      600
+    );
+
+    if (!popup) {
+      toast.error("Please allow popups for this site to login with Google.");
+      return;
+    }
+
+    window.addEventListener("message", (event) => {
+      if (event.origin !== WEB_URL) return;
+
+      const token = event.data?.token;
+      if (token) {
+        setToken(token);
+        router.push("/");
+      }
+    });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -116,63 +140,66 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  ref={emailRef}
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                {emailError && (
-                  <p className="text-xs text-red-500">{emailError}</p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                {passwordError && (
-                  <p className="text-xs text-red-500">{passwordError}</p>
-                )}
-              </div>
-              <Button
-                ref={buttonRef}
-                type="submit"
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? "Loading..." : "Login"}
-              </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                ref={emailRef}
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              {emailError && (
+                <p className="text-xs text-red-500">{emailError}</p>
+              )}
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Register
-              </Link>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {passwordError && (
+                <p className="text-xs text-red-500">{passwordError}</p>
+              )}
             </div>
-            <div className="mt-4 text-center text-sm">
-              <a
-                href="#"
-                className="inline-block text-sm underline-offset-4 hover:underline"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </form>
+            <Button
+              ref={buttonRef}
+              type="submit"
+              disabled={loading}
+              onClick={handleLogin}
+              className="w-full"
+            >
+              {loading ? "Loading..." : "Login"}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
+            >
+              Login with Google
+            </Button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="underline underline-offset-4">
+              Register
+            </Link>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            <a
+              href="#"
+              className="inline-block text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>

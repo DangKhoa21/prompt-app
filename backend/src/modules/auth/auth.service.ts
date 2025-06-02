@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import {
   ErrInvalidEmailAndPassword,
+  GooglePayload,
   UserLoginDTO,
   userLoginDTOSchema,
   UserRegisterDTO,
@@ -40,6 +41,10 @@ export class AuthService {
     // TODO: attach roles field in payload
     const payload: TokenPayload = { sub: user.id, username: user.username };
 
+    return this.createToken(payload);
+  }
+
+  async createToken(payload: TokenPayload): Promise<string> {
     return this.jwtService.sign(payload);
   }
 
@@ -60,5 +65,35 @@ export class AuthService {
       username: user.username,
     };
     return requesterInfo;
+  }
+
+  async validateGoogleUser(payload: GooglePayload): Promise<Requester> {
+    const user = await this.userService.findByCond({
+      email: payload.email,
+    });
+
+    if (!user) {
+      const newUser = {
+        email: payload.email,
+        username: payload.username,
+        password: '',
+        avatarUrl: payload.picture,
+      };
+
+      const newUserId = await this.userService.createWithGoogle(newUser);
+      const { id, username } = await this.userService.findById(newUserId);
+
+      const requesterInfo: Requester = {
+        sub: id,
+        username: username,
+      };
+      return requesterInfo;
+    } else {
+      const requesterInfo: Requester = {
+        sub: user.id,
+        username: user.username,
+      };
+      return requesterInfo;
+    }
   }
 }

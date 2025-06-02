@@ -44,6 +44,19 @@ export class UserService {
     return newId;
   }
 
+  async createWithGoogle(dto: UserCreationDTO): Promise<string> {
+    const newId = v7();
+    const newUser: User = {
+      ...dto,
+      id: newId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.userRepo.insert(newUser);
+    return newId;
+  }
+
   async findByCond(condition: UserCondDTO): Promise<User | null> {
     return this.userRepo.findByCond(condition);
   }

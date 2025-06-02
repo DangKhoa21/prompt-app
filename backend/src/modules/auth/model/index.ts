@@ -18,3 +18,9 @@ export const userLoginDTOSchema = userRegisterDTOSchema.omit({
 });
 
 export type UserLoginDTO = z.infer<typeof userLoginDTOSchema>;
+
+export type GooglePayload = {
+  email: string;
+  username: string;
+  picture: string;
+};
