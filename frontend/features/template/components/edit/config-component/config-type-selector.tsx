@@ -13,10 +13,7 @@ interface ConfigTypeSelectorProps {
   type: ConfigType;
 }
 
-export default function ConfigTypeSelector({
-  id,
-  type,
-}: ConfigTypeSelectorProps) {
+export function ConfigTypeSelector({ id, type }: ConfigTypeSelectorProps) {
   const { template, setTemplate } = useTemplate();
 
   const handleSelectChange = (configId: string, type: ConfigType) => {

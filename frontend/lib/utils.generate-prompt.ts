@@ -1,6 +1,6 @@
 import { ConfigType } from "@/features/template";
+import { parseInfo } from "@/lib/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
-import { parseInfo } from "./utils.details";
 
 export function fillPromptTemplate({
   template,

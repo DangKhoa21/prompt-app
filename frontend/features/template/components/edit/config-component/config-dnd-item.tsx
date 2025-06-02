@@ -1,3 +1,5 @@
+"use client";
+
 import SortableItem from "@/components/dnd/drag-and-drop-item";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,7 +130,7 @@ interface ConfigItemProps {
   values: TemplateConfigValue[];
 }
 
-export default function ConfigDnD({ id, values }: ConfigItemProps) {
+export function ConfigDnD({ id, values }: ConfigItemProps) {
   const { template, setTemplate } = useTemplate();
 
   const sortableItems = values

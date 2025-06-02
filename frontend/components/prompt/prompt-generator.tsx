@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
+import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -30,7 +31,6 @@ import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import RenderConfigInput from "./generator-items/generator-config-item";
 
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();

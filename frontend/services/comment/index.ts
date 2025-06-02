@@ -1,6 +1,6 @@
 import axiosInstance from "@/lib/axios";
+import { Paginated } from "@/services/shared";
 import { CommentItem } from "./interface";
-import { Paginated } from "../shared";
 
 export async function createComment({
   promptId,
@@ -39,7 +39,7 @@ export async function getComments({
 
 export async function updateAComment(
   commentId: string,
-  { content }: { content: string }
+  { content }: { content: string },
 ): Promise<boolean> {
   const response = await axiosInstance.patch(`/comments/${commentId}`, {
     content,

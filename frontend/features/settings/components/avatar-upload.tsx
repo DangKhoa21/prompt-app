@@ -8,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDeleteAvatr, useUploadAvatar } from "@/features/settings";
 import { User } from "@/services/user/interface";
 import { Camera, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { useDeleteAvatr, useUploadAvatar } from "../hooks";
 
 export function AvatarUpload({ user }: { user: User }) {
   const fileInputRef = useRef<HTMLInputElement>(null);

@@ -1,10 +1,10 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
 import { useTemplate } from "@/context/template-context";
-import { useEffect, useRef, useState } from "react";
-import { useAutoResizeTextarea } from "./use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 
 const config: Record<string, string> = {
   topic: "#fde68a",
@@ -13,17 +13,19 @@ const config: Record<string, string> = {
 
 function getContrastTextColor(bgColor: string): string {
   const hex = bgColor.replace("#", "");
+
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
+
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.5 ? "#111827" : "#ffffff";
 }
 
 function parseTemplateText(text: string): string {
   return text
-    .replace(/\${(.*?)}/g, (_, key) => `{{ ${key.trim()} }}`)
-    .replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`);
+    .replace(/\${(.*?)}/g, (_, key) => `{{ ${key.trim()} }}`) // Replace all the old ${}
+    .replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`); // Replace the new {{}}
 }
 
 function renderHighlightedText(text: string): JSX.Element[] {

@@ -1,12 +1,13 @@
 "use client";
 
-import * as React from "react";
 import { BotMessageSquare } from "lucide-react";
+import * as React from "react";
 
-import { NavUser } from "@/components/nav/nav-user";
+import { LoadingSpinner } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { NavChats } from "@/components/nav/nav-chats";
 import { NavPrompts } from "@/components/nav/nav-prompts";
+import { NavUser } from "@/components/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +16,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth-context";
-import { LoadingSpinner } from "../icons";
 
 // This is sample data.
 const data = {

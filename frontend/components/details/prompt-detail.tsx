@@ -1,12 +1,12 @@
 "use client";
 
+import CommentSection from "@/components/details/comment-section";
 import PromptHeadDetail from "@/components/details/prompt-detail-comps/prompt-head-detail";
 import PromptResults from "@/components/details/prompt-detail-comps/prompt-results";
 import { cn } from "@/lib/utils";
 import { Prompt, PromptStats, TemplateTag } from "@/services/prompt/interface";
 import { User } from "@/services/user/interface";
 import { motion } from "framer-motion";
-import CommentSection from "./comment-section";
 
 interface PromptDetailProps {
   promptData: Prompt & Partial<PromptStats>;

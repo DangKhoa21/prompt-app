@@ -4,16 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useTemplate } from "@/context/template-context";
-import { ConfigType } from "@/features/template";
+import {
+  AddConfigDialog,
+  ConfigDnD,
+  ConfigType,
+  ConfigTypeSelector,
+  DescriptionEditor,
+} from "@/features/template";
 import { cn } from "@/lib/utils";
 import { parseInfo, stringifyInfo } from "@/lib/utils.details";
 import { TemplateConfig } from "@/services/prompt/interface";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import AddConfigDialog from "./config-component/add-config-dialog";
-import ConfigDnD from "./config-component/config-dnd-item";
-import ConfigTypeSelector from "./config-component/config-type-selector";
-import DescriptionEditor from "./config-component/description-editor";
 
 interface ConfigVariableProps extends TemplateConfig {
   isSidebarOpen?: boolean;

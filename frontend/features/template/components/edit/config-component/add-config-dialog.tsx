@@ -14,11 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTemplate } from "@/context/template-context";
+import { ConfigDnD } from "@/features/template";
 import { TemplateConfigValue } from "@/services/prompt/interface";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { v7 } from "uuid";
-import ConfigDnD from "./config-dnd-item";
 
 interface AddConfigDialogProps {
   id: string;
@@ -26,11 +26,7 @@ interface AddConfigDialogProps {
   values: TemplateConfigValue[];
 }
 
-export default function AddConfigDialog({
-  id,
-  label,
-  values,
-}: AddConfigDialogProps) {
+export function AddConfigDialog({ id, label, values }: AddConfigDialogProps) {
   const [newConfigValue, setNewConfigValue] = useState("");
   const [latestAdded, setLatestAdded] = useState("");
   const [addingError, setAddingError] = useState("");

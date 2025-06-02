@@ -1,3 +1,5 @@
+import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
+import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,8 +21,6 @@ import { parseInfo } from "@/lib/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
 import { CircleHelp } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
-import { ArrayConfig } from "./array-config";
-import { CreatableCombobox } from "./creatable-combobox";
 
 interface RenderConfigInputProps {
   config: PromptConfig | TemplateConfig;
