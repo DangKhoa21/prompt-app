@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
-import { deserializeResultConfigData } from "@/lib/utils.details";
+import { deserializeResultConfigData } from "@/lib/utils/utils.details";
 import { Prompt } from "@/services/prompt/interface";
 import { Copy } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";

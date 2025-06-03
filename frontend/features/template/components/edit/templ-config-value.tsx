@@ -12,7 +12,7 @@ import {
   DescriptionEditor,
 } from "@/features/template";
 import { cn } from "@/lib/utils";
-import { parseInfo, stringifyInfo } from "@/lib/utils.details";
+import { parseInfo, stringifyInfo } from "@/lib/utils/utils.details";
 import { TemplateConfig } from "@/services/prompt/interface";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
@@ -77,10 +77,7 @@ export function TemplatesConfigVariable({
         onClick={() => setIsOpen(!isOpen)}
       >
         <CardTitle className="text-base font-semibold flex justify-between items-center">
-          <div className="flex gap-2">
-            {label}{" "}
-            {isMandatory && <div className="text-lg text-red-400">*</div>}
-          </div>
+          <div className={cn(isMandatory ? "text-red-400" : "")}>{label}</div>
 
           <div className="italic text-sm font-thin cursor-default">
             {!isOpen ? "Click for details" : "Click to hide"}

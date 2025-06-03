@@ -2,18 +2,18 @@ import { LoadingSpinner } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth-context";
@@ -22,17 +22,17 @@ import { createComment, deleteAComment, getComments } from "@/services/comment";
 import { CommentItem } from "@/services/comment/interface";
 import { getUserProfile } from "@/services/user";
 import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useQueryClient,
 } from "@tanstack/react-query";
 import {
-  MessageSquare,
-  MoreVertical,
-  Reply,
-  ThumbsUp,
-  Trash,
+    MessageSquare,
+    MoreVertical,
+    Reply,
+    ThumbsUp,
+    Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";

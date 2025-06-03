@@ -9,13 +9,13 @@ import { motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
 import type React from "react";
 import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type Dispatch,
-  type SetStateAction,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type ChangeEvent,
+    type Dispatch,
+    type SetStateAction,
 } from "react";
 import { toast } from "sonner";
 // import { PreviewAttachment } from "./preview-attachment";

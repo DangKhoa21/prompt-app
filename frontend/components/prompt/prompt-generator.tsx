@@ -17,13 +17,13 @@ import {
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
-import axios from "@/lib/axios";
+import axios from "@/lib/axios/axiosWithAuth";
 import { generateUUID } from "@/lib/utils";
-import { serializeOptionConfigData } from "@/lib/utils.details";
+import { serializeOptionConfigData } from "@/lib/utils/utils.details";
 import {
   fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils.generate-prompt";
+} from "@/lib/utils/utils.generate-prompt";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";

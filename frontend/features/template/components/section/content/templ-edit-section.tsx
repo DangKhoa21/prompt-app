@@ -17,6 +17,7 @@ import {
 } from "@/features/template";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, generateUUID } from "@/lib/utils";
+import { parseTemplateText } from "@/lib/utils/utils.generate-prompt";
 import {
   ConfigValue,
   Tag,
@@ -45,7 +46,11 @@ export function TemplateEditSection({
 
   useEffect(() => {
     if (!hasMounted.current) {
-      setTemplate(initialPrompt); // set the template only once
+      const newTemplate = {
+        ...initialPrompt,
+        stringTemplate: parseTemplateText(initialPrompt.stringTemplate),
+      };
+      setTemplate(newTemplate); // set the template only once
       hasMounted.current = true;
     }
   }, [initialPrompt, setTemplate]);
