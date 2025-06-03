@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axios";
+import axiosWithAuth from "@/lib/axios/axiosWithAuth";
 
 export const login = async ({
   email,
@@ -7,7 +7,7 @@ export const login = async ({
   email: string;
   password: string;
 }): Promise<string> => {
-  const response = await axiosInstance.post(`/auth/login`, { email, password });
+  const response = await axiosWithAuth.post(`/auth/login`, { email, password });
   return response.data.data;
 };
 
@@ -20,7 +20,7 @@ export const register = async ({
   username: string;
   password: string;
 }): Promise<string> => {
-  const response = await axiosInstance.post(`/auth/register`, {
+  const response = await axiosWithAuth.post(`/auth/register`, {
     email,
     username,
     password,

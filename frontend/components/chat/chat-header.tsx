@@ -11,6 +11,7 @@ import { Paginated } from "@/services/shared";
 import { User } from "@/services/user/interface";
 import { useQueryClient } from "@tanstack/react-query";
 import { Compass, PencilRuler, Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
@@ -109,17 +110,12 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
           )}
           <div ref={triggerMarketplaceRef} onMouseEnter={prefetchPrompts}>
             {/* <div> */}
-            <Button
-              variant="ghost"
-              className="h-8 p-2"
-              onClick={() => {
-                router.push("/marketplace");
-                router.refresh();
-              }}
-            >
-              <Compass />
-              {!isMobile && "Marketplace"}
-            </Button>
+            <Link href="/marketplace">
+              <Button variant="ghost" className="h-8 p-2">
+                <Compass />
+                {!isMobile && "Marketplace"}
+              </Button>
+            </Link>
           </div>
           <Separator orientation="vertical" className="h-4" />
           {!isAuthenticated && (

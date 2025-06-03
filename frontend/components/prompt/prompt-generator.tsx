@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
+import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,13 +17,13 @@ import {
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
-import axios from "@/lib/axios";
+import axios from "@/lib/axios/axiosWithAuth";
 import { generateUUID } from "@/lib/utils";
-import { serializeOptionConfigData } from "@/lib/utils.details";
+import { serializeOptionConfigData } from "@/lib/utils/utils.details";
 import {
   fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils.generate-prompt";
+} from "@/lib/utils/utils.generate-prompt";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -30,7 +31,6 @@ import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import RenderConfigInput from "./generator-items/generator-config-item";
 
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();

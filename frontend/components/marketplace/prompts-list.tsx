@@ -33,14 +33,6 @@ export default function PromptsList({ filter }: { filter: PromptFilter }) {
     }
   }, [fetchNextPage, hasNextPage, inView]);
 
-  // if (status === "pending") {
-  //   return (
-  //     <div className="flex h-full justify-center items-center">
-  //       <LoadingSpinner />
-  //     </div>
-  //   );
-  // }
-
   if (status === "error") {
     return <span>Error: {error.message}</span>;
   }

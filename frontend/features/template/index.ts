@@ -1,3 +1,9 @@
+// edit/config-component
+export * from "./components/edit/config-component/add-config-dialog";
+export * from "./components/edit/config-component/config-dnd-item";
+export * from "./components/edit/config-component/config-type-selector";
+export * from "./components/edit/config-component/description-editor";
+
 // edit
 export * from "./components/edit/templ-config-textarea";
 export * from "./components/edit/templ-config-value";

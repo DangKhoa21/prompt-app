@@ -22,11 +22,11 @@ import { cn } from "@/lib/utils";
 import {
   ConfigMapping,
   serializeMultipleResultsConfigData,
-} from "@/lib/utils.details";
+} from "@/lib/utils/utils.details";
 import {
   fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils.generate-prompt";
+} from "@/lib/utils/utils.generate-prompt";
 import { Check, Copy, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";

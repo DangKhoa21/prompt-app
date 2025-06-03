@@ -1,10 +1,9 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import { useTemplate } from "@/context/template-context";
-import { useEffect, useRef, useState } from "react";
-import { useAutoResizeTextarea } from "./use-auto-resize-textarea";
+import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const config: Record<string, string> = {
   topic: "#fde68a",
@@ -21,12 +20,14 @@ function getContrastTextColor(bgColor: string): string {
 }
 
 function parseTemplateText(text: string): string {
-  return text
-    .replace(/\${(.*?)}/g, (_, key) => `{{ ${key.trim()} }}`)
-    .replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`);
+  return text.replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`);
 }
 
-function renderHighlightedText(text: string): JSX.Element[] {
+function renderHighlightedText(
+  text: string,
+  isFocused: boolean,
+): JSX.Element[] {
+  if (isFocused) return [];
   const parts: JSX.Element[] = [];
   const regex = /{{(.*?)}}/g;
   let lastIndex = 0;
@@ -44,10 +45,7 @@ function renderHighlightedText(text: string): JSX.Element[] {
       <span
         key={match.index}
         className="rounded transition-colors duration-200"
-        style={{
-          backgroundColor: bgColor,
-          color: textColor,
-        }}
+        style={{ backgroundColor: bgColor, color: textColor }}
       >
         {`{{ ${key} }}`}
       </span>,
@@ -58,45 +56,77 @@ function renderHighlightedText(text: string): JSX.Element[] {
 
   const after = text.slice(lastIndex);
   if (after) parts.push(<span key={lastIndex}>{after}</span>);
-
   return parts;
 }
 
 interface HighlightedTextareaProps {
-  id: string;
+  placeholder?: string;
   value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 export default function HighlightedTextarea({
-  id,
+  placeholder,
   value,
+  onChange,
 }: HighlightedTextareaProps) {
-  const parsedText = parseTemplateText(value);
-  const backdropRef = useRef<HTMLDivElement>(null);
-  const { textareaRef } = useAutoResizeTextarea(parsedText);
   const [focused, setFocused] = useState(false);
+  const [localText, setLocalText] = useState(value);
 
-  const { template, setTemplate } = useTemplate();
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const { textareaRef } = useAutoResizeTextarea(localText);
 
+  // Sync external value into localText when not focused
+  useEffect(() => {
+    if (!focused) {
+      setLocalText(value);
+    }
+  }, [value, focused]);
+
+  // Sync scroll
   useEffect(() => {
     const textarea = textareaRef.current;
     const backdrop = backdropRef.current;
     if (!textarea || !backdrop) return;
-
     const syncScroll = () => {
       backdrop.scrollTop = textarea.scrollTop;
       backdrop.scrollLeft = textarea.scrollLeft;
     };
-
     textarea.addEventListener("scroll", syncScroll);
     return () => textarea.removeEventListener("scroll", syncScroll);
   }, [textareaRef]);
 
-  const handleTextareaChange = (newValue: string) => {
-    setTemplate({
-      ...template,
-      [id]: newValue,
-    });
+  // Handle smart typing inside `onChange`
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const el = e.target;
+    const text = el.value;
+    const pos = el.selectionStart;
+
+    // Detect if `{{` was just typed
+    if (pos >= 2 && text.slice(pos - 2, pos) === "{{") {
+      const newText = text.slice(0, pos) + "  }}" + text.slice(pos); // Add `  }}`
+      setLocalText(newText);
+
+      // Move cursor between the spaces
+      requestAnimationFrame(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = pos + 1;
+          textareaRef.current.selectionEnd = pos + 1;
+        }
+      });
+
+      // Don't call onChange — you can debounce or force it on blur
+      return;
+    }
+
+    setLocalText(text);
+    onChange(e);
+  };
+
+  const handleBlur = () => {
+    const parsed = parseTemplateText(localText);
+    setLocalText(parsed);
+    setFocused(false);
   };
 
   return (
@@ -109,19 +139,20 @@ export default function HighlightedTextarea({
         )}
         aria-hidden
       >
-        {renderHighlightedText(parsedText)}
+        {renderHighlightedText(localText, focused)}
       </div>
 
       <Textarea
         ref={textareaRef}
-        value={parsedText}
+        placeholder={placeholder}
+        value={localText}
+        onFocus={() => setFocused(true)}
+        onBlur={handleBlur}
+        onChange={handleChange}
         className={cn(
           "relative z-10 bg-transparent transition-colors duration-200",
           focused ? "text-inherit" : "text-transparent",
         )}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onChange={(e) => handleTextareaChange(e.target.value)}
         spellCheck={false}
       />
     </div>

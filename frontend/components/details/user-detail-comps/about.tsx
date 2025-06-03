@@ -1,11 +1,11 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { getPromptsOfCreator } from "@/services/prompt";
 import { User } from "@/services/user/interface";
 import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface UserAboutProps {
   userData: User;

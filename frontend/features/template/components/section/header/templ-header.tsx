@@ -4,11 +4,10 @@ import { Compass } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
 import { useWindowSize } from "usehooks-ts";
+import Link from "next/link";
 
 export function TemplatesHeader() {
-  const router = useRouter();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
 
@@ -18,17 +17,12 @@ export function TemplatesHeader() {
         <SidebarTrigger className="h-7" />
 
         <div className="flex items-center gap-2 ml-auto">
-          <Button
-            variant="ghost"
-            className="h-8 p-2"
-            onClick={() => {
-              router.push("/marketplace");
-              router.refresh();
-            }}
-          >
-            <Compass />
-            {!isMobile && "Marketplace"}
-          </Button>
+          <Link href="/marketplace">
+            <Button variant="ghost" className="h-8 p-2">
+              <Compass />
+              {!isMobile && "Marketplace"}
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

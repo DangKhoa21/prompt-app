@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn, openCenteredPopup } from "@/lib/utils";
 import { SERVER_URL, VERSION_PREFIX, WEB_URL } from "@/config";
+import { cn, openCenteredPopup } from "@/lib/utils";
 
 export function LoginForm({
   className,
@@ -111,7 +111,7 @@ export function LoginForm({
       `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=web`,
       "googleLoginPopup",
       500,
-      600
+      600,
     );
 
     if (!popup) {

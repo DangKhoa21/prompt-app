@@ -1,6 +1,10 @@
 import { ConfigType } from "@/features/template";
+import { parseInfo } from "@/lib/utils/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
-import { parseInfo } from "./utils.details";
+
+export function parseTemplateText(text: string): string {
+  return text.replace(/\${(.*?)}/g, (_, key) => `{{ ${key.trim()} }}`); // Replace all the old ${}
+}
 
 export function fillPromptTemplate({
   template,
@@ -15,11 +19,11 @@ export function fillPromptTemplate({
   textareaValues: Record<string, string>;
   arrayValues: Record<string, { id: string; values: string[] }[]>;
 }) {
-  let prompt = template;
+  let prompt = parseTemplateText(template);
   const FALLBACK_CONFIG = "NOT_FILLED";
 
   configs.forEach((config) => {
-    const placeholder = `\${${config.label}}`;
+    const placeholder = `{{ ${config.label} }}`;
 
     switch (config.type) {
       case "dropdown":

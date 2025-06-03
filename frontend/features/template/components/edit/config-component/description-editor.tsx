@@ -9,7 +9,7 @@ interface DescriptionEditorProps {
   onRequiredChange: () => void;
 }
 
-export default function DescriptionEditor({
+export function DescriptionEditor({
   description,
   isMandatory,
   onDescriptionChange,
