@@ -85,7 +85,7 @@ export function Chat({
 
   return (
     <>
-      {isFirstVisit && <ChatTutorial run={true} />}
+      {isFirstVisit && <ChatTutorial />}
 
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader selectedModelId={selectedModelId} />

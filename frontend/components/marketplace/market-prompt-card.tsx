@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CreatorAvatar from "@/components/creator-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,20 +56,43 @@ export function MarketplacePromptCard({
   const queryClient = useQueryClient();
   const triggerRef = useRef<HTMLDivElement>(null);
 
-  const prefetchPrompt = () => {
-    queryClient.prefetchQuery({
-      queryKey: ["prompt", id],
-      queryFn: () => getPrompt(id),
-    });
+  const hoverTimeout = useRef<NodeJS.Timeout>();
+
+  const handleMouseEnter = () => {
+    hoverTimeout.current = setTimeout(() => {
+      queryClient.prefetchQuery({
+        queryKey: ["prompt", id],
+        queryFn: () => getPrompt(id),
+      });
+    }, 150); // slight delay
   };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+  };
+
+  function CardWrapper({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) {
+    return (
+      <div
+        ref={triggerRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={className}
+      >
+        {children}
+      </div>
+    );
+  }
 
   if (variant === "hover") {
     return (
-      <div
-        className="bg-card overflow-hidden"
-        ref={triggerRef}
-        onMouseEnter={prefetchPrompt}
-      >
+      <CardWrapper className="bg-card overflow-hidden">
         <Link href={detailURL}>
           <CardTitle className="flex items-center justify-between text-base">
             <div className="pl-1">Prompt Details</div>
@@ -101,65 +124,52 @@ export function MarketplacePromptCard({
             </div>
           </div>
         </Link>
-      </div>
+      </CardWrapper>
     );
   } else if (variant === "carousel") {
     return (
-      <>
-        <div className="p-1" ref={triggerRef} onMouseEnter={prefetchPrompt}>
-          <Card className="rounded-3xl max-w-80 h-52 md:w-64 md:h-48 flex flex-col">
-            <Link href={detailURL} className="h-full">
-              <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
-                <CardTitle className="flex relative h-full w-full mt-2 text-xl">
-                  <div className="flex h-full w-full text-center justify-center items-center">
-                    {title}
-                  </div>
-                  <Badge
-                    variant="secondary"
-                    className="absolute right-0 top-0 flex border-2 items-center gap-1 ml-2 opacity-25 hober:opacity-100"
-                  >
-                    <Star
-                      className={cn("h-3 w-3", {
-                        "fill-primary": hasStarred,
-                      })}
-                    />
-                    {formatRating(starCount)}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-            </Link>
-            <div>
-              <Link href={`${title.toLowerCase().replace(" ", "-")}-i${id}`}>
-                <Separator
-                  orientation="horizontal"
-                  className="w-auto mx-4 my-1 bg-neutral-800"
-                />
-              </Link>
-              <CardFooter className="justify-between pt-2 pb-3 items-center">
-                <div className="flex flex-row gap-2 t-2 items-center">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <div className="text-xs text-foreground-accent">
-                    by {creator["username"]}
-                  </div>
+      <CardWrapper className="p-1">
+        <Card className="border-2 rounded-3xl max-w-80 h-52 md:w-64 md:h-48 flex flex-col">
+          <Link href={detailURL} className="h-full">
+            <CardHeader className="space-y-1 px-4 pt-2 pb-0 h-full">
+              <CardTitle className="flex relative h-full w-full mt-2 text-xl">
+                <div className="flex h-full w-full text-center justify-center items-center">
+                  {title}
                 </div>
-              </CardFooter>
-            </div>
-          </Card>
-        </div>
-      </>
+                <Badge
+                  variant="secondary"
+                  className="absolute right-0 top-0 flex border-2 items-center gap-1 ml-2 opacity-25 hober:opacity-100"
+                >
+                  <Star
+                    className={cn("h-3 w-3", {
+                      "fill-primary": hasStarred,
+                    })}
+                  />
+                  {formatRating(starCount)}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+          </Link>
+          <div>
+            <Link href={`${title.toLowerCase().replace(" ", "-")}-i${id}`}>
+              <Separator
+                orientation="horizontal"
+                className="w-auto mx-4 my-1 bg-neutral-800"
+              />
+            </Link>
+            <CardFooter className="justify-between pt-2 pb-3 items-center">
+              <CreatorAvatar username={creator?.username ?? "Unknown"} />
+            </CardFooter>
+          </div>
+        </Card>
+      </CardWrapper>
     );
   }
 
   return (
-    <div ref={triggerRef} onMouseEnter={prefetchPrompt}>
+    <CardWrapper>
       <Link href={detailURL}>
-        <Card className="rounded-3xl max-w-80 h-52 flex flex-col transition-all hover:scale-105">
+        <Card className="border-2 rounded-3xl max-w-80 h-52 flex flex-col transition-all hover:scale-105">
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">
             <CardTitle className="flex items-start justify-between mt-2 text-xl">
               <div className="pl-1 line-clamp-2">{title}</div>
@@ -197,38 +207,23 @@ export function MarketplacePromptCard({
               className="w-auto mx-4 my-1 bg-neutral-800"
             />
             <CardFooter className="justify-between pt-2 pb-4 items-center">
-              <div className="flex flex-row gap-2 t-2 items-center">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
-                  />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div className="text-xs text-foreground-accent line-clamp-2">
-                  by {creator["username"]}
-                </div>
-              </div>
+              <CreatorAvatar username={creator?.username ?? "Unknown"} />
+
               <Button
-                variant="secondary"
-                className="t-2 text-xs text-foreground rounded-2xl"
-                asChild
+                variant="link"
+                className="text-xs text-foreground border-2 rounded-2xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  router.push(`/?promptId=${id}`);
+                }}
               >
-                <Button
-                  variant="link"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    router.push(`/?promptId=${id}`);
-                  }}
-                >
-                  Try it now
-                </Button>
+                Try it now
               </Button>
             </CardFooter>
           </div>
         </Card>
       </Link>
-    </div>
+    </CardWrapper>
   );
 }

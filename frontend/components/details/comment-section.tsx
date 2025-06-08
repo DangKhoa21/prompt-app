@@ -23,7 +23,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { AlertCircle, MessageSquare } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,7 +35,6 @@ export default function CommentSection({
   className?: string;
 }) {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [userComment, setUserComment] = useState("");
 
@@ -144,7 +143,9 @@ export default function CommentSection({
                   You need to be logged in to comment
                 </p>
               </div>
-              <Button onClick={() => router.push("/login")}>Log In</Button>
+              <Link href={`/login`}>
+                <Button>Log In</Button>
+              </Link>
             </CardContent>
           </Card>
         )}

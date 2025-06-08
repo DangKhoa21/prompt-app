@@ -85,7 +85,7 @@ export function LoginForm({
 
       if (token) {
         setToken(token);
-        router.push("/");
+        router.replace("/");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -125,7 +125,7 @@ export function LoginForm({
       const token = event.data?.token;
       if (token) {
         setToken(token);
-        router.push("/");
+        router.replace("/");
       }
     });
   };
