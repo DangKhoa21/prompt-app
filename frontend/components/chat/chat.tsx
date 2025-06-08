@@ -8,12 +8,14 @@ import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { usePrompt } from "@/context/prompt-context";
+import { useFirstVisit } from "@/hooks/use-first-visit";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ChatTutorial } from "./chat-tutorial";
 
 export function Chat({
   id,
@@ -29,6 +31,8 @@ export function Chat({
   const { token, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const { prompt, setPrompt, systemInstruction } = usePrompt();
+
+  const isFirstVisit = useFirstVisit();
 
   const {
     messages,
@@ -81,6 +85,8 @@ export function Chat({
 
   return (
     <>
+      {isFirstVisit && <ChatTutorial run={true} />}
+
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader selectedModelId={selectedModelId} />
 

@@ -9,13 +9,13 @@ import { motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
 import type React from "react";
 import {
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    type ChangeEvent,
-    type Dispatch,
-    type SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
 import { toast } from "sonner";
 // import { PreviewAttachment } from "./preview-attachment";
@@ -229,7 +229,7 @@ export function MultimodalInput({
   });
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="multimodal-input relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
