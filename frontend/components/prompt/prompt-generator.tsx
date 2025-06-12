@@ -217,7 +217,7 @@ export function PromptGeneratorSidebar() {
 
   return (
     <>
-      <SidebarHeader className="pb-0">
+      <SidebarHeader className="prompt-editor pb-0">
         <div className="flex justify-between items-center p-2">
           <div className="flex items-center">
             <Button

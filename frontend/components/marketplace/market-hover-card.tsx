@@ -27,7 +27,7 @@ export default function MarketplaceHoverCard(
         </div>
       </HoverCardTrigger>
       {/* Hover card */}
-      <HoverCardContent sideOffset={-150} className="w-80">
+      <HoverCardContent sideOffset={-208} className="w-80 md:w-96 bg-card">
         <MarketplacePromptCard {...marketplaceCardProps} variant="hover" />
       </HoverCardContent>
     </HoverCard>

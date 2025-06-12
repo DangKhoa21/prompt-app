@@ -12,12 +12,10 @@ import { User } from "@/services/user/interface";
 import { useQueryClient } from "@tanstack/react-query";
 import { Compass, PencilRuler, Plus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
-  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
@@ -50,9 +48,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
     if (!user) return;
 
     const tab = "";
-
     const creatorId = user.id;
-
     const updatedFilter = { ...filter, creatorId };
 
     queryClient.prefetchInfiniteQuery({
@@ -66,23 +62,18 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   };
 
   return (
-    <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
+    <header className="chat-header sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
       <div className="flex flex-1 items-center gap-2 px-3">
         <SidebarTrigger className="h-7" />
 
         <Separator orientation="vertical" className="h-4" />
 
         <BetterTooltip content="New chat">
-          <Button
-            variant="ghost"
-            className="h-7 p-2"
-            onClick={() => {
-              router.push("/");
-              router.refresh();
-            }}
-          >
-            <Plus />
-          </Button>
+          <Link href={`/`}>
+            <Button variant="ghost" className="h-7 p-2">
+              <Plus />
+            </Button>
+          </Link>
         </BetterTooltip>
 
         <Separator orientation="vertical" className="h-4" />
@@ -93,17 +84,12 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
           {isAuthenticated && (
             <>
               <div ref={triggerTemplateRef} onMouseEnter={prefetchTemplates}>
-                <Button
-                  variant="ghost"
-                  className="h-8 p-2"
-                  onClick={() => {
-                    router.push("/templates");
-                    router.refresh();
-                  }}
-                >
-                  <PencilRuler />
-                  {!isMobile && "Templates"}
-                </Button>
+                <Link href={`/templates`}>
+                  <Button variant="ghost" className="h-8 p-2">
+                    <PencilRuler />
+                    {!isMobile && "Templates"}
+                  </Button>
+                </Link>
               </div>
               <Separator orientation="vertical" className="h-4" />
             </>
@@ -120,16 +106,14 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
           <Separator orientation="vertical" className="h-4" />
           {!isAuthenticated && (
             <>
-              <Button
-                variant="ghost"
-                className="h-7 p-2 border-slate-500 border"
-                onClick={() => {
-                  router.push("/login");
-                  router.refresh();
-                }}
-              >
-                Log in
-              </Button>
+              <Link href={`/login`}>
+                <Button
+                  variant="ghost"
+                  className="h-7 p-2 border-slate-500 border"
+                >
+                  Log in
+                </Button>
+              </Link>
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
