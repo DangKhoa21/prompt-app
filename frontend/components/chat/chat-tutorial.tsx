@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import Joyride from "react-joyride";
 
@@ -10,7 +11,6 @@ export const ChatTutorial = () => {
       {
         target: "body",
         content: <h2>Let&apos;s begin our journey!</h2>,
-        locale: { skip: "SKIP" },
         placement: "center",
       },
       {
@@ -28,6 +28,27 @@ export const ChatTutorial = () => {
     ],
   });
 
+  const { resolvedTheme } = useTheme();
+
+  const defaultOptions = {
+    arrowColor: "#fff",
+    backgroundColor: "#fff",
+    beaconSize: 36,
+    overlayColor: "rgba(0, 0, 0, 0.5)",
+    primaryColor: "#f04",
+    spotlightShadow: "0 0 15px rgba(0, 0, 0, 0.5)",
+    textColor: "#333",
+    // width: undefined,
+    zIndex: 100,
+  };
+
+  if (resolvedTheme === "dark") {
+    defaultOptions.arrowColor = "#010017";
+    defaultOptions.backgroundColor = "#010017";
+    defaultOptions.primaryColor = "#779cff";
+    defaultOptions.textColor = "#fff";
+  }
+
   return (
     <Joyride
       run={run}
@@ -37,9 +58,7 @@ export const ChatTutorial = () => {
       showProgress
       showSkipButton
       styles={{
-        options: {
-          zIndex: 9999,
-        },
+        options: defaultOptions,
       }}
     />
   );

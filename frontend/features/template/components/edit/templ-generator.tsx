@@ -10,21 +10,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Textarea } from "@/components/ui/textarea";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { useTemplate } from "@/context/template-context";
 import { ConfigType } from "@/features/template";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Sparkles } from "lucide-react";
-import React from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
 export function TemplateGenerator() {
-  const [input, setInput] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [input, setInput] = useState("");
+  const [open, setOpen] = useState(false);
   const { token } = useAuth();
   const { template, setTemplate } = useTemplate();
 
@@ -81,6 +92,87 @@ export function TemplateGenerator() {
     },
   });
 
+  function GeneratorInput() {
+    return (
+      <Textarea
+        //ref={textareaRef}
+        placeholder="Create a prompt that..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
+        rows={3}
+        autoFocus
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+
+            if (isLoading) {
+              toast.error("Please wait for the AI to finish its generating!");
+            } else {
+              submit({ prompt: input });
+            }
+          }
+        }}
+      />
+    );
+  }
+
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <Button
+            variant="ghost"
+            className="h-8 p-2 text-base font-semibold"
+            onClick={() => {}}
+          >
+            <Sparkles />
+            Generate Template
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Generate Template</DrawerTitle>
+            <DrawerDescription>
+              Type what kind of prompt configurations you want to generate. At
+              least 20 characters. Click Generate when you&apos;re done.
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <div className="p-2 ">
+            <GeneratorInput />
+          </div>
+
+          <DrawerFooter className="pt-2">
+            <DrawerClose asChild>
+              <div className="flex flex-row-reverse items-center justify-between">
+                {isLoading ? (
+                  <Button
+                    className="w-24 bg-muted-foreground hover:bg-muted-foreground"
+                    onClick={() => stop()}
+                  >
+                    Stop
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-24"
+                    onClick={() => submit({ prompt: input })}
+                    disabled={input.trim().length < 20}
+                  >
+                    Generate
+                  </Button>
+                )}
+                <Button variant="outline">Cancel</Button>
+              </div>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -101,26 +193,7 @@ export function TemplateGenerator() {
             least 20 characters. Click Generate when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <Textarea
-          //ref={textareaRef}
-          placeholder="Create a prompt that..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
-          rows={3}
-          autoFocus
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-
-              if (isLoading) {
-                toast.error("Please wait for the AI to finish its generating!");
-              } else {
-                submit({ prompt: input });
-              }
-            }
-          }}
-        />
+        <GeneratorInput />
         <DialogFooter>
           {isLoading ? (
             <Button

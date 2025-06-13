@@ -1,16 +1,10 @@
+import Container from "@/components/container";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Loading() {
+export default function TemplateLoading() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex h-14 items-center gap-2 px-3">
-        <Skeleton className="h-7 w-7 rounded-sm" />
-        <Skeleton className="h-7 w-[1px]" />
-        <Skeleton className="m-2 h-4 w-4" />
-        <Skeleton className="h-6 w-24" />
-      </div>
-
-      <div className="max-w-5xl w-full mx-auto space-y-6">
+    <Container>
+      <div className="min-h-screen w-11/12 mx-auto bg-background">
         <div className="flex flex-col px-5">
           <div className="flex items-center justify-between">
             <Skeleton className="h-8 my-4 basis-2/12" />
@@ -73,6 +67,6 @@ export default function Loading() {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

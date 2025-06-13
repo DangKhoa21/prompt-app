@@ -53,15 +53,6 @@ export function LoginForm({
     return () => document.removeEventListener("keydown", handleEnterPress);
   }, []);
 
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  // Auto focus email when navigated
-  useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
-    }
-  }, []);
-
   const handleLogin = async () => {
     setLoading(true);
     setEmailError("");
@@ -144,12 +135,12 @@ export function LoginForm({
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
-                ref={emailRef}
                 id="email"
                 type="email"
                 placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoFocus
                 required
               />
               {emailError && (
