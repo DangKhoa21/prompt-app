@@ -5,13 +5,13 @@ import { useState } from "react";
 import Joyride from "react-joyride";
 
 export const ChatTutorial = () => {
-  const [{ run, steps }, setState] = useState({
+  const [{ run, steps }] = useState({
     run: true,
     steps: [
       {
         target: "body",
         content: <h2>Let&apos;s begin our journey!</h2>,
-        placement: "center",
+        placement: "center" as const,
       },
       {
         target: ".multimodal-input",

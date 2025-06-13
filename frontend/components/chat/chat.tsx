@@ -16,9 +16,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ChatTutorial } from "./chat-tutorial";
-import { motion } from "framer-motion";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useSidebar2 } from "@/components/ui/sidebar2";
+// import { motion } from "framer-motion";
+// import { useSidebar } from "@/components/ui/sidebar";
+// import { useSidebar2 } from "@/components/ui/sidebar2";
 
 export function Chat({
   id,
@@ -36,8 +36,8 @@ export function Chat({
   const { prompt, setPrompt, systemInstruction } = usePrompt();
 
   const isFirstVisit = useFirstVisit();
-  const { toggleSidebar: toggleSidebarLeft } = useSidebar();
-  const { toggleSidebar: toggleSidebarRight } = useSidebar2();
+  //const { toggleSidebar: toggleSidebarLeft } = useSidebar();
+  //const { toggleSidebar: toggleSidebarRight } = useSidebar2();
 
   const {
     messages,
@@ -88,16 +88,16 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
-  const handleDragEnd = (
-    _: MouseEvent | TouchEvent | PointerEvent,
-    info: { offset: { x: number } },
-  ) => {
-    if (info.offset.x > 0) {
-      toggleSidebarLeft();
-    } else if (info.offset.x < -0) {
-      toggleSidebarRight();
-    }
-  };
+  // const handleDragEnd = (
+  //   _: MouseEvent | TouchEvent | PointerEvent,
+  //   info: { offset: { x: number } },
+  // ) => {
+  //   if (info.offset.x > 0) {
+  //     toggleSidebarLeft();
+  //   } else if (info.offset.x < -0) {
+  //     toggleSidebarRight();
+  //   }
+  // };
 
   return (
     <>
