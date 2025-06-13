@@ -3,7 +3,10 @@ import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ChangePasswordDTO,
+  changePasswordDTOSchema,
   ErrInvalidEmailAndPassword,
+  ErrWrongOldPassword,
   GooglePayload,
   UserLoginDTO,
   userLoginDTOSchema,
@@ -95,5 +98,21 @@ export class AuthService {
       };
       return requesterInfo;
     }
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDTO): Promise<void> {
+    const user = await this.userService.findByIdWithPassword(userId);
+    if (!user) {
+      throw AppError.from(ErrNotFound, 404); // already checked by guard
+    }
+
+    const { oldPassword, newPassword } = changePasswordDTOSchema.parse(dto);
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      throw AppError.from(ErrWrongOldPassword, 400);
+    }
+
+    await this.userService.updatePassword(userId, newPassword);
   }
 }

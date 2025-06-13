@@ -33,6 +33,13 @@ export class UserRepository {
     });
   }
 
+  async updatePassword(id: string, password: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { password },
+    });
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.user.delete({
       where: { id },

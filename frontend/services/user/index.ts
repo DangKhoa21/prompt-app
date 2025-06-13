@@ -53,3 +53,11 @@ export async function deleteAvatar({
   });
   return response.data.data;
 }
+
+export async function updateUserPassword(data: {
+  oldPassword: string;
+  newPassword: string;
+}): Promise<boolean> {
+  const response = await axiosWithAuth.post(`/auth/change-password`, data);
+  return response.data.data;
+}

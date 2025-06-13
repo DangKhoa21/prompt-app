@@ -1,4 +1,9 @@
-import { deleteAvatar, updateUserProfile, uploadAvatar } from "@/services/user";
+import {
+  deleteAvatar,
+  updateUserPassword,
+  updateUserProfile,
+  uploadAvatar,
+} from "@/services/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useUpdateUserProfile = () => {
@@ -39,6 +44,16 @@ export const useDeleteAvatr = () => {
     },
     onError: (error) => {
       console.error("Error deleting avatar:", error);
+    },
+  });
+};
+
+export const useUpdateUserPassword = () => {
+  return useMutation({
+    mutationFn: (data: { oldPassword: string; newPassword: string }) =>
+      updateUserPassword(data),
+    onError: (error) => {
+      console.error("Error updating user password:", error);
     },
   });
 };

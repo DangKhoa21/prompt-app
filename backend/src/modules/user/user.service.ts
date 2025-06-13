@@ -61,6 +61,10 @@ export class UserService {
     return this.userRepo.findByCond(condition);
   }
 
+  async findByIdWithPassword(id: string): Promise<User | null> {
+    return this.userRepo.findById(id);
+  }
+
   async findById(id: string): Promise<Omit<User, 'password'>> {
     const user = await this.userRepo.findById(id);
     if (!user) {
@@ -84,6 +88,13 @@ export class UserService {
     }
 
     await this.userRepo.update(id, data);
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const salt = bcrypt.genSaltSync(8);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    // userId is already validated before
+    await this.userRepo.updatePassword(userId, hashPassword);
   }
 
   async remove(id: string, userId: string): Promise<void> {

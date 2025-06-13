@@ -1,9 +1,10 @@
 import { z } from 'zod';
-import { userSchema } from 'src/shared';
+import { ErrPasswordAtLeast6Chars, userSchema } from 'src/shared';
 
 export const ErrInvalidEmailAndPassword = new Error(
   'Invalid email and password',
 );
+export const ErrWrongOldPassword = new Error('Wrong old password');
 
 export const userRegisterDTOSchema = userSchema.pick({
   username: true,
@@ -24,3 +25,10 @@ export type GooglePayload = {
   username: string;
   picture: string;
 };
+
+export const changePasswordDTOSchema = z.object({
+  oldPassword: z.string().min(6, ErrPasswordAtLeast6Chars.message),
+  newPassword: z.string().min(6, ErrPasswordAtLeast6Chars.message),
+});
+
+export type ChangePasswordDTO = z.infer<typeof changePasswordDTOSchema>;

@@ -19,3 +19,14 @@ export const registerSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" })
     .max(30, { message: "Password must be 30 characters or less" }),
 });
+
+export const changePasswordSchema = z.object({
+  oldPassword: z
+    .string()
+    .min(5, { message: "Old password must be at least 5 characters long" })
+    .max(30, { message: "Old password must be 30 characters or less" }),
+  newPassword: z
+    .string()
+    .min(6, { message: "New password must be at least 6 characters long" })
+    .max(30, { message: "New password must be 30 characters or less" }),
+});

@@ -10,9 +10,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserLoginDTO, UserRegisterDTO } from './model';
-import { GoogleAuthGuard } from 'src/common/guard';
-import { config } from 'src/shared';
+import { ChangePasswordDTO, UserLoginDTO, UserRegisterDTO } from './model';
+import { GoogleAuthGuard, JwtAuthGuard } from 'src/common/guard';
+import { config, ReqWithRequester } from 'src/shared';
 
 @Controller('auth')
 export class AuthController {
@@ -54,5 +54,16 @@ export class AuthController {
   async create(@Body() dto: UserRegisterDTO) {
     const data = await this.authService.register(dto);
     return { data };
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Req() req: ReqWithRequester,
+    @Body() dto: ChangePasswordDTO,
+  ) {
+    const { sub: userId } = req.user;
+    await this.authService.changePassword(userId, dto);
+    return { data: true };
   }
 }
