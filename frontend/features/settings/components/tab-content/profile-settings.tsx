@@ -1,11 +1,10 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   AvatarUpload,
+  ChangePasswordDialog,
   SettingsEditTextField,
   useUpdateUserProfile,
 } from "@/features/settings";
@@ -43,7 +42,23 @@ export function ProfileSettings() {
   };
 
   if (isPending) {
-    return null;
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <div className="h-6 w-48 bg-muted animate-pulse rounded" />
+          <div className="h-4 w-64 bg-muted animate-pulse rounded" />
+        </div>
+        <Separator />
+        <div className="flex flex-col items-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6">
+          <div className="h-20 w-20 bg-muted animate-pulse rounded-full" />
+          <div className="flex-1 space-y-4">
+            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-muted animate-pulse rounded" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (isError) {
@@ -110,7 +125,7 @@ export function ProfileSettings() {
         </div>
 
         <div className="space-y-2">
-          <Button variant="outline">Change Password</Button>
+          <ChangePasswordDialog />
         </div>
       </div>
     </div>
