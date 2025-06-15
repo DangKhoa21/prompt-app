@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/icons";
+import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,13 +17,13 @@ import {
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
-import axios from "@/lib/axios";
-import { fillPromptTemplate } from "@/lib/generatePrompt";
+import axios from "@/lib/axios/axiosWithAuth";
+import { generateUUID } from "@/lib/utils";
+import { serializeOptionConfigData } from "@/lib/utils/utils.details";
 import {
-  generateUUID,
-  serializeConfigData,
+  fillPromptTemplate,
   validateFilledConfigs,
-} from "@/lib/utils";
+} from "@/lib/utils/utils.generate-prompt";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -30,7 +31,6 @@ import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import RenderConfigInput from "./generator-items/generator-config-item";
 
 export function PromptGeneratorSidebar() {
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
@@ -54,7 +54,7 @@ export function PromptGeneratorSidebar() {
   const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
-    queryKey: ["prompts", promptId],
+    queryKey: ["prompt", promptId],
     queryFn: () => getPromptWithConfigs(promptId),
   });
 
@@ -185,9 +185,9 @@ export function PromptGeneratorSidebar() {
 
     params.set("promptId", promptId);
 
-    const serializedData = serializeConfigData({
+    const serializedData = serializeOptionConfigData({
       promptId: promptId,
-      data,
+      configs: data.configs,
       selectedValues,
       textareaValues,
       arrayValues,
@@ -217,7 +217,7 @@ export function PromptGeneratorSidebar() {
 
   return (
     <>
-      <SidebarHeader className="pb-0">
+      <SidebarHeader className="prompt-editor pb-0">
         <div className="flex justify-between items-center p-2">
           <div className="flex items-center">
             <Button

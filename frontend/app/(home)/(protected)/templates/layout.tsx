@@ -1,10 +1,11 @@
 import { Metadata } from "next";
+import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Prompt Template",
-  description: "Powerful UI for promptings",
+  title: "Your Templates",
+  description: "Configuring your Template",
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function TemplatesLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }

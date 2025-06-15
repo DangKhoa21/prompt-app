@@ -1,3 +1,4 @@
+import type { Message as DBMessage } from "@/services/chat/interface";
 import type {
   CoreAssistantMessage,
   CoreMessage,
@@ -7,17 +8,7 @@ import type {
 } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-
-import type { Message as DBMessage } from "@/services/chat/interface";
 import { v7 } from "uuid";
-import {
-  PromptConfig,
-  PromptWithConfigs,
-  TemplateConfig,
-  TemplateConfigInfo,
-  TemplateWithConfigs,
-} from "@/services/prompt/interface";
-import { ConfigType } from "@/features/template";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,7 +49,7 @@ export function formatDate(date: Date): string {
 }
 
 export function sanitizeResponseMessages(
-  messages: Array<CoreToolMessage | CoreAssistantMessage>,
+  messages: Array<CoreToolMessage | CoreAssistantMessage>
 ): Array<CoreToolMessage | CoreAssistantMessage> {
   const toolResultIds: Array<string> = [];
 
@@ -81,8 +72,8 @@ export function sanitizeResponseMessages(
       content.type === "tool-call"
         ? toolResultIds.includes(content.toolCallId)
         : content.type === "text"
-          ? content.text.length > 0
-          : true,
+        ? content.text.length > 0
+        : true
     );
 
     return {
@@ -92,7 +83,7 @@ export function sanitizeResponseMessages(
   });
 
   return messagesBySanitizedContent.filter(
-    (message) => message.content.length > 0,
+    (message) => message.content.length > 0
   );
 }
 
@@ -114,7 +105,7 @@ function addToolMessageToChat({
         ...message,
         toolInvocations: message.toolInvocations.map((toolInvocation) => {
           const toolResult = toolMessage.content.find(
-            (tool) => tool.toolCallId === toolInvocation.toolCallId,
+            (tool) => tool.toolCallId === toolInvocation.toolCallId
           );
 
           if (toolResult) {
@@ -135,7 +126,7 @@ function addToolMessageToChat({
 }
 
 export function convertToUIMessages(
-  messages: Array<DBMessage>,
+  messages: Array<DBMessage>
 ): Array<Message> {
   return messages.reduce((chatMessages: Array<Message>, message) => {
     if (message.role === "tool") {
@@ -193,7 +184,7 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
     const sanitizedToolInvocations = message.toolInvocations.filter(
       (toolInvocation) =>
         toolInvocation.state === "result" ||
-        toolResultIds.includes(toolInvocation.toolCallId),
+        toolResultIds.includes(toolInvocation.toolCallId)
     );
 
     return {
@@ -205,238 +196,68 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   return messagesBySanitizedToolInvocations.filter(
     (message) =>
       message.content.length > 0 ||
-      (message.toolInvocations && message.toolInvocations.length > 0),
+      (message.toolInvocations && message.toolInvocations.length > 0)
   );
 }
 
-type ConfigMapping = {
-  label: string;
-  type: string;
-  value: string;
-};
+export function openCenteredPopup(
+  url: string,
+  title: string,
+  w: number,
+  h: number
+) {
+  // Fix dual-screen position
+  const dualScreenLeft =
+    window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+  const dualScreenTop =
+    window.screenTop !== undefined ? window.screenTop : window.screenY;
 
-type Serializing = {
-  promptId: string;
-  configs: ConfigMapping[];
-};
+  const width = window.innerWidth
+    ? window.innerWidth
+    : document.documentElement.clientWidth
+    ? document.documentElement.clientWidth
+    : screen.width;
 
-type SerializingResult = Serializing & {
-  exampleResult: string;
-};
+  const height = window.innerHeight
+    ? window.innerHeight
+    : document.documentElement.clientHeight
+    ? document.documentElement.clientHeight
+    : screen.height;
 
-export function serializeConfigData({
-  promptId,
-  data,
-  selectedValues,
-  textareaValues,
-  arrayValues,
-}: {
-  promptId: string;
-  data: PromptWithConfigs;
-  selectedValues: Record<string, string>;
-  textareaValues: Record<string, string>;
-  arrayValues: Record<string, { id: string; values: string[] }[]>;
-}) {
-  const serialized: Serializing = {
-    promptId,
-    configs: [],
-  };
+  const left = width / 2 - w / 2 + dualScreenLeft;
+  const top = height / 2 - h / 2 + dualScreenTop;
 
-  data.configs.forEach((config) => {
-    const key = config.label;
-    let value: string = "";
+  const newWindow = window.open(
+    url,
+    title,
+    `scrollbars=yes, width=${w}, height=${h}, top=${top}, left=${left}`
+  );
 
-    if (
-      config.type === ConfigType.DROPDOWN ||
-      config.type === ConfigType.COMBOBOX
-    ) {
-      value = selectedValues[key];
-    } else if (config.type === ConfigType.TEXTAREA) {
-      value = textareaValues[key];
-    } else if (config.type === ConfigType.ARRAY) {
-      value = JSON.stringify(arrayValues[key]);
-    } else {
-      return;
-    }
-
-    serialized.configs.push({
-      label: key,
-      type: config.type,
-      value,
-    });
-  });
-
-  return JSON.stringify(serialized);
+  if (newWindow?.focus) newWindow.focus();
+  return newWindow;
 }
 
-export function serializeResultConfigData({
-  promptId,
-  data,
-  selectedValues,
-  textareaValues,
-  arrayValues,
-  exampleResult,
-}: {
-  promptId: string;
-  data: TemplateWithConfigs;
-  selectedValues: Record<string, string>;
-  textareaValues: Record<string, string>;
-  arrayValues: Record<string, { id: string; values: string[] }[]>;
-  exampleResult: string;
-}) {
-  const serialized: SerializingResult = {
-    promptId,
-    exampleResult,
-    configs: [],
-  };
-
-  data.configs.forEach((config) => {
-    const key = config.label;
-    let value: string = "";
-
-    if (
-      config.type === ConfigType.DROPDOWN ||
-      config.type === ConfigType.COMBOBOX
-    ) {
-      value = selectedValues[key];
-    } else if (config.type === ConfigType.TEXTAREA) {
-      value = textareaValues[key];
-    } else if (config.type === ConfigType.ARRAY) {
-      value = JSON.stringify(arrayValues[key]);
-    } else {
-      return;
-    }
-
-    serialized.configs.push({
-      label: key,
-      type: config.type,
-      value,
-    });
-  });
-
-  return JSON.stringify(serialized);
-}
-
-export type ExampleResultOutput = {
-  promptId: string;
-  exampleResult: string;
-  selectedValues: Record<string, string>;
-  textareaValues: Record<string, string>;
-  arrayValues: Record<string, { id: string; values: string[] }[]>;
-};
-
-export function deserializeResultConfigData(
-  jsonString: string,
-): ExampleResultOutput {
-  const parsed: SerializingResult = JSON.parse(jsonString);
-
-  const newSelected: Record<string, string> = {};
-  const newTextarea: Record<string, string> = {};
-  const newArray: Record<string, { id: string; values: string[] }[]> = {};
-
-  parsed.configs.forEach((config) => {
-    const { label, type, value } = config;
-
-    if (type === ConfigType.DROPDOWN || type === ConfigType.COMBOBOX) {
-      newSelected[label] = value;
-    } else if (type === ConfigType.TEXTAREA) {
-      newTextarea[label] = value;
-    } else if (type === ConfigType.ARRAY) {
-      try {
-        const parsedArray = JSON.parse(value);
-        if (Array.isArray(parsed)) {
-          newArray[label] = parsedArray;
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      console.error("Invalid array param:", value);
-    }
-  });
-
-  return {
-    promptId: parsed.promptId,
-    exampleResult: parsed.exampleResult,
-    selectedValues: newSelected,
-    textareaValues: newTextarea,
-    arrayValues: newArray,
-  };
-}
-
-export function stringifyInfo(infoObj: TemplateConfigInfo): string {
-  return JSON.stringify(infoObj);
-}
-
-export function parseInfo(info?: string): TemplateConfigInfo {
-  try {
-    if (!info) return { description: "", isRequired: true };
-    const parsed = JSON.parse(info);
-    return {
-      description: parsed.description || "",
-      isRequired: parsed.isRequired !== false, // default to true
-    };
-  } catch (err) {
-    console.log(err);
-    // Fallback for legacy plain description string
-    return {
-      description: info || "",
-      isRequired: true,
-    };
+export function evaluatePassword(password: string): string[] {
+  const weakPoints: string[] = [];
+  if (!/(?=.*[a-z])/.test(password)) {
+    weakPoints.push("Password should contain at least one lowercase letter");
   }
+  if (!/(?=.*[A-Z])/.test(password)) {
+    weakPoints.push("Password should contain at least one uppercase letter");
+  }
+  if (!/(?=.*\d)/.test(password)) {
+    weakPoints.push("Password should contain at least one number");
+  }
+  return weakPoints;
 }
 
-export function validateFilledConfigs(
-  configs: PromptConfig[] | TemplateConfig[],
-  selectedValues: Record<string, string>,
-  textareaValues: Record<string, string>,
-  arrayValues: Record<string, { id: string; values: string[] }[]>,
-): {
-  isValid: boolean;
-  unfilledConfigs: string[];
-  filledCount: number;
-  totalCount: number;
+export function getPasswordStrength(password: string): {
+  strength: number;
+  label: string;
 } {
-  const unfilledConfigs: string[] = [];
-  let totalCount = 0;
-
-  configs.forEach((config) => {
-    const { isRequired } = parseInfo(config.info);
-    if (!isRequired) return;
-
-    totalCount += 1;
-
-    const value =
-      config.type === ConfigType.TEXTAREA
-        ? textareaValues[config.label]
-        : config.type === ConfigType.ARRAY
-          ? arrayValues[config.label]
-          : selectedValues[config.label];
-
-    const isFilled =
-      config.type === ConfigType.ARRAY
-        ? Array.isArray(value) &&
-          value.length > 0 &&
-          value.every(
-            (item) =>
-              Array.isArray(item.values) &&
-              item.values.length > 0 &&
-              item.values.some((v) => v.trim() !== ""),
-          )
-        : typeof value === "string" &&
-          value.trim() !== "" &&
-          value.trim().toLowerCase() !== "none";
-
-    if (!isFilled) {
-      unfilledConfigs.push(config.label);
-    }
-  });
-
-  const filledCount = totalCount - unfilledConfigs.length;
-
-  return {
-    isValid: unfilledConfigs.length === 0,
-    unfilledConfigs,
-    filledCount,
-    totalCount,
-  };
+  const weakPoints = evaluatePassword(password);
+  if (password.length === 0) return { strength: 0, label: "" };
+  if (weakPoints.length === 0) return { strength: 100, label: "Strong" };
+  if (weakPoints.length === 1) return { strength: 60, label: "Medium" };
+  return { strength: 30, label: "Weak" };
 }

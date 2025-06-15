@@ -28,7 +28,7 @@ export default function PromptCarousels({
           getPrompts({
             pageParam: "",
             filter: { tagId: tag.id },
-          })
+          }),
         ),
         getPrompts({
           pageParam: "",

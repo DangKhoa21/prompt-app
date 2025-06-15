@@ -2,13 +2,18 @@ import { SidebarRight } from "@/components/sidebar/sidebar-right";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { SidebarProvider2 } from "@/components/ui/sidebar2";
 import { Metadata } from "next";
+import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Prompt Chat",
+  title: "New Chat",
   description: "Powerful UI for promptings",
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function PromptChatLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <SidebarProvider2>
       <SidebarInset>{children}</SidebarInset>

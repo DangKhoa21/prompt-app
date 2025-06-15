@@ -1,22 +1,24 @@
 "use client";
 
-import type { Attachment, Message } from "ai";
-import { useState } from "react";
-
-import { PreviewMessage, ThinkingMessage } from "@/components/message";
-
 import { ChatHeader } from "@/components/chat/chat-header";
-import { useChat } from "ai/react";
 import { MultimodalInput } from "@/components/chat/multimodal-input";
-
+import { PreviewMessage, ThinkingMessage } from "@/components/message";
 import { Overview } from "@/components/overview";
 import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import { usePrompt } from "@/context/prompt-context";
+import { useFirstVisit } from "@/hooks/use-first-visit";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Attachment, Message } from "ai";
+import { useChat } from "ai/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ChatTutorial } from "./chat-tutorial";
+// import { motion } from "framer-motion";
+// import { useSidebar } from "@/components/ui/sidebar";
+// import { useSidebar2 } from "@/components/ui/sidebar2";
 
 export function Chat({
   id,
@@ -32,6 +34,10 @@ export function Chat({
   const { token, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const { prompt, setPrompt, systemInstruction } = usePrompt();
+
+  const isFirstVisit = useFirstVisit();
+  //const { toggleSidebar: toggleSidebarLeft } = useSidebar();
+  //const { toggleSidebar: toggleSidebarRight } = useSidebar2();
 
   const {
     messages,
@@ -82,14 +88,33 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
+  // const handleDragEnd = (
+  //   _: MouseEvent | TouchEvent | PointerEvent,
+  //   info: { offset: { x: number } },
+  // ) => {
+  //   if (info.offset.x > 0) {
+  //     toggleSidebarLeft();
+  //   } else if (info.offset.x < -0) {
+  //     toggleSidebarRight();
+  //   }
+  // };
+
   return (
     <>
+      {isFirstVisit && <ChatTutorial />}
+
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader selectedModelId={selectedModelId} />
 
+        {/* <motion.div */}
+        {/*   drag="x" */}
+        {/*   dragConstraints={{ left: 0, right: 0 }} */}
+        {/*   onDragEnd={handleDragEnd} */}
+        {/*   className="flex flex-col h-dvh" */}
+        {/* > */}
         <div
           ref={messagesContainerRef}
-          className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+          className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto pt-4"
         >
           {messages.length === 0 && <Overview />}
 
@@ -110,10 +135,10 @@ export function Chat({
           <div
             ref={messagesEndRef}
             className="shrink-0 min-w-[24px] min-h-[24px]"
-          />
+          ></div>
         </div>
 
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+        <form className="flex mx-auto p-2 md:px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
           <MultimodalInput
             chatId={id}
             input={input}
@@ -128,6 +153,7 @@ export function Chat({
             append={append}
           />
         </form>
+        {/* </motion.div> */}
       </div>
     </>
   );

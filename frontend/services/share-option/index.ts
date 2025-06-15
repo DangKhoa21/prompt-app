@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axios";
+import axiosWithAuth from "@/lib/axios/axiosWithAuth";
 import { ShareOption } from "./interface";
 
 export async function createShareOption({
@@ -8,7 +8,7 @@ export async function createShareOption({
   optionId: string;
   option: string;
 }): Promise<string> {
-  const response = await axiosInstance.post(`/option/`, {
+  const response = await axiosWithAuth.post(`/option/`, {
     optionId,
     option,
   });
@@ -21,7 +21,7 @@ export async function getComments({
 }: {
   optionId: string;
 }): Promise<ShareOption> {
-  const response = await axiosInstance.get(`/option/${optionId}`);
+  const response = await axiosWithAuth.get(`/option/${optionId}`);
 
   return response.data;
 }

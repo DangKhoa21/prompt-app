@@ -8,7 +8,7 @@ import {
 } from "@/features/template";
 import { Suspense } from "react";
 
-export default async function Page(props: {
+export default async function TemplatesPage(props: {
   searchParams?: Promise<{
     tagId?: string;
     search?: string;

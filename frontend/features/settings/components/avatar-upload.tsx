@@ -1,20 +1,18 @@
 "use client";
 
-import type React from "react";
-
-import { useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Trash2, Loader2, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+import { useDeleteAvatr, useUploadAvatar } from "@/features/settings";
 import { User } from "@/services/user/interface";
-import { Button } from "@/components/ui/button";
-import { useDeleteAvatr, useUploadAvatar } from "../hooks";
+import { Camera, Loader2, Plus, Trash2 } from "lucide-react";
+import { useRef } from "react";
+import { toast } from "sonner";
 
 export function AvatarUpload({ user }: { user: User }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +33,7 @@ export function AvatarUpload({ user }: { user: User }) {
     const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!validTypes.includes(file.type)) {
       toast.error(
-        "Invalid file type. Please upload a JPEG, PNG, GIF, or WebP image."
+        "Invalid file type. Please upload a JPEG, PNG, GIF, or WebP image.",
       );
       return;
     }

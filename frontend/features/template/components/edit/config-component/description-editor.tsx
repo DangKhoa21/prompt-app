@@ -9,7 +9,7 @@ interface DescriptionEditorProps {
   onRequiredChange: () => void;
 }
 
-export default function DescriptionEditor({
+export function DescriptionEditor({
   description,
   isMandatory,
   onDescriptionChange,
@@ -19,8 +19,8 @@ export default function DescriptionEditor({
     <>
       <div className="flex justify-between items-center h-10">
         <div className="font-medium">Description</div>
-        <div className="flex gap-4">
-          <p className="font-medium">Required?</p>
+        <div className="flex justify-between items-center gap-4">
+          <p className="text-base font-semibold italic">Required</p>
           <Switch checked={isMandatory} onCheckedChange={onRequiredChange} />
         </div>
       </div>

@@ -1,13 +1,13 @@
-import axiosInstance from "@/lib/axios";
+import axiosWithAuth from "@/lib/axios/axiosWithAuth";
 import { User } from "./interface";
 
 export async function getUser(userId: string): Promise<User> {
-  const response = await axiosInstance.get(`/users/${userId}`);
+  const response = await axiosWithAuth.get(`/users/${userId}`);
   return response.data.data;
 }
 
 export async function getUserProfile(): Promise<User> {
-  const response = await axiosInstance.get(`/users/profile`);
+  const response = await axiosWithAuth.get(`/users/profile`);
   return response.data.data;
 }
 
@@ -18,7 +18,7 @@ export async function updateUserProfile({
   id: string;
   data: Partial<Pick<User, "username" | "bio">>;
 }): Promise<boolean> {
-  const response = await axiosInstance.patch(`/users/${id}`, data);
+  const response = await axiosWithAuth.patch(`/users/${id}`, data);
   return response.data.data;
 }
 
@@ -32,7 +32,7 @@ export async function uploadAvatar({
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await axiosInstance.post(`/users/${id}/avatar`, formData, {
+  const response = await axiosWithAuth.post(`/users/${id}/avatar`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -48,8 +48,16 @@ export async function deleteAvatar({
   id: string;
   previousUrl: string;
 }): Promise<boolean> {
-  const response = await axiosInstance.delete(`/users/${id}/avatar`, {
+  const response = await axiosWithAuth.delete(`/users/${id}/avatar`, {
     data: { previousUrl },
   });
+  return response.data.data;
+}
+
+export async function updateUserPassword(data: {
+  oldPassword: string;
+  newPassword: string;
+}): Promise<boolean> {
+  const response = await axiosWithAuth.post(`/auth/change-password`, data);
   return response.data.data;
 }

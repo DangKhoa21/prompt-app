@@ -4,15 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useTemplate } from "@/context/template-context";
-import { ConfigType } from "@/features/template";
-import { cn, parseInfo, stringifyInfo } from "@/lib/utils";
+import {
+  AddConfigDialog,
+  ConfigDnD,
+  ConfigType,
+  ConfigTypeSelector,
+  DescriptionEditor,
+} from "@/features/template";
+import { cn } from "@/lib/utils";
+import { parseInfo, stringifyInfo } from "@/lib/utils/utils.details";
 import { TemplateConfig } from "@/services/prompt/interface";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import AddConfigDialog from "./config-component/add-config-dialog";
-import ConfigDnD from "./config-component/config-dnd-item";
-import ConfigTypeSelector from "./config-component/config-type-selector";
-import DescriptionEditor from "./config-component/description-editor";
 
 interface ConfigVariableProps extends TemplateConfig {
   isSidebarOpen?: boolean;
@@ -68,13 +71,13 @@ export function TemplatesConfigVariable({
 
   // TODO: Smaller display on small devices (slide left to delete item instead of click)
   return (
-    <Card key={id} className="border border-slate-500">
+    <Card key={id} className="">
       <CardHeader
         className={cn("pt-6 pb-2 px-4", isSidebarOpen ? "md:px-6" : "lg:px-4")}
         onClick={() => setIsOpen(!isOpen)}
       >
         <CardTitle className="text-base font-semibold flex justify-between items-center">
-          <div>Config {label}</div>
+          <div className={cn(isMandatory ? "text-red-400" : "")}>{label}</div>
 
           <div className="italic text-sm font-thin cursor-default">
             {!isOpen ? "Click for details" : "Click to hide"}

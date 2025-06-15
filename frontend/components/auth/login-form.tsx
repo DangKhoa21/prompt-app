@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "@/context/auth-context";
 import { login } from "@/services/auth";
@@ -19,7 +20,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { SERVER_URL, VERSION_PREFIX, WEB_URL } from "@/config";
+import { cn, openCenteredPopup } from "@/lib/utils";
 
 export function LoginForm({
   className,
@@ -29,6 +31,7 @@ export function LoginForm({
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
   const [emailError, setEmailError] = React.useState("");
   const [passwordError, setPasswordError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -52,17 +55,7 @@ export function LoginForm({
     return () => document.removeEventListener("keydown", handleEnterPress);
   }, []);
 
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  // Auto focus email when navigated
-  useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
-    }
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     setLoading(true);
     setEmailError("");
     setPasswordError("");
@@ -85,7 +78,7 @@ export function LoginForm({
 
       if (token) {
         setToken(token);
-        router.push("/");
+        router.replace("/");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -106,6 +99,30 @@ export function LoginForm({
     }
   };
 
+  const handleGoogleLogin = () => {
+    const popup = openCenteredPopup(
+      `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=web`,
+      "googleLoginPopup",
+      500,
+      600
+    );
+
+    if (!popup) {
+      toast.error("Please allow popups for this site to login with Google.");
+      return;
+    }
+
+    window.addEventListener("message", (event) => {
+      if (event.origin !== WEB_URL) return;
+
+      const token = event.data?.token;
+      if (token) {
+        setToken(token);
+        router.replace("/");
+      }
+    });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -116,63 +133,85 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  ref={emailRef}
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                {emailError && (
-                  <p className="text-xs text-red-500">{emailError}</p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoFocus
+                required
+              />
+              {emailError && (
+                <p className="text-xs text-red-500">{emailError}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                {passwordError && (
-                  <p className="text-xs text-red-500">{passwordError}</p>
-                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-              <Button
-                ref={buttonRef}
-                type="submit"
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? "Loading..." : "Login"}
-              </Button>
-              <Button variant="outline" className="w-full">
-                Login with Google
-              </Button>
+              {passwordError && (
+                <p className="text-xs text-red-500">{passwordError}</p>
+              )}
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Register
-              </Link>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              <a
-                href="#"
-                className="inline-block text-sm underline-offset-4 hover:underline"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </form>
+            <Button
+              ref={buttonRef}
+              type="submit"
+              disabled={loading}
+              onClick={handleLogin}
+              className="w-full"
+            >
+              {loading ? "Loading..." : "Login"}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
+            >
+              Login with Google
+            </Button>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="underline-offset-4 hover:underline text-primary"
+            >
+              Register
+            </Link>
+            .
+          </div>
+          <div className="mt-4 text-center text-sm">
+            <Link
+              href="/forgot-password"
+              className="underline-offset-4 hover:underline text-primary"
+            >
+              Forgot your password?
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

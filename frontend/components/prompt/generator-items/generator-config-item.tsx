@@ -1,3 +1,5 @@
+import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
+import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -14,12 +16,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { BetterTooltip } from "@/components/ui/tooltip";
-import { cn, parseInfo } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { parseInfo } from "@/lib/utils/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
 import { CircleHelp } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
-import { ArrayConfig } from "./array-config";
-import { CreatableCombobox } from "./creatable-combobox";
 
 interface RenderConfigInputProps {
   config: PromptConfig | TemplateConfig;
@@ -60,6 +61,8 @@ export default function RenderConfigInput({
   const extractedInfo = parseInfo(config.info);
 
   const handleSelectChange = (configLabel: string, value: string) => {
+    if (!value) return;
+
     setSelectedValues((prevState) => ({
       ...prevState,
       [configLabel]: value,
@@ -102,7 +105,11 @@ export default function RenderConfigInput({
             : "Description is not available"
         }
       >
-        <Button variant="ghost" className="h-8 w-8 mr-2">
+        <Button
+          variant="ghost"
+          className="h-8 w-8 mr-2"
+          aria-label="View description"
+        >
           <CircleHelp />
         </Button>
       </BetterTooltip>
@@ -114,6 +121,7 @@ export default function RenderConfigInput({
       case "dropdown":
         return (
           <Select
+            value={selectedValues[config.label] ?? ""}
             onValueChange={(value) => handleSelectChange(config.label, value)}
           >
             <SelectTrigger id={config.label}>
@@ -163,7 +171,7 @@ export default function RenderConfigInput({
           <ArrayConfig
             id={config.label}
             labels={config.values.map((v) => v.value)}
-            values={arrayValues[config.label]}
+            values={arrayValues[config.label] ?? []}
             setArrayValues={setArrayValues}
           />
         );

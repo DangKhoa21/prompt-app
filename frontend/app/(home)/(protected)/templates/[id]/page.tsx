@@ -3,7 +3,7 @@ import { LoadingSpinner } from "@/components/icons";
 import { TemplateEditWrapper } from "@/features/template";
 import { Suspense } from "react";
 
-export default function Page({ params }: { params: { id: string } }) {
+export default function TemplateIdPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
   return (

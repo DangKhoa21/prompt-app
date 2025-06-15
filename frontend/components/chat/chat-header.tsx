@@ -11,12 +11,11 @@ import { Paginated } from "@/services/shared";
 import { User } from "@/services/user/interface";
 import { useQueryClient } from "@tanstack/react-query";
 import { Compass, PencilRuler, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 
 export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
-  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
@@ -49,9 +48,7 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
     if (!user) return;
 
     const tab = "";
-
     const creatorId = user.id;
-
     const updatedFilter = { ...filter, creatorId };
 
     queryClient.prefetchInfiniteQuery({
@@ -65,23 +62,22 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
   };
 
   return (
-    <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
-      <div className="flex flex-1 items-center gap-2 px-3">
-        <SidebarTrigger className="h-7" />
+    <header className="chat-header sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
+      <div className="flex flex-1 items-center gap-1 md:gap-2 px-1 md:px-3">
+        {!isMobile && (
+          <>
+            <SidebarTrigger className="h-7" />
 
-        <Separator orientation="vertical" className="h-4" />
+            <Separator orientation="vertical" className="h-4" />
+          </>
+        )}
 
         <BetterTooltip content="New chat">
-          <Button
-            variant="ghost"
-            className="h-7 p-2"
-            onClick={() => {
-              router.push("/");
-              router.refresh();
-            }}
-          >
-            <Plus />
-          </Button>
+          <Link href={`/`}>
+            <Button variant="ghost" className="h-7 p-2">
+              <Plus />
+            </Button>
+          </Link>
         </BetterTooltip>
 
         <Separator orientation="vertical" className="h-4" />
@@ -92,53 +88,42 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
           {isAuthenticated && (
             <>
               <div ref={triggerTemplateRef} onMouseEnter={prefetchTemplates}>
-                <Button
-                  variant="ghost"
-                  className="h-8 p-2"
-                  onClick={() => {
-                    router.push("/templates");
-                    router.refresh();
-                  }}
-                >
-                  <PencilRuler />
-                  {!isMobile && "Templates"}
-                </Button>
+                <Link href={`/templates`}>
+                  <Button variant="ghost" className="h-8 p-2">
+                    <PencilRuler />
+                    {!isMobile && "Templates"}
+                  </Button>
+                </Link>
               </div>
               <Separator orientation="vertical" className="h-4" />
             </>
           )}
           <div ref={triggerMarketplaceRef} onMouseEnter={prefetchPrompts}>
             {/* <div> */}
-            <Button
-              variant="ghost"
-              className="h-8 p-2"
-              onClick={() => {
-                router.push("/marketplace");
-                router.refresh();
-              }}
-            >
-              <Compass />
-              {!isMobile && "Marketplace"}
-            </Button>
+            <Link href="/marketplace">
+              <Button variant="ghost" className="h-8 p-2">
+                <Compass />
+                {!isMobile && "Marketplace"}
+              </Button>
+            </Link>
           </div>
           <Separator orientation="vertical" className="h-4" />
           {!isAuthenticated && (
-            <>
+            <Link href={`/login`}>
               <Button
                 variant="ghost"
                 className="h-7 p-2 border-slate-500 border"
-                onClick={() => {
-                  router.push("/login");
-                  router.refresh();
-                }}
               >
                 Log in
               </Button>
-              <Separator orientation="vertical" className="h-4" />
-            </>
+            </Link>
           )}
 
-          <SidebarTrigger2 className="h-7" />
+          {!isMobile && !isAuthenticated && (
+            <Separator orientation="vertical" className="h-4" />
+          )}
+
+          {!isMobile && <SidebarTrigger2 className="h-7" />}
         </div>
       </div>
     </header>

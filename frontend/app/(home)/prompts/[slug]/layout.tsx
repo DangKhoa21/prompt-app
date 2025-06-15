@@ -1,12 +1,37 @@
 import { DetailsHeader } from "@/components/details/details-header";
-import { Metadata } from "next";
+import { SERVER_URL, VERSION_PREFIX } from "@/config";
+import { getIdFromDetailURL } from "@/lib/utils";
+import { Prompt } from "@/services/prompt/interface";
+import axios from "axios";
 
-export const metadata: Metadata = {
-  title: "Prompt Detail",
-  description: "Powerful UI for promptings",
-};
+async function getPrompt(id: string | null): Promise<Prompt> {
+  const response = await axios.get(
+    `${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`,
+  );
+  return response.data.data;
+}
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { slug } = params;
+  const promptId = getIdFromDetailURL(slug);
+
+  const prompt = await getPrompt(promptId);
+
+  return {
+    title: `Prompt: ${prompt.title}`,
+    description: `Prompt Detail: ${prompt.description}`,
+  };
+}
+
+export default function PromptDetailLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <DetailsHeader pageName="Prompt Detail"></DetailsHeader>

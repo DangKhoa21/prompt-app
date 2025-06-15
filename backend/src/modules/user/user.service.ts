@@ -44,8 +44,25 @@ export class UserService {
     return newId;
   }
 
+  async createWithGoogle(dto: UserCreationDTO): Promise<string> {
+    const newId = v7();
+    const newUser: User = {
+      ...dto,
+      id: newId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.userRepo.insert(newUser);
+    return newId;
+  }
+
   async findByCond(condition: UserCondDTO): Promise<User | null> {
     return this.userRepo.findByCond(condition);
+  }
+
+  async findByIdWithPassword(id: string): Promise<User | null> {
+    return this.userRepo.findById(id);
   }
 
   async findById(id: string): Promise<Omit<User, 'password'>> {
@@ -71,6 +88,13 @@ export class UserService {
     }
 
     await this.userRepo.update(id, data);
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const salt = bcrypt.genSaltSync(8);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    // userId is already validated before
+    await this.userRepo.updatePassword(userId, hashPassword);
   }
 
   async remove(id: string, userId: string): Promise<void> {

@@ -1,9 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,6 +13,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 export type ComboboxOption = {
   value: string;
@@ -39,37 +38,35 @@ export function CreatableCombobox({
   onCreateOption,
   className,
 }: CreatableComboboxProps) {
-  const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState("");
-  const [selectedValue, setSelectedValue] = React.useState<string | undefined>(
-    value
-  );
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(value);
 
   // update internal state when external value changes
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedValue(value);
   }, [value]);
 
-  const filteredOptions = React.useMemo(() => {
+  const filteredOptions = useMemo(() => {
     const updatedOptions = [{ value: "None" }, ...options];
 
     if (!inputValue) return updatedOptions;
 
     return updatedOptions.filter((option) =>
-      option.value.toLowerCase().includes(inputValue.toLowerCase())
+      option.value.toLowerCase().includes(inputValue.toLowerCase()),
     );
   }, [options, inputValue]);
 
   // check if the current input value exists as an option (exact match)
-  const optionExists = React.useMemo(() => {
+  const optionExists = useMemo(() => {
     const updatedOptions = [{ value: "None" }, ...options];
 
     return updatedOptions.some(
-      (option) => option.value.toLowerCase() === inputValue.toLowerCase()
+      (option) => option.value.toLowerCase() === inputValue.toLowerCase(),
     );
   }, [options, inputValue]);
 
-  const shouldShowCreateOption = React.useMemo(() => {
+  const shouldShowCreateOption = useMemo(() => {
     return inputValue.trim() !== "" && !optionExists;
   }, [inputValue, optionExists]);
 
@@ -121,7 +118,7 @@ export function CreatableCombobox({
                       "mr-2 h-4 w-4",
                       selectedValue === option.value
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                   {option.value}

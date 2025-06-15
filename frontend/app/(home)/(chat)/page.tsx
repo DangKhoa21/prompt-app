@@ -4,7 +4,7 @@ import { Chat } from "@/components/chat/chat";
 import { DEFAULT_MODEL_NAME, models } from "@/lib/ai/models";
 import { generateUUID } from "@/lib/utils";
 
-export default function Page() {
+export default function ChatPage() {
   const id = generateUUID();
 
   const cookieStore = cookies();

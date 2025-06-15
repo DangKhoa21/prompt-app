@@ -1,13 +1,10 @@
 "use client";
 
-import axios from "axios";
-import { SERVER_URL, VERSION_PREFIX } from "@/config";
+import axiosInstance from "./axiosIntance";
 
-const axiosInstance = axios.create({
-  baseURL: `${SERVER_URL}/${VERSION_PREFIX}`,
-});
+const axiosWithAuth = axiosInstance;
 
-axiosInstance.interceptors.request.use(
+axiosWithAuth.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem("token");
     if (token && config.headers) {
@@ -18,7 +15,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-axiosInstance.interceptors.response.use(
+axiosWithAuth.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response && error.response.status === 401) {
@@ -32,4 +29,4 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export default axiosInstance;
+export default axiosWithAuth;

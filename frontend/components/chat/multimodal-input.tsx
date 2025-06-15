@@ -1,9 +1,12 @@
 "use client";
 
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
 import useWindowSize from "@/components/use-window-size";
+import { sanitizeUIMessages } from "@/lib/utils";
 import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
 import cx from "classnames";
 import { motion } from "framer-motion";
+import { Sparkle } from "lucide-react";
 import type React from "react";
 import {
   useCallback,
@@ -15,11 +18,6 @@ import {
   type SetStateAction,
 } from "react";
 import { toast } from "sonner";
-
-import { sanitizeUIMessages } from "@/lib/utils";
-
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
-import { Sparkle } from "lucide-react";
 // import { PreviewAttachment } from "./preview-attachment";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -231,11 +229,11 @@ export function MultimodalInput({
   });
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="multimodal-input relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[500px]">
+          <div className="grid sm:grid-cols-2 gap-4 w-full px-0 mx-auto md:max-w-3xl">
             {suggestedActions.map((suggestedAction, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

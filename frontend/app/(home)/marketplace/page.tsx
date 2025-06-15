@@ -1,11 +1,19 @@
-import { Suspense } from "react";
+import Container from "@/components/container";
 import { LoadingSpinner } from "@/components/icons";
 import { MarketSearch } from "@/components/marketplace/market-search";
 import PromptsList from "@/components/marketplace/prompts-list";
 import TagsList from "@/components/marketplace/tags-list";
-import Container from "@/components/container";
+import { getPrompts } from "@/services/prompt";
+import { PromptCard } from "@/services/prompt/interface";
+import { Paginated } from "@/services/shared";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { Suspense } from "react";
 
-export default async function Page(props: {
+export default async function MarketplacePage(props: {
   searchParams?: {
     tagId?: string;
     search?: string;
@@ -18,6 +26,15 @@ export default async function Page(props: {
   const sort = searchParams?.sort || "newest";
   const filter = { tagId, search, sort };
 
+  const queryClient = new QueryClient();
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["prompts", filter],
+    queryFn: ({ pageParam }) => getPrompts({ pageParam, filter }),
+    initialPageParam: "",
+    getNextPageParam: (lastPage: Paginated<PromptCard>) => lastPage.nextCursor,
+    staleTime: 1000 * 60 * 5,
+  });
+
   return (
     <Container>
       <MarketSearch />
@@ -26,7 +43,9 @@ export default async function Page(props: {
         <TagsList />
       </Suspense>
 
-      <PromptsList filter={filter} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <PromptsList filter={filter} />
+      </HydrationBoundary>
     </Container>
   );
 }

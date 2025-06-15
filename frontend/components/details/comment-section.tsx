@@ -1,5 +1,8 @@
 "use client";
 
+import Comment from "@/components/details/comment";
+import { LoadingSpinner } from "@/components/icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,21 +14,18 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
-import { useState, Fragment } from "react";
+import { createComment, getComments } from "@/services/comment";
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createComment, getComments } from "@/services/comment";
-import { toast } from "sonner";
-import { useAuth } from "@/context/auth-context";
 import { AlertCircle, MessageSquare } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Comment from "./comment";
-import { LoadingSpinner } from "@/components/icons";
+import Link from "next/link";
+import { Fragment, useState } from "react";
+import { toast } from "sonner";
 
 export default function CommentSection({
   promptId,
@@ -35,7 +35,6 @@ export default function CommentSection({
   className?: string;
 }) {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [userComment, setUserComment] = useState("");
 
@@ -144,7 +143,9 @@ export default function CommentSection({
                   You need to be logged in to comment
                 </p>
               </div>
-              <Button onClick={() => router.push("/login")}>Log In</Button>
+              <Link href={`/login`}>
+                <Button>Log In</Button>
+              </Link>
             </CardContent>
           </Card>
         )}

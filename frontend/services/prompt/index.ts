@@ -1,4 +1,7 @@
-import axiosInstance from "@/lib/axios";
+import { PAGE_LIMIT } from "@/config";
+import { ConfigType } from "@/features/template";
+import axiosInstance from "@/lib/axios/axiosIntance";
+import axiosWithAuth from "@/lib/axios/axiosWithAuth";
 import {
   Prompt,
   PromptCard,
@@ -11,8 +14,6 @@ import {
   TemplateWithConfigs,
 } from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
-import { PAGE_LIMIT } from "@/config";
-import { ConfigType } from "@/features/template";
 
 export async function getPrompts({
   pageParam,
@@ -43,7 +44,7 @@ export async function getStarredPrompts({
   filter?: PromptFilter;
 }): Promise<Paginated<PromptCard>> {
   const { tagId, search } = filter || {};
-  const response = await axiosInstance.get("/users/starred-prompts", {
+  const response = await axiosWithAuth.get("/users/starred-prompts", {
     params: {
       limit: PAGE_LIMIT,
       cursor: pageParam.length > 0 ? pageParam : undefined,
@@ -55,7 +56,7 @@ export async function getStarredPrompts({
 }
 
 export async function getTags(): Promise<Tag[]> {
-  const response = await axiosInstance.get("/tags");
+  const response = await axiosWithAuth.get("/tags");
   return response.data.data;
 }
 
@@ -79,7 +80,7 @@ export async function getPrompt(id: string | null): Promise<Prompt> {
 }
 
 export async function getPromptWithConfigs(
-  id: string | null
+  id: string | null,
 ): Promise<PromptWithConfigs> {
   if (!id) {
     return {
@@ -96,62 +97,62 @@ export async function getPromptWithConfigs(
       configs: [],
     };
   }
-  const response = await axiosInstance.get(`/prompts/${id}`);
+  const response = await axiosWithAuth.get(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function getTagsForTemplate(id: string): Promise<TemplateTag[]> {
-  const response = await axiosInstance.get(`/prompts/${id}/tags`);
+  const response = await axiosWithAuth.get(`/prompts/${id}/tags`);
   return response.data.data;
 }
 
 export async function getPromptTemplate(
-  id: string
+  id: string,
 ): Promise<TemplateWithConfigs> {
-  const response = await axiosInstance.get(`/prompts/${id}`);
+  const response = await axiosWithAuth.get(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function createPromptTemplate(
-  data: PromptWithConfigsCreation
+  data: PromptWithConfigsCreation,
 ): Promise<string> {
   // Change config type to lowercase
   data.configs = data.configs.map((config) => ({
     ...config,
     type: config.type.toLowerCase(),
   }));
-  const response = await axiosInstance.post(`/prompts`, data);
+  const response = await axiosWithAuth.post(`/prompts`, data);
   return response.data.data;
 }
 
 export async function updatePromptTemplate(
-  data: TemplateWithConfigs
+  data: TemplateWithConfigs,
 ): Promise<boolean> {
   data.configs = data.configs.map((config) => ({
     ...config,
     type: config.type.toLowerCase() as ConfigType,
   }));
-  const response = await axiosInstance.put(`/prompts/${data.id}`, data);
+  const response = await axiosWithAuth.put(`/prompts/${data.id}`, data);
   return response.data.data;
 }
 
 export async function updateTag(
   id: string,
-  data: TemplateTag[]
+  data: TemplateTag[],
 ): Promise<boolean> {
-  const response = await axiosInstance.put(`/prompts/${id}/tags`, {
+  const response = await axiosWithAuth.put(`/prompts/${id}/tags`, {
     tagIds: data.map((tag) => tag.id),
   });
   return response.data.data;
 }
 
 export async function deletePromptTemplate(id: string): Promise<boolean> {
-  const response = await axiosInstance.delete(`/prompts/${id}`);
+  const response = await axiosWithAuth.delete(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function createEnhancePrompt(prompt: string) {
-  const response = await axiosInstance.post("/prompts/enhance", {
+  const response = await axiosWithAuth.post("/prompts/enhance", {
     prompt,
   });
 
@@ -162,7 +163,7 @@ export async function createEnhancePrompt(prompt: string) {
 }
 
 export async function generateResult(prompt: string): Promise<string> {
-  const response = await axiosInstance.post("/prompts/generate-result", {
+  const response = await axiosWithAuth.post("/prompts/generate-result", {
     prompt,
   });
 
@@ -170,7 +171,7 @@ export async function generateResult(prompt: string): Promise<string> {
 }
 
 export async function evaluatePrompt(prompt: string): Promise<string> {
-  const response = await axiosInstance.post("/prompts/evaluate", {
+  const response = await axiosWithAuth.post("/prompts/evaluate", {
     prompt,
   });
 
@@ -183,9 +184,9 @@ export async function evaluatePrompt(prompt: string): Promise<string> {
 }
 
 export async function getPromptsOfCreator(
-  creatorId: string
+  creatorId: string,
 ): Promise<Array<PromptCard>> {
-  const response = await axiosInstance.get("/prompts", {
+  const response = await axiosWithAuth.get("/prompts", {
     params: {
       creatorId: creatorId,
     },
@@ -194,7 +195,7 @@ export async function getPromptsOfCreator(
 }
 
 export async function updatePromptResult(id: string, promptResult: string) {
-  const response = await axiosInstance.patch(`/prompts/${id}/result`, {
+  const response = await axiosWithAuth.patch(`/prompts/${id}/result`, {
     exampleResult: promptResult,
   });
 
@@ -202,6 +203,6 @@ export async function updatePromptResult(id: string, promptResult: string) {
 }
 
 export async function getPromptStats(id: string): Promise<PromptStats> {
-  const response = await axiosInstance.get(`/prompts/${id}/stats`);
+  const response = await axiosWithAuth.get(`/prompts/${id}/stats`);
   return response.data.data;
 }

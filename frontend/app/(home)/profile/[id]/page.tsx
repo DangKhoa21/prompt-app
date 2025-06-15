@@ -3,7 +3,7 @@
 import Container from "@/components/container";
 import UserAbout from "@/components/details/user-detail-comps/about";
 import UserAchievements from "@/components/details/user-detail-comps/achievements";
-import UserExpertise from "@/components/details/user-detail-comps/expertise";
+// import UserExpertise from "@/components/details/user-detail-comps/expertise";
 import { LoadingSpinner } from "@/components/icons";
 import { MarketSearch } from "@/components/marketplace/market-search";
 import PromptsList from "@/components/marketplace/prompts-list";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Mail, Zap } from "lucide-react";
+import { Calendar, Mail } from "lucide-react";
 import { Suspense } from "react";
 
 interface ProfilePageProps {
@@ -25,7 +25,10 @@ interface ProfilePageProps {
   };
 }
 
-export default function Page({ params, searchParams }: ProfilePageProps) {
+export default function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
   const { id } = params;
 
   const { tagId, search, sort } = searchParams || {
@@ -101,16 +104,6 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
 
                 <div className="mt-4 flex flex-wrap gap-6">
                   <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      <strong>
-                        {/* {userData.stats.totalPrompts.toLocaleString()} */}
-                        50
-                      </strong>{" "}
-                      <span className="text-muted-foreground">Prompts</span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">
                       Joined {formatDate(userData.createdAt)}
@@ -130,10 +123,10 @@ export default function Page({ params, searchParams }: ProfilePageProps) {
 
             <div className="space-y-6">
               {/* Expertise */}
-              <UserExpertise />
+              {/* <UserExpertise /> */}
 
               {/* Achievements */}
-              <UserAchievements />
+              <UserAchievements userId={id} />
 
               {/* Stats */}
             </div>
