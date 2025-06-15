@@ -55,15 +55,6 @@ export function LoginForm({
     return () => document.removeEventListener("keydown", handleEnterPress);
   }, []);
 
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  // Auto focus email when navigated
-  useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
-    }
-  }, []);
-
   const handleLogin = async () => {
     setLoading(true);
     setEmailError("");
@@ -146,12 +137,12 @@ export function LoginForm({
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
-                ref={emailRef}
                 id="email"
                 type="email"
                 placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoFocus
                 required
               />
               {emailError && (
@@ -205,17 +196,21 @@ export function LoginForm({
           </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline underline-offset-4">
+            <Link
+              href="/register"
+              className="underline-offset-4 hover:underline text-primary"
+            >
               Register
             </Link>
+            .
           </div>
           <div className="mt-4 text-center text-sm">
-            <a
-              href="#"
-              className="inline-block text-sm underline-offset-4 hover:underline"
+            <Link
+              href="/forgot-password"
+              className="underline-offset-4 hover:underline text-primary"
             >
               Forgot your password?
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>

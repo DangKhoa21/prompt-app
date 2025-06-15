@@ -5,6 +5,7 @@ export const ErrInvalidEmailAndPassword = new Error(
   'Invalid email and password',
 );
 export const ErrWrongOldPassword = new Error('Wrong old password');
+export const ErrFailedToSendEmail = new Error('Failed to send email');
 
 export const userRegisterDTOSchema = userSchema.pick({
   username: true,
@@ -32,3 +33,18 @@ export const changePasswordDTOSchema = z.object({
 });
 
 export type ChangePasswordDTO = z.infer<typeof changePasswordDTOSchema>;
+
+export const forgotPasswordDTOSchema = userSchema.pick({
+  email: true,
+});
+
+export type ForgotPasswordDTO = z.infer<typeof forgotPasswordDTOSchema>;
+
+export const resetPasswordDTOSchema = z.object({
+  token: z.string().min(1, { message: 'Token is required' }).jwt({
+    message: 'Token is invalid',
+  }),
+  newPassword: z.string().min(6, ErrPasswordAtLeast6Chars.message),
+});
+
+export type ResetPasswordDTO = z.infer<typeof resetPasswordDTOSchema>;

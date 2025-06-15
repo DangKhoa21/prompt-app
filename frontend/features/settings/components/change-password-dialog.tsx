@@ -17,10 +17,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BetterTooltip } from "@/components/ui/tooltip";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUpdateUserPassword } from "@/features/settings";
-import { Eye, EyeOff, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  AlertCircle,
+  CheckCircle,
+  CircleHelp,
+} from "lucide-react";
 import { changePasswordSchema } from "@/services/auth/interface";
+import { getPasswordStrength } from "@/lib/utils";
 
 export function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);
@@ -33,20 +42,6 @@ export function ChangePasswordDialog() {
   const [errors, setErrors] = useState<string[]>([]);
 
   const updatePasswordMutation = useUpdateUserPassword();
-
-  const evaluatePassword = (password: string): string[] => {
-    const weakPoints: string[] = [];
-    if (!/(?=.*[a-z])/.test(password)) {
-      weakPoints.push("Password should contain at least one lowercase letter");
-    }
-    if (!/(?=.*[A-Z])/.test(password)) {
-      weakPoints.push("Password should contain at least one uppercase letter");
-    }
-    if (!/(?=.*\d)/.test(password)) {
-      weakPoints.push("Password should contain at least one number");
-    }
-    return weakPoints;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,14 +121,6 @@ export function ChangePasswordDialog() {
     setErrors([]);
   };
 
-  const getPasswordStrength = (password: string) => {
-    const weakPoints = evaluatePassword(password);
-    if (password.length === 0) return { strength: 0, label: "" };
-    if (weakPoints.length === 0) return { strength: 100, label: "Strong" };
-    if (weakPoints.length === 1) return { strength: 60, label: "Medium" };
-    return { strength: 30, label: "Weak" };
-  };
-
   const passwordStrength = getPasswordStrength(newPassword);
 
   return (
@@ -184,7 +171,30 @@ export function ChangePasswordDialog() {
 
           {/* New Password */}
           <div className="space-y-2">
-            <Label htmlFor="new-password">New Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="new-password">New Password</Label>
+              <BetterTooltip
+                content={
+                  <div>
+                    <p className="text-sm">
+                      A strong password should also include
+                    </p>
+                    <ul className="list-disc pl-4">
+                      <li>At least one uppercase letter</li>
+                      <li>At least one number</li>
+                    </ul>
+                  </div>
+                }
+              >
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8"
+                  aria-label="View description"
+                >
+                  <CircleHelp />
+                </Button>
+              </BetterTooltip>
+            </div>
             <div className="relative">
               <Input
                 id="new-password"
@@ -214,9 +224,7 @@ export function ChangePasswordDialog() {
             {newPassword && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Password strength:
-                  </span>
+                  <span className="text-muted-foreground">Strength</span>
                   <span
                     className={`font-medium ${
                       passwordStrength.strength >= 80

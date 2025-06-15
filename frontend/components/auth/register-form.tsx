@@ -113,6 +113,7 @@ export function RegisterForm({
                   placeholder="m@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoFocus
                   required
                 />
                 {emailError && (
@@ -166,9 +167,13 @@ export function RegisterForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="/login" className="underline">
+              <Link
+                href="/login"
+                className="underline-offset-4 hover:underline text-primary"
+              >
                 Login
               </Link>
+              .
             </div>
           </form>
         </CardContent>

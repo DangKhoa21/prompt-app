@@ -27,3 +27,26 @@ export const register = async ({
   });
   return response.data.data;
 };
+
+export const forgotPassword = async ({
+  email,
+}: {
+  email: string;
+}): Promise<boolean> => {
+  const response = await axiosWithAuth.post(`/auth/forgot-password`, { email });
+  return response.data.data;
+};
+
+export const resetPassword = async ({
+  token,
+  newPassword,
+}: {
+  token: string;
+  newPassword: string;
+}): Promise<boolean> => {
+  const response = await axiosWithAuth.post(`/auth/reset-password`, {
+    token,
+    newPassword,
+  });
+  return response.data.data;
+};

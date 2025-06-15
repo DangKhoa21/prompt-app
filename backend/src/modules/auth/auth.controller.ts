@@ -10,7 +10,13 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ChangePasswordDTO, UserLoginDTO, UserRegisterDTO } from './model';
+import {
+  ChangePasswordDTO,
+  ForgotPasswordDTO,
+  ResetPasswordDTO,
+  UserLoginDTO,
+  UserRegisterDTO,
+} from './model';
 import { GoogleAuthGuard, JwtAuthGuard } from 'src/common/guard';
 import { config, ReqWithRequester } from 'src/shared';
 
@@ -64,6 +70,18 @@ export class AuthController {
   ) {
     const { sub: userId } = req.user;
     await this.authService.changePassword(userId, dto);
+    return { data: true };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDTO) {
+    await this.authService.forgotPassword(dto);
+    return { data: true };
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDTO) {
+    await this.authService.resetPassword(dto);
     return { data: true };
   }
 }
