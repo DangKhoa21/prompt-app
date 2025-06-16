@@ -67,3 +67,29 @@ export function serializeConfigData({
 
   return JSON.stringify(serialized);
 }
+
+export function openCenteredPopup(url: string, width: number, height: number) {
+  const screenLeft =
+    window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+  const screenTop =
+    window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+  const innerWidth =
+    window.innerWidth || document.documentElement.clientWidth || screen.width;
+  const innerHeight =
+    window.innerHeight ||
+    document.documentElement.clientHeight ||
+    screen.height;
+
+  const left = Math.floor(innerWidth / 2 - width / 2 + screenLeft);
+  const top = Math.floor(innerHeight / 2 - height / 2 + screenTop);
+
+  return browser.windows.create({
+    url: url,
+    type: "popup",
+    width: width,
+    height: height,
+    left: left,
+    top: top,
+  });
+}
