@@ -32,7 +32,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { FileQuestion, Pin, PinOff, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "@/hooks/useSearchParams";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { sendMessage } from "@/lib/messaging";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth-context";
