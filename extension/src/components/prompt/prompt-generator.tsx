@@ -1,16 +1,9 @@
 import { LoadingSpinner } from "@/components/icons";
-import { ArrayConfig } from "@/components/prompt/generator-items/array-config";
-import { CreatableCombobox } from "@/components/prompt/generator-items/creatable-combobox";
+import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import {
   SidebarContent,
   SidebarFooter,
@@ -19,17 +12,20 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { Textarea } from "@/components/ui/textarea";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { WebDropdown } from "@/components/web-dropdown";
 //import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt, useUnpinPrompt } from "@/features/template";
-// import axios from "@/lib/axios";
-import { generateUUID, serializeConfigData } from "@/lib/utils";
+import axios from "@/lib/axios/axiosWithAuth";
+import { generateUUID } from "@/lib/utils";
+import { serializeOptionConfigData } from "@/lib/utils/utils.details";
+import {
+  fillPromptTemplate,
+  validateFilledConfigs,
+} from "@/lib/utils/utils.generate-prompt";
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { FileQuestion, Pin, PinOff, RotateCcw, Share2 } from "lucide-react";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { useEffect, useState } from "react";
@@ -50,11 +46,18 @@ export function PromptGeneratorSidebar() {
     Record<string, { id: string; values: string[] }[]>
   >({});
 
+  const [isFilled, setIsFilled] = useState({
+    isValid: false,
+    unfilledConfigs: [""],
+    filledCount: 0,
+    totalCount: 0,
+  });
+
   const searchParams = useSearchParams();
   const promptId = searchParams.get("promptId");
 
   const { isPending, isError, data, error, refetch } = useQuery({
-    queryKey: ["prompts", promptId],
+    queryKey: ["prompt", promptId],
     queryFn: () => getPromptWithConfigs(promptId),
   });
 
@@ -72,6 +75,7 @@ export function PromptGeneratorSidebar() {
     },
   });
 
+  // Set share configs
   useEffect(() => {
     if (!data) return;
 
@@ -122,6 +126,20 @@ export function PromptGeneratorSidebar() {
   //   }
   // }, [data, systemInstruction, setSystemInstruction]);
 
+  // Check filled configs
+  useEffect(() => {
+    if (!data) return;
+
+    setIsFilled(
+      validateFilledConfigs(
+        data.configs,
+        selectedValues,
+        textareaValues,
+        arrayValues
+      )
+    );
+  }, [arrayValues, data, selectedValues, textareaValues]);
+
   const pinPromptMutation = usePinPrompt();
   const unpinPromptMutation = useUnpinPrompt();
 
@@ -145,98 +163,36 @@ export function PromptGeneratorSidebar() {
     );
   }
 
-  const handleSelectChange = (configLabel: string, value: string) => {
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
-  const handleCreateOption = (configLabel: string, inputValue: string) => {
-    const newOption = {
-      value: inputValue,
-    };
-
-    setSelectedValues((prevState) => ({
-      ...prevState,
-      [configLabel]: newOption.value,
-    }));
-  };
-
-  const handleTextareaChange = (configLabel: string, value: string) => {
-    setTextareaValues((prevState) => ({
-      ...prevState,
-      [configLabel]: value,
-    }));
-  };
-
   const handlePrompt = (isSending: boolean) => {
     const template = data.stringTemplate;
-    let prompt = template;
-
-    data.configs.forEach((config) => {
-      prompt = prompt.replace("$", "");
-      if (config.type === "dropdown" || config.type === "combobox") {
-        if (
-          selectedValues[config.label] &&
-          selectedValues[config.label] !== "None"
-        ) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            selectedValues[config.label]
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "textarea") {
-        if (textareaValues[config.label]) {
-          prompt = prompt.replace(
-            `{${config.label}}`,
-            textareaValues[config.label]
-          );
-        } else {
-          prompt = prompt.replace(`{${config.label}}`, "");
-        }
-      } else if (config.type === "array") {
-        const replaceValue = arrayValues[config.label]
-          ? arrayValues[config.label]
-              .map((item, index) =>
-                item.values
-                  .map(
-                    (value, labelIndex) =>
-                      `\n\t${config.values[labelIndex].value} ${
-                        index + 1
-                      }: ${value}`
-                  )
-                  .join("")
-              )
-              .join("\n")
-          : "";
-
-        prompt = prompt.replace(`{${config.label}}`, `${replaceValue}`);
-      }
+    const configs = data.configs;
+    const prompt = fillPromptTemplate({
+      template,
+      configs,
+      selectedValues,
+      textareaValues,
+      arrayValues,
     });
 
-    // Remove only excessive spaces, not newlines "\n"
-    prompt = prompt.replace(/ {2,}/g, " ");
-    prompt = prompt.replace(/\\n/g, "\n");
-    // setPrompt({
-    //   id: data.id,
-    //   value: prompt,
-    //   isSending,
-    // });
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
 
-      sendMessage(
-        "setPrompt",
-        {
-          id: data.id,
-          value: prompt,
-          isSending,
-        },
-        currentTab.id
-      );
+      try {
+        sendMessage(
+          "setPrompt",
+          {
+            id: data.id,
+            value: prompt,
+            isSending,
+          },
+          currentTab.id
+        );
+      } catch (err) {
+        console.error("Failed to send message to content script:", err);
+        toast.error(
+          "Failed to set prompt in the current tab. Please refresh the page."
+        );
+      }
     });
   };
 
@@ -251,9 +207,9 @@ export function PromptGeneratorSidebar() {
       const params = new URLSearchParams(url.search);
       params.set("promptId", promptId);
       if (currentTab) {
-        const serializedData = serializeConfigData({
+        const serializedData = serializeOptionConfigData({
           promptId: promptId,
-          data,
+          configs: data.configs,
           selectedValues,
           textareaValues,
           arrayValues,
@@ -353,78 +309,38 @@ export function PromptGeneratorSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {data.configs?.map((config) => (
-          <SidebarGroup key={config.label}>
-            <SidebarGroupLabel className="flex justify-between">
-              <Label htmlFor={config.label.toLowerCase()}>{config.label}</Label>
-              <Button variant="ghost" className="h-8 w-8 mr-2">
-                <FileQuestion></FileQuestion>
-              </Button>
-            </SidebarGroupLabel>
-
-            <SidebarGroupContent className="px-2">
-              {config.type === "combobox" ? (
-                <CreatableCombobox
-                  options={config.values}
-                  value={selectedValues[config.label]}
-                  onChange={(value) => handleSelectChange(config.label, value)}
-                  placeholder={`Select a ${config.label.toLowerCase()}`}
-                  onCreateOption={(inputValue) =>
-                    handleCreateOption(config.label, inputValue)
-                  }
-                />
-              ) : config.type === "dropdown" ? (
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(config.label, value)
-                  }
-                >
-                  <SelectTrigger id={config.label}>
-                    <SelectValue
-                      placeholder={
-                        selectedValues[config.label] ??
-                        `Select a ${config.label.toLowerCase()}`
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None</SelectItem>
-                    {config.values.map((value) => (
-                      <SelectItem key={value.id} value={value.value}>
-                        {value.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : config.type === "textarea" ? (
-                <Textarea
-                  id={config.label}
-                  placeholder={`Input your content`}
-                  value={textareaValues[config.label]}
-                  onChange={(e) =>
-                    handleTextareaChange(config.label, e.target.value)
-                  }
-                  // className={config.className}
-                />
-              ) : config.type === "array" ? (
-                <>
-                  <ArrayConfig
-                    id={config.label}
-                    labels={config.values.map((value) => {
-                      return value.value;
-                    })}
-                    values={arrayValues[config.label]}
-                    setArrayValues={setArrayValues}
-                  ></ArrayConfig>
-                </>
-              ) : null}
-            </SidebarGroupContent>
-          </SidebarGroup>
+        {data.configs?.map((config, i) => (
+          <RenderConfigInput
+            key={`config-${i}`}
+            config={config}
+            isFilled={isFilled}
+            selectedValues={selectedValues}
+            textareaValues={textareaValues}
+            arrayValues={arrayValues}
+            setSelectedValues={setSelectedValues}
+            setTextareaValues={setTextareaValues}
+            setArrayValues={setArrayValues}
+          />
         ))}
       </SidebarContent>
 
       {data.id !== "1" && (
         <SidebarFooter className="sticky bottom-0 bg-background">
+          <BetterTooltip
+            content={`Unfilled required config(s): ${isFilled.unfilledConfigs
+              .map((configName) => `${configName}`)
+              .join(", ")}`}
+          >
+            <div className="flex flex-col gap-1 px-2">
+              <Progress
+                value={(isFilled.filledCount / isFilled.totalCount) * 100}
+                className="w-full h-2 mt-2 bg-muted"
+              />
+              <p className="text-xs text-muted-foreground mt-1 text-right">
+                {isFilled.filledCount} / {isFilled.totalCount} fields filled
+              </p>
+            </div>
+          </BetterTooltip>
           <div className="flex justify-around gap-4 p-2">
             <Button className="w-full" onClick={() => handlePrompt(false)}>
               Generate

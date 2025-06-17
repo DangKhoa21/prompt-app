@@ -4,22 +4,29 @@ export default defineBackground(() => {
   console.log("Hello background!", { id: browser.runtime.id });
   console.log("Current URL in background:", browser.runtime.getURL(""));
 
-  browser.sidePanel.setPanelBehavior({
-    openPanelOnActionClick: true,
-  });
+  browser.sidePanel
+    .setPanelBehavior({
+      openPanelOnActionClick: true,
+    })
+    .catch((error) => {
+      console.error("Error setting side panel behavior:", error);
+    });
 
-  const allowedUrls = [
-    "https://chatgpt.com",
-    "https://gemini.google.com",
-    "https://claude.ai",
-    "https://chat.deepseek.com",
+  const allowedMatchPatterns = [
+    new MatchPattern("*://*.chatgpt.com/*"),
+    new MatchPattern("*://*.gemini.google.com/*"),
+    new MatchPattern("*://*.claude.ai/*"),
+    new MatchPattern("*://*.chat.deepseek.com/*"),
   ];
 
   browser.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     if (!tab.url) return;
 
-    if (allowedUrls.some((url) => tab.url?.startsWith(url))) {
-      console.log("Enabling side panel for:", tab.url);
+    if (
+      allowedMatchPatterns.some((pattern) =>
+        pattern.includes(tab.url as string)
+      )
+    ) {
       // Enables the side panel on allowed sites
       await browser.sidePanel.setOptions({
         tabId,
@@ -27,7 +34,6 @@ export default defineBackground(() => {
         enabled: true,
       });
     } else {
-      console.log("Disabling side panel for:", tab.url);
       // Disables the side panel on all other sites
       await browser.sidePanel.setOptions({
         tabId,

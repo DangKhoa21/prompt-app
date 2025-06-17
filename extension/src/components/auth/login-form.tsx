@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "@/context/auth-context";
 import { login } from "@/services/auth";
@@ -25,12 +26,15 @@ export function LoginForm({
   const { setToken } = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+
   const [emailError, setEmailError] = React.useState("");
   const [passwordError, setPasswordError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Add "Enter" key to login button
   useEffect(() => {
     const handleEnterPress = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -45,14 +49,6 @@ export function LoginForm({
 
     document.addEventListener("keydown", handleEnterPress);
     return () => document.removeEventListener("keydown", handleEnterPress);
-  }, []);
-
-  const emailRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
-    }
   }, []);
 
   const handleLogin = async () => {
@@ -138,12 +134,12 @@ export function LoginForm({
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
-                ref={emailRef}
                 id="email"
                 type="email"
                 placeholder="m@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoFocus
                 required
               />
               {emailError && (
@@ -152,13 +148,28 @@ export function LoginForm({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               {passwordError && (
                 <p className="text-xs text-red-500">{passwordError}</p>
               )}
@@ -186,15 +197,16 @@ export function LoginForm({
               href="https://promptcrafter.studio/register"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-4"
+              className="underline-offset-4 hover:underline text-primary"
             >
               Register
             </a>
           </div>
           <div className="mt-4 text-center text-sm">
             <a
-              href="#"
-              className="inline-block text-sm underline-offset-4 hover:underline"
+              href="https://promptcrafter.studio/forgot-password"
+              target="_blank"
+              className="underline-offset-4 hover:underline text-primary"
             >
               Forgot your password?
             </a>

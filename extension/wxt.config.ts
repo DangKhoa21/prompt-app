@@ -16,4 +16,12 @@ export default defineConfig({
     // This is because Chrome's latest update broke dev mode by removing the --load-extension flag,
     // so the extension no longer loads automatically at startup.
   },
+  hooks: {
+    "build:manifestGenerated": (wxt, manifest) => {
+      // To remove the side_panel.default_path from the manifest
+      if ((manifest as any).side_panel) {
+        delete (manifest as any).side_panel;
+      }
+    },
+  },
 });
