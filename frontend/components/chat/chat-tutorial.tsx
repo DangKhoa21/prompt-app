@@ -43,9 +43,9 @@ export const ChatTutorial = () => {
   };
 
   if (resolvedTheme === "dark") {
-    defaultOptions.arrowColor = "#010017";
-    defaultOptions.backgroundColor = "#010017";
-    defaultOptions.primaryColor = "#779cff";
+    defaultOptions.arrowColor = "#4e75df";
+    defaultOptions.backgroundColor = "#4e75df";
+    defaultOptions.primaryColor = "#203f93";
     defaultOptions.textColor = "#fff";
   }
 
