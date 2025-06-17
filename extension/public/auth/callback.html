@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Google Auth Callback</title></head>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+
+      if (token && window.opener) {
+        // Send token to the main window
+        window.opener.postMessage({ token }, window.origin);
+        window.close();
+        alert('Login successful! You can close this window now.');
+      } else {
+        document.body.innerText = 'Login failed: No token received.';
+      }
+    </script>
+  </body>
+</html>
