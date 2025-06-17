@@ -227,7 +227,9 @@ export function PromptGeneratorSidebar() {
             params.set("optionId", optionId);
             url.search = params.toString();
 
-            navigator.clipboard.writeText(url.toString());
+            const encodedUrl = encodeURIComponent(url.toString());
+            const sharedUrl = `https://www.promptcrafter.studio/?redirect=${encodedUrl}`;
+            navigator.clipboard.writeText(sharedUrl);
 
             return "Creating share option successfully, shareable URL copied to clipboard!";
           },
@@ -342,7 +344,11 @@ export function PromptGeneratorSidebar() {
             </div>
           </BetterTooltip>
           <div className="flex justify-around gap-4 p-2">
-            <Button className="w-full" onClick={() => handlePrompt(false)}>
+            <Button
+              className="w-full"
+              disabled={!isFilled.isValid}
+              onClick={() => handlePrompt(false)}
+            >
               Generate
             </Button>
           </div>
