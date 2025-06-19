@@ -8,7 +8,7 @@ export default function TemplateIdPage({ params }: { params: { id: string } }) {
 
   return (
     <Container>
-      <div className="w-11/12 mx-auto bg-background">
+      <div className="relative w-11/12 mx-auto h-full bg-background">
         <Suspense fallback={<LoadingSpinner />}>
           <TemplateEditWrapper id={id} />
         </Suspense>

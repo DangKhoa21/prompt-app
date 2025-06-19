@@ -1,7 +1,6 @@
 "use client";
 
 import ConfirmDialog from "@/components/confirm-dialog";
-import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTemplate } from "@/context/template-context";
 import {
@@ -9,21 +8,14 @@ import {
   EvaluatePrompt,
   TemplateEditTag,
   TemplateEditTextField,
-  TemplateGenerator,
-  TemplatesConfigTextarea,
-  TemplatesConfigVariable,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
+import EditPrompt from "@/features/template/components/edit/edit-prompt";
+import { handleParseTemplate } from "@/features/template/components/handle-parse-template";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn, generateUUID } from "@/lib/utils";
 import { parseTemplateText } from "@/lib/utils/utils.generate-prompt";
-import {
-  ConfigValue,
-  Tag,
-  TemplateConfig,
-  TemplateWithConfigs,
-} from "@/services/prompt/interface";
+import { Tag, TemplateWithConfigs } from "@/services/prompt/interface";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -55,57 +47,16 @@ export function TemplateEditSection({
     }
   }, [initialPrompt, setTemplate]);
 
-  const { open } = useSidebar();
+  useEffect(() => {
+    const hash = window.location.hash?.replace("#", "");
+    if (hash && ["edit", "evaluation"].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
 
   const isMobile = useIsMobile();
 
   const [activeTab, setActiveTab] = useState("edit");
-
-  const handleParseTemplate = () => {
-    const promptTemplate = template.stringTemplate;
-    const matches = Array.from(
-      new Set(
-        promptTemplate.match(/\$\{([^}]+)\}/g)?.map((m) => m.slice(2, -1)) ||
-          [],
-      ),
-    );
-
-    const createConfig = (
-      id: string,
-      label: string,
-      type: ConfigType,
-      values: ConfigValue[],
-    ): TemplateConfig => ({
-      id,
-      label,
-      type,
-      promptId: template.id,
-      values,
-    });
-
-    const result =
-      matches.length !== 0
-        ? matches.map((name) => {
-            const res = template.configs.find((c) => c.label === name);
-            return (
-              res ??
-              createConfig(
-                generateUUID().toString(),
-                name,
-                ConfigType.TEXTAREA,
-                [],
-              )
-            );
-          })
-        : [];
-
-    const newTemplate = {
-      ...template,
-      configs: result,
-    };
-
-    setTemplate(newTemplate);
-  };
 
   const handleReset = () => {
     setTemplate(savingPrompt);
@@ -162,8 +113,8 @@ export function TemplateEditSection({
   };
 
   return (
-    <div className="w-full bg-background/90 p-2">
-      <div className="w-full bg-background mx-auto space-y-6">
+    <>
+      <div className="w-full h-full bg-background mx-auto space-y-6">
         <div className="flex flex-col gap-4">
           <TemplateEditTextField
             label="title"
@@ -183,7 +134,10 @@ export function TemplateEditSection({
         <Tabs
           defaultValue="edit"
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={(val) => {
+            setActiveTab(val);
+            window.location.hash = val;
+          }}
         >
           <TabsList className="sticky top-14 z-20 grid w-full grid-cols-2">
             <TabsTrigger value="edit">Edit Template</TabsTrigger>
@@ -191,79 +145,22 @@ export function TemplateEditSection({
           </TabsList>
 
           <TabsContent value="edit" className="p-1 space-y-6">
-            <div
-              className={cn(
-                "bg-background py-2 grid gap-6 h-fit lg:grid-cols-2",
-                open ? "md:grid-cols-1" : "md:grid-cols-2",
-              )}
-            >
-              <div
-                className={cn(
-                  "lg:sticky lg:top-28 h-fit",
-                  open ? "" : "sm:sticky sm:top-28",
-                )}
-              >
-                <TemplatesConfigTextarea
-                  id="systemInstruction"
-                  label="System Instruction"
-                  placeholder="Enter your System Instruction ..."
-                  value={template.systemInstruction ?? ""}
-                />
-
-                <TemplatesConfigTextarea
-                  id="stringTemplate"
-                  label="Prompt Template"
-                  placeholder="Enter your Prompt Template..."
-                  value={template.stringTemplate}
-                />
-
-                {isMobile && (
-                  <div className="flex my-2 justify-end">
-                    <ConfirmDialog
-                      description="This action will convert your variables into prompt configs. Any undeclared variables will be deleted!"
-                      variant="secondary"
-                      action={handleParseTemplate}
-                      className="mr-3"
-                    >
-                      Parse
-                    </ConfirmDialog>
-                  </div>
-                )}
-              </div>
-
-              <div className="h-full">
-                <div className="flex justify-between items-center">
-                  <div className="text-xl font-semibold p-2">Configs</div>
-
-                  <TemplateGenerator />
-                </div>
-
-                <div className="space-y-4 h-fit border rounded-md p-4">
-                  {template.configs.map((config) => (
-                    <TemplatesConfigVariable
-                      key={config.id}
-                      {...config}
-                      isSidebarOpen={open}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <EditPrompt />
           </TabsContent>
           <TabsContent value="evaluate" className="p-1 pb-12 space-y-6">
-            <EvaluatePrompt></EvaluatePrompt>
+            <EvaluatePrompt />
           </TabsContent>
         </Tabs>
       </div>
       {activeTab === "edit" && (
-        <div className="bg-background/90 sticky bottom-0 py-2 flex justify-center items-center">
+        <div className="bg-background/90 sticky bottom-0 py-4 flex justify-center items-center">
           <div className="grid w-full max-w-screen-xl items-center justify-end md:grid-cols-2">
             {!isMobile && (
               <div className="flex">
                 <ConfirmDialog
                   description="This will convert your variables into prompt configs. Any undeclared variables will be deleted!"
                   variant="secondary"
-                  action={handleParseTemplate}
+                  action={() => handleParseTemplate(template, setTemplate)}
                   className="mr-3"
                 >
                   Parse
@@ -292,6 +189,6 @@ export function TemplateEditSection({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

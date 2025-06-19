@@ -29,7 +29,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
@@ -92,31 +92,6 @@ export function TemplateGenerator() {
     },
   });
 
-  function GeneratorInput() {
-    return (
-      <Textarea
-        //ref={textareaRef}
-        placeholder="Create a prompt that..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
-        rows={3}
-        autoFocus
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-
-            if (isLoading) {
-              toast.error("Please wait for the AI to finish its generating!");
-            } else {
-              submit({ prompt: input });
-            }
-          }
-        }}
-      />
-    );
-  }
-
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -142,7 +117,12 @@ export function TemplateGenerator() {
           </DrawerHeader>
 
           <div className="p-2 ">
-            <GeneratorInput />
+            <GeneratorInput
+              input={input}
+              setInput={setInput}
+              isLoading={isLoading}
+              submit={submit}
+            />
           </div>
 
           <DrawerFooter className="pt-2">
@@ -193,7 +173,12 @@ export function TemplateGenerator() {
             least 20 characters. Click Generate when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <GeneratorInput />
+        <GeneratorInput
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          submit={submit}
+        />
         <DialogFooter>
           {isLoading ? (
             <Button
@@ -214,5 +199,40 @@ export function TemplateGenerator() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function GeneratorInput({
+  input,
+  setInput,
+  isLoading,
+  submit,
+}: {
+  input: string;
+  setInput: Dispatch<SetStateAction<string>>;
+  isLoading: boolean;
+  submit: (input: any) => void;
+}) {
+  return (
+    <Textarea
+      //ref={textareaRef}
+      placeholder="Create a prompt that..."
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
+      rows={3}
+      autoFocus
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+
+          if (isLoading) {
+            toast.error("Please wait for the AI to finish its generating!");
+          } else {
+            submit({ prompt: input });
+          }
+        }
+      }}
+    />
   );
 }

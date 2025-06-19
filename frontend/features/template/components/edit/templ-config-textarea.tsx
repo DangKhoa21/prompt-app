@@ -1,6 +1,7 @@
 import HighlightedTextarea from "@/components/highlighted-textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useTemplate } from "@/context/template-context";
 import { cn } from "@/lib/utils";
 import { createEnhancePrompt } from "@/services/prompt";
@@ -13,6 +14,7 @@ interface configTextareaProp {
   label: string;
   placeholder: string;
   value: string;
+  highlight?: boolean;
 }
 
 export function TemplatesConfigTextarea({
@@ -20,6 +22,7 @@ export function TemplatesConfigTextarea({
   label,
   placeholder,
   value,
+  highlight = false,
 }: configTextareaProp) {
   const { template, setTemplate } = useTemplate();
 
@@ -78,11 +81,19 @@ export function TemplatesConfigTextarea({
         )}
       </CardHeader>
       <CardContent>
-        <HighlightedTextarea
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => handleTextareaChange(e.target.value)}
-        />
+        {highlight ? (
+          <HighlightedTextarea
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => handleTextareaChange(e.target.value)}
+          />
+        ) : (
+          <Textarea
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => handleTextareaChange(e.target.value)}
+          />
+        )}
       </CardContent>
     </Card>
   );

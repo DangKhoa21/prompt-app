@@ -2,8 +2,9 @@ import { ConfigType } from "@/features/template";
 import { parseInfo } from "@/lib/utils/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
 
+// Replace all the old ${}
 export function parseTemplateText(text: string): string {
-  return text.replace(/\${(.*?)}/g, (_, key) => `{{ ${key.trim()} }}`); // Replace all the old ${}
+  return text.replace(/\${(.*?)}/g, (_, key) => `{{${key.trim()}}}`);
 }
 
 export function fillPromptTemplate({
@@ -23,7 +24,7 @@ export function fillPromptTemplate({
   const FALLBACK_CONFIG = "NOT_FILLED";
 
   configs.forEach((config) => {
-    const placeholder = `{{ ${config.label} }}`;
+    const placeholder = `{{${config.label}}}`;
 
     switch (config.type) {
       case "dropdown":
