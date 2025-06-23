@@ -1,7 +1,10 @@
+"use client";
+
 import HighlightedTextarea from "@/components/highlighted-textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
 import { useTemplate } from "@/context/template-context";
 import { cn } from "@/lib/utils";
 import { createEnhancePrompt } from "@/services/prompt";
@@ -25,6 +28,7 @@ export function TemplatesConfigTextarea({
   highlight = false,
 }: configTextareaProp) {
   const { template, setTemplate } = useTemplate();
+  const { textareaRef } = useAutoResizeTextarea(value);
 
   const handleTextareaChange = (texting: string) => {
     const newTemplate = {
@@ -89,6 +93,7 @@ export function TemplatesConfigTextarea({
           />
         ) : (
           <Textarea
+            ref={textareaRef}
             placeholder={placeholder}
             value={value}
             onChange={(e) => handleTextareaChange(e.target.value)}

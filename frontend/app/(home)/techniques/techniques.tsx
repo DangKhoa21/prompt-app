@@ -21,22 +21,22 @@ export const techniques: Technique[] = [
     category: "Examples",
     difficulty: "Beginner",
     useCase: "When you want consistent output format or style",
-    template: `Here are some examples of [task]:
+    template: `Here are some examples of {{task}}:
 
 Example 1:
-Input: [example_input_1]
-Output: [example_output_1]
+Input: {{example_input_1}}
+Output: {{example_output_1}}
 
 Example 2:
-Input: [example_input_2]
-Output: [example_output_2]
+Input: {{example_input_2}}
+Output: {{example_output_2}}
 
 Example 3:
-Input: [example_input_3]
-Output: [example_output_3]
+Input: {{example_input_3}}
+Output: {{example_output_3}}
 
-Now, please [task] for:
-Input: [user_input]
+Now, please {{task}} for:
+Input: {{user_input}}
 Output:`,
     examples: [
       {
@@ -84,14 +84,14 @@ Output:`,
     category: "Reasoning",
     difficulty: "Intermediate",
     useCase: "For complex problems requiring logical reasoning",
-    template: `[Your question or problem]
+    template: `{{Your question or problem}}
 
 Let's think through this step by step:
 
-1. First, I need to [step_1]
-2. Then, I should [step_2]  
-3. Next, I'll [step_3]
-4. Finally, I can [step_4]
+1. First, I need to {{step_1}}
+2. Then, I should {{step_2}}  
+3. Next, I'll {{step_3}}
+4. Finally, I can {{step_4}}
 
 Please show your reasoning for each step.`,
     examples: [
@@ -132,9 +132,9 @@ Please show your reasoning for each step.`,
     category: "Meta",
     difficulty: "Advanced",
     useCase: "To optimize prompts or get AI assistance in prompt design",
-    template: `I want to create a prompt for [task]. Here's my current prompt:
+    template: `I want to create a prompt for {{task}}. Here's my current prompt:
 
-"[current_prompt]"
+"{{current_prompt}}"
 
 Please analyze this prompt and suggest improvements. Consider:
 1. Clarity and specificity
@@ -182,7 +182,7 @@ Then provide an improved version of the prompt.`,
     category: "Quality",
     difficulty: "Intermediate",
     useCase: "To improve response quality and catch errors",
-    template: `[Your original request]
+    template: `{{Your original request}}
 
 After providing your response, please:
 1. Review your answer for accuracy and completeness
@@ -224,9 +224,9 @@ After providing your response, please:
     category: "Context",
     difficulty: "Beginner",
     useCase: "To get responses from a specific perspective or expertise",
-    template: `You are a [role/profession] with [years] years of experience in [field]. You are known for [key_traits].
+    template: `You are a {{role/profession}} with {{years}} years of experience in {{field}}. You are known for {{key_traits}}.
 
-[Your request/question]
+{{Your request/question}}
 
 Please respond as this character would, using appropriate:
 - Terminology and jargon
@@ -270,19 +270,19 @@ Please respond as this character would, using appropriate:
     category: "Structure",
     difficulty: "Beginner",
     useCase: "To get responses in specific formats or with certain limitations",
-    template: `[Your request]
+    template: `{{Your request}}
 
 Please follow these constraints:
-- Length: [word/character limit]
-- Format: [specific format requirements]
-- Style: [tone, formality level]
-- Content: [what to include/exclude]
-- Audience: [target audience]
+- Length: {{word/character limit}}
+- Format: {{specific format requirements}}
+- Style: {{tone, formality level}}
+- Content: {{what to include/exclude}}
+- Audience: {{target audience}}
 
 Additional requirements:
-- [requirement_1]
-- [requirement_2]
-- [requirement_3]`,
+- {{requirement_1}}
+- {{requirement_2}}
+- {{requirement_3}}`,
     examples: [
       {
         before: "Explain artificial intelligence.",
@@ -329,16 +329,16 @@ Additional requirements:
     template: `Based on the following retrieved information:
 
 CONTEXT:
-[retrieved_document_1]
-Source: [source_1]
+{{retrieved_document_1}}
+Source: {{source_1}}
 
-[retrieved_document_2] 
-Source: [source_2]
+{{retrieved_document_2}} 
+Source: {{source_2}}
 
-[retrieved_document_3]
-Source: [source_3]
+{{retrieved_document_3}}
+Source: {{source_3}}
 
-QUERY: [user_question]
+QUERY: {{user_question}}
 
 Please answer the query using ONLY the information provided in the context above. If the context doesn't contain enough information to answer the question, say so explicitly. Always cite your sources.
 
@@ -396,7 +396,7 @@ Please answer the query using ONLY the information provided in the context above
       "For multi-step problems requiring both reasoning and external tool usage",
     template: `You will solve this problem by alternating between Thought, Action, and Observation steps.
 
-PROBLEM: [problem_description]
+PROBLEM: {{problem_description}}
 
 Available Actions:
 - search(query): Search for information
@@ -405,9 +405,9 @@ Available Actions:
 - analyze(data): Analyze data
 
 Format:
-Thought: [your reasoning about what to do next]
-Action: [action_name(parameters)]
-Observation: [result of the action]
+Thought: {{your reasoning about what to do next}}
+Action: {{action_name(parameters)}}
+Observation: {{result of the action}}
 
 Continue this cycle until you reach a final answer.
 
@@ -425,9 +425,9 @@ Available Actions:
 - calculate(expression): Perform calculations
 
 Format:
-Thought: [your reasoning]
-Action: [action_name(parameters)]
-Observation: [result]
+Thought: {{your reasoning}}
+Action: {{action_name(parameters)}}
+Observation: {{result}}
 
 Thought: I need to find the population and area of both Tokyo and NYC to calculate density.
 Action: search("Tokyo population area square kilometers 2024")
@@ -473,25 +473,25 @@ Observation: NYC density = 10,651 people/km²`,
     difficulty: "Advanced",
     useCase:
       "For mathematical, logical, or computational problems requiring precise calculations",
-    template: `Problem: [problem_description]
+    template: `Problem: {{problem_description}}
 
    I'll solve this step by step by writing and executing code.
 
    # Step 1: Understand the problem
-   [problem_analysis]
+   {{problem_analysis}}
 
    # Step 2: Write the solution code
    \`\`\`python
-   # [code_explanation]
-   [python_code]
+   # {{code_explanation}}
+   {{python_code}}
    \`\`\`
 
    # Step 3: Execute and verify
    Let me trace through the execution:
-   [execution_trace]
+   {{execution_trace}}
 
    # Step 4: Final answer
-   [final_answer]`,
+   {{final_answer}}`,
     examples: [
       {
         before:
@@ -555,7 +555,7 @@ Observation: NYC density = 10,651 people/km²`,
     difficulty: "Advanced",
     useCase:
       "To systematically improve prompt performance without manual iteration",
-    template: `I want to create the best possible prompt for: [task_description]
+    template: `I want to create the best possible prompt for: {{task_description}}
 
    Please generate 5 different prompt variations that could work well for this task. For each variation, consider:
    - Different instruction styles (direct, conversational, step-by-step)
@@ -565,10 +565,10 @@ Observation: NYC density = 10,651 people/km²`,
 
    After generating the variations, analyze each one and predict which would perform best and why.
 
-   TASK: [task_description]
-   TARGET AUDIENCE: [audience]
-   DESIRED OUTPUT: [output_format]
-   CONSTRAINTS: [any_constraints]
+   TASK: {{task_description}}
+   TARGET AUDIENCE: {{audience}}
+   DESIRED OUTPUT: {{output_format}}
+   CONSTRAINTS: {{any_constraints}}
 
    Generate the prompt variations:`,
     examples: [
@@ -591,7 +591,7 @@ Observation: NYC density = 10,651 people/km²`,
 
    Variation 3 (Role-based): "You are a research librarian. Create a concise summary of this paper for fellow researchers..."
 
-   [Analysis of which variation would work best and why]`,
+   {{Analysis of which variation would work best and why}}`,
         explanation:
           "APE automates the prompt optimization process by generating and evaluating multiple approaches.",
       },
@@ -620,33 +620,33 @@ Observation: NYC density = 10,651 people/km²`,
     category: "Reasoning",
     difficulty: "Advanced",
     useCase: "For complex problems with multiple possible solution approaches",
-    template: `Problem: [problem_description]
+    template: `Problem: {{problem_description}}
 
    I'll explore multiple reasoning paths to find the best solution.
 
    ## Initial Analysis
-   [problem_breakdown]
+   {{problem_breakdown}}
 
-   ## Reasoning Path 1: [approach_1_name]
-   Thought: [reasoning_1]
-   Evaluation: [pros_and_cons_1]
-   Confidence: [1-10]
+   ## Reasoning Path 1: {{approach_1_name}}
+   Thought: {{reasoning_1}}
+   Evaluation: {{pros_and_cons_1}}
+   Confidence: {{1-10}}
 
-   ## Reasoning Path 2: [approach_2_name]
-   Thought: [reasoning_2]
-   Evaluation: [pros_and_cons_2]
-   Confidence: [1-10]
+   ## Reasoning Path 2: {{approach_2_name}}
+   Thought: {{reasoning_2}}
+   Evaluation: {{pros_and_cons_2}}
+   Confidence: {{1-10}}
 
-   ## Reasoning Path 3: [approach_3_name]
-   Thought: [reasoning_3]
-   Evaluation: [pros_and_cons_3]
-   Confidence: [1-10]
+   ## Reasoning Path 3: {{approach_3_name}}
+   Thought: {{reasoning_3}}
+   Evaluation: {{pros_and_cons_3}}
+   Confidence: {{1-10}}
 
    ## Path Selection
-   Best path: [selected_path] because [justification]
+   Best path: {{selected_path}} because {{justification}}
 
    ## Final Solution
-   [detailed_solution_following_best_path]`,
+   {{detailed_solution_following_best_path}}`,
     examples: [
       {
         before: "How should a startup prioritize features for their MVP?",
@@ -676,7 +676,7 @@ Observation: NYC density = 10,651 people/km²`,
    Best path: Hybrid of Path 1 and 2 because it balances user needs with business viability
 
    ## Final Solution
-   [Detailed framework combining user research with business impact analysis]`,
+   {{Detailed framework combining user research with business impact analysis}}`,
         explanation:
           "ToT allows systematic exploration of different approaches before committing to a solution path.",
       },
@@ -707,13 +707,13 @@ Observation: NYC density = 10,651 people/km²`,
     difficulty: "Advanced",
     useCase:
       "To ensure responses align with specific principles, ethics, or guidelines",
-    template: `[Your original request]
+    template: `{{Your original request}}
 
    Constitutional Principles:
-   1. [principle_1]
-   2. [principle_2]
-   3. [principle_3]
-   4. [principle_4]
+   1. {{principle_1}}
+   2. {{principle_2}}
+   3. {{principle_3}}
+   4. {{principle_4}}
 
    Process:
    1. First, provide your initial response
@@ -723,19 +723,19 @@ Observation: NYC density = 10,651 people/km²`,
    5. Explain the changes made and why
 
    Initial Response:
-   [initial_answer]
+   {{initial_answer}}
 
    Constitutional Review:
-   - Principle 1: [evaluation_and_issues]
-   - Principle 2: [evaluation_and_issues]
-   - Principle 3: [evaluation_and_issues]
-   - Principle 4: [evaluation_and_issues]
+   - Principle 1: {{evaluation_and_issues}}
+   - Principle 2: {{evaluation_and_issues}}
+   - Principle 3: {{evaluation_and_issues}}
+   - Principle 4: {{evaluation_and_issues}}
 
    Revised Response:
-   [improved_answer]
+   {{improved_answer}}
 
    Changes Made:
-   [explanation_of_revisions]`,
+   {{explanation_of_revisions}}`,
     examples: [
       {
         before: "Give me advice on handling a difficult employee.",
@@ -803,21 +803,21 @@ Observation: NYC density = 10,651 people/km²`,
    - file_reader(path): Read file contents
    - data_analyzer(data, analysis_type): Analyze datasets
 
-   Task: [your_task]
+   Task: {{your_task}}
 
    I'll solve this by using the appropriate tools. Let me break this down:
 
-   1. Analysis: [what_tools_are_needed]
-   2. Execution Plan: [step_by_step_tool_usage]
+   1. Analysis: {{what_tools_are_needed}}
+   2. Execution Plan: {{step_by_step_tool_usage}}
    3. Tool Calls:
 
-   [tool_name]([parameters])
-   Result: [tool_output]
+   {{tool_name}}({{parameters}})
+   Result: {{tool_output}}
 
-   [tool_name]([parameters])
-   Result: [tool_output]
+   {{tool_name}}({{parameters}})
+   Result: {{tool_output}}
 
-   4. Final Answer: [synthesized_result]`,
+   4. Final Answer: {{synthesized_result}}`,
     examples: [
       {
         before:
@@ -875,31 +875,31 @@ Observation: NYC density = 10,651 people/km²`,
     difficulty: "Advanced",
     useCase:
       "For complex problems requiring diverse perspectives and expertise",
-    template: `Task: [complex_task]
+    template: `Task: {{complex_task}}
 
    I'll simulate multiple expert agents collaborating on this task:
 
    ## Agent Roles:
-   - **Agent 1 ([role_1])**: [expertise_and_perspective_1]
-   - **Agent 2 ([role_2])**: [expertise_and_perspective_2]
-   - **Agent 3 ([role_3])**: [expertise_and_perspective_3]
+   - **Agent 1 ({{role_1}})**: {{expertise_and_perspective_1}}
+   - **Agent 2 ({{role_2}})**: {{expertise_and_perspective_2}}
+   - **Agent 3 ({{role_3}})**: {{expertise_and_perspective_3}}
    - **Moderator**: Synthesizes inputs and guides discussion
 
    ## Collaboration Process:
 
    ### Round 1: Initial Analysis
-   **[Agent_1_Name]**: [perspective_1]
-   **[Agent_2_Name]**: [perspective_2]
-   **[Agent_3_Name]**: [perspective_3]
+   **{{Agent_1_Name}}**: {{perspective_1}}
+   **{{Agent_2_Name}}**: {{perspective_2}}
+   **{{Agent_3_Name}}**: {{perspective_3}}
 
    ### Round 2: Discussion & Debate
-   **[Agent_1_Name]**: [response_to_others]
-   **[Agent_2_Name]**: [response_to_others]
-   **[Agent_3_Name]**: [response_to_others]
+   **{{Agent_1_Name}}**: {{response_to_others}}
+   **{{Agent_2_Name}}**: {{response_to_others}}
+   **{{Agent_3_Name}}**: {{response_to_others}}
 
    ### Round 3: Consensus Building
-   **Moderator**: [synthesis_of_viewpoints]
-   **Final Recommendation**: [collaborative_solution]`,
+   **Moderator**: {{synthesis_of_viewpoints}}
+   **Final Recommendation**: {{collaborative_solution}}`,
     examples: [
       {
         before: "Should our company adopt a 4-day work week?",
@@ -960,32 +960,32 @@ Observation: NYC density = 10,651 people/km²`,
     difficulty: "Advanced",
     useCase:
       "For problems involving complex relationships, dependencies, or network analysis",
-    template: `Problem: [problem_involving_relationships]
+    template: `Problem: {{problem_involving_relationships}}
 
    I'll model this as a graph to understand the relationships and dependencies.
 
    ## Graph Structure:
-   Nodes: [list_of_entities]
-   Edges: [list_of_relationships]
+   Nodes: {{list_of_entities}}
+   Edges: {{list_of_relationships}}
 
    ## Graph Representation:
    \`\`\`
-   [entity_1] --[relationship_type]--> [entity_2]
-   [entity_2] --[relationship_type]--> [entity_3]
-   [entity_3] --[relationship_type]--> [entity_1]
+   {{entity_1}} --{{relationship_type}}--> {{entity_2}}
+   {{entity_2}} --{{relationship_type}}--> {{entity_3}}
+   {{entity_3}} --{{relationship_type}}--> {{entity_1}}
    \`\`\`
 
    ## Graph Analysis:
-   - **Central Nodes**: [most_connected_entities]
-   - **Critical Paths**: [important_connection_sequences]
-   - **Clusters**: [groups_of_related_entities]
-   - **Bottlenecks**: [single_points_of_failure]
+   - **Central Nodes**: {{most_connected_entities}}
+   - **Critical Paths**: {{important_connection_sequences}}
+   - **Clusters**: {{groups_of_related_entities}}
+   - **Bottlenecks**: {{single_points_of_failure}}
 
    ## Insights from Graph Structure:
-   [analysis_based_on_graph_properties]
+   {{analysis_based_on_graph_properties}}
 
    ## Solution Strategy:
-   [approach_based_on_graph_understanding]`,
+   {{approach_based_on_graph_understanding}}`,
     examples: [
       {
         before: "How can we improve communication in our organization?",

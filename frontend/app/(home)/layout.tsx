@@ -8,7 +8,8 @@ export default function HomeLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = cookies();
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+  const lastState = cookieStore.get("sidebar:state")?.value;
+  const defaultOpen = lastState ? lastState === "true" : true;
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

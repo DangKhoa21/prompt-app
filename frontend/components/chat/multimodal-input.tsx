@@ -39,20 +39,7 @@ const suggestedActions = [
   },
 ];
 
-export function MultimodalInput({
-  //chatId,
-  input,
-  setInput,
-  isLoading,
-  stop,
-  attachments,
-  setAttachments,
-  messages,
-  setMessages,
-  append,
-  handleSubmit,
-  className,
-}: {
+interface MultimodelInputProps {
   chatId: string;
   input: string;
   setInput: (value: string) => void;
@@ -73,7 +60,22 @@ export function MultimodalInput({
     chatRequestOptions?: ChatRequestOptions,
   ) => void;
   className?: string;
-}) {
+}
+
+export function MultimodalInput({
+  //chatId,
+  input,
+  setInput,
+  isLoading,
+  stop,
+  attachments,
+  setAttachments,
+  messages,
+  setMessages,
+  append,
+  handleSubmit,
+  className,
+}: MultimodelInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 

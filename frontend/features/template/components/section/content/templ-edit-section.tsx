@@ -5,14 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTemplate } from "@/context/template-context";
 import {
   ConfigType,
+  EditPrompt,
   EvaluatePrompt,
+  handleParseTemplate,
   TemplateEditTag,
   TemplateEditTextField,
   useUpdatePromptTemplate,
   useUpdateTag,
 } from "@/features/template";
-import EditPrompt from "@/features/template/components/edit/edit-prompt";
-import { handleParseTemplate } from "@/features/template/components/handle-parse-template";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { parseTemplateText } from "@/lib/utils/utils.generate-prompt";
 import { Tag, TemplateWithConfigs } from "@/services/prompt/interface";

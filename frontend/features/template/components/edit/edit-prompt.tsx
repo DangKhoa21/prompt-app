@@ -8,7 +8,7 @@ import { TemplatesConfigTextarea } from "./templ-config-textarea";
 import { TemplatesConfigVariable } from "./templ-config-value";
 import { TemplateGenerator } from "./templ-generator";
 
-export default function EditPrompt() {
+export function EditPrompt() {
   const { template, setTemplate } = useTemplate();
   const { open } = useSidebar();
   const isMobile = useIsMobile();

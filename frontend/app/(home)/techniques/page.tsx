@@ -72,7 +72,7 @@ export default function TechniquesPage() {
 
     // Replace parameter placeholders
     Object.entries(builder.parameters).forEach(([key, value]) => {
-      const placeholder = `[${key}]`;
+      const placeholder = `{{${key}}}`;
       generated = generated.replace(
         new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
         value,

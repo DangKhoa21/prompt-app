@@ -16,7 +16,8 @@ export default function PromptChatLayout({
   children: ReactNode;
 }) {
   const cookieStore = cookies();
-  const defaultOpen = cookieStore.get("sidebar_right:state")?.value === "true";
+  const lastState = cookieStore.get("sidebar_right:state")?.value;
+  const defaultOpen = lastState ? lastState === "true" : true;
 
   return (
     <SidebarProvider2 defaultOpen={defaultOpen}>
