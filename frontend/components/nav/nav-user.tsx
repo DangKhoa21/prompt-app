@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { EXTENSION_URL } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { Settings } from "@/features/settings";
 import { getUserProfile } from "@/services/user";
@@ -28,6 +29,7 @@ import {
   LogOut,
   Moon,
   Sparkles,
+  Blocks,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -106,6 +108,12 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
               <DropdownMenuItem disabled>
                 <Sparkles />
                 Upgrade to Pro
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => window.open(EXTENSION_URL, "_blank")}
+              >
+                <Blocks />
+                Extension
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

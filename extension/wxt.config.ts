@@ -5,8 +5,15 @@ export default defineConfig({
   manifest: {
     permissions: ["sidePanel", "storage", "tabs"],
     action: {},
-    name: "Prompt App",
+    name: "Prompt Crafter",
     description: "A helpful tool for quicker prompting",
+    version: "0.1.0",
+    host_permissions: [
+      "https://chatgpt.com",
+      "https://gemini.google.com",
+      "https://claude.ai",
+      "https://chat.deepseek.com",
+    ],
   },
   modules: ["@wxt-dev/module-react"],
   srcDir: "src",

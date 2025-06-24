@@ -1,15 +1,15 @@
 import { onMessage } from "@/lib/messaging";
 
 export default defineContentScript({
-  // matches: [
-  //   "*://*.chatgpt.com/*",
-  //   "*://*.gemini.google.com/*",
-  //   "*://*.claude.ai/*",
-  //   "*://*.chat.deepseek.com/*",
-  // ],
-  matches: ["<all_urls>"],
+  matches: [
+    "*://*.chatgpt.com/*",
+    "*://*.gemini.google.com/*",
+    "*://*.claude.ai/*",
+    "*://*.chat.deepseek.com/*",
+  ],
+  //matches: ["<all_urls>"],
   main() {
-    console.log("Hello content.");
+    //console.log("Hello content.");
 
     onMessage("replaceCurrentUrl", (msg) => {
       const url = msg.data.url;
@@ -20,7 +20,7 @@ export default defineContentScript({
       const { value } = msg.data;
 
       const currentUrl = window.location.href;
-      console.log("Current URL in content script:", currentUrl);
+      //console.log("Current URL in content script:", currentUrl);
 
       let promptInput;
       if (currentUrl.includes("chatgpt.com")) {
