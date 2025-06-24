@@ -16,7 +16,7 @@ interface OverviewProps {
   handleBuildPrompt: (technique: Technique) => void;
 }
 
-export default function OverviewTab({
+export function OverviewTab({
   technique,
   copyToClipboard,
   handleBuildPrompt,

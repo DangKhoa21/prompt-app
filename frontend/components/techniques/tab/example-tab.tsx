@@ -13,7 +13,7 @@ interface ExampleTabProps {
   technique: Technique;
 }
 
-export default function ExampleTab({ technique }: ExampleTabProps) {
+export function ExampleTab({ technique }: ExampleTabProps) {
   const { name, examples } = technique;
 
   return (

@@ -1,16 +1,20 @@
 "use client";
 
-import BuilderTab from "@/components/techniques/builder-tab";
-import ExampleTab from "@/components/techniques/example-tab";
-import OverviewTab from "@/components/techniques/overview-tab";
-import SidebarList from "@/components/techniques/sidebar-list";
+import {
+  BuilderTab,
+  ExampleTab,
+  OverviewTab,
+  SidebarList,
+} from "@/components/techniques";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { techniques } from "@/constants/techniques";
+
 import { Brain, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
 import { Technique, TechniqueBuilder } from "./technique-type";
-import { techniques } from "./techniques";
 
 export default function TechniquesPage() {
   const [isClient, setIsClient] = useState(false);

@@ -23,8 +23,20 @@ export const ChatTutorial = ({ run, setRun }: ChatTutorialProps) => {
       content: "This header lets you switch models or settings.",
     },
     {
-      target: ".prompt-editor",
+      target: ".prompt-menu",
       content: "Edit your prompt here before chatting with the model.",
+    },
+    {
+      target: ".new-ai-prompt",
+      content: "Create new prompt for your purpose with the help of AI",
+    },
+    {
+      target: ".marketplace",
+      content: "Search for existing prompts which is shared by the community",
+    },
+    {
+      target: ".techniques-handbook",
+      content: "Or you can use our handbook to use quick prompt techniques",
     },
   ];
 

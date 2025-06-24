@@ -1,5 +1,6 @@
 "use client";
 
+import { Technique } from "@/app/(home)/techniques/technique-type";
 import { LoadingSpinner } from "@/components/icons";
 import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
@@ -15,6 +16,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { BetterTooltip } from "@/components/ui/tooltip";
+import { techniques } from "@/constants/techniques";
 import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt } from "@/features/template";
 import axios from "@/lib/axios/axiosWithAuth";
@@ -27,12 +29,28 @@ import {
 import { getPromptWithConfigs } from "@/services/prompt";
 import { createShareOption } from "@/services/share-option";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Pin, RotateCcw, Share2 } from "lucide-react";
+
+import {
+  ChevronLeft,
+  ExternalLinkIcon,
+  Pin,
+  RotateCcw,
+  Share2,
+} from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+type GeneratorMode = "choose" | "marketplace" | "new-ai" | "technique";
+
 export function PromptGeneratorSidebar() {
+  const [mode, setMode] = useState<GeneratorMode>("choose");
+
+  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
+    null,
+  );
+
   const { systemInstruction, setSystemInstruction, setPrompt } = usePrompt();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {},
@@ -78,6 +96,8 @@ export function PromptGeneratorSidebar() {
 
     const optionId = searchParams.get("optionId");
     if (!optionId) return;
+
+    setMode("marketplace");
 
     (async () => {
       try {
@@ -138,6 +158,133 @@ export function PromptGeneratorSidebar() {
   }, [arrayValues, data, selectedValues, textareaValues]);
 
   const pinPromptMutation = usePinPrompt();
+
+  if (mode === "choose") {
+    return (
+      <>
+        <SidebarContent className="prompt-menu p-4 flex flex-col items-center justify-center gap-8">
+          <h2 className="text-lg font-semibold">What would you like to do?</h2>
+          <div className="flex flex-col items-center justify-center gap-4">
+            <Button
+              className="new-ai-prompt w-40"
+              variant="outline"
+              onClick={() => setMode("new-ai")}
+            >
+              New Prompt with AI
+            </Button>
+            <Button
+              className="marketplace w-40"
+              variant="outline"
+              onClick={() => setMode("marketplace")}
+            >
+              Marketplace
+            </Button>
+            <Button
+              className="techniques-handbook w-40"
+              variant="outline"
+              onClick={() => setMode("technique")}
+            >
+              Techniques handbook
+            </Button>
+          </div>
+        </SidebarContent>
+      </>
+    );
+  }
+
+  if (mode === "technique") {
+    return (
+      <>
+        <SidebarHeader className="prompt-editor pb-0">
+          <div className="flex justify-between items-center p-2">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => {
+                  if (!selectedTechnique) {
+                    setMode("choose");
+                    return;
+                  }
+                  setSelectedTechnique(null);
+                }}
+              >
+                <ChevronLeft />
+              </Button>
+              <div className="text-base leading-tight ml-2">
+                <span className="font-semibold">
+                  {selectedTechnique ? "Back to techniques" : "Techniques"}
+                </span>
+              </div>
+            </div>
+            <div>
+              <Link href="/techniques" target="_blank">
+                <ExternalLinkIcon className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </SidebarHeader>
+        <SidebarContent className="p-4 overflow-y-auto">
+          {!selectedTechnique ? (
+            <>
+              <h2 className="text-lg font-semibold mt-4 mb-2">
+                Prompt Techniques
+              </h2>
+              <div className="flex flex-col gap-2">
+                {techniques.map((tech) => (
+                  <Button
+                    key={tech.id}
+                    variant="outline"
+                    className="flex justify-start gap-2"
+                    onClick={() => setSelectedTechnique(tech)}
+                  >
+                    {tech.icon}
+                    <div className="text-left truncate">
+                      <p className="font-semibold">{tech.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {tech.description}
+                      </p>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold mb-1">
+                {selectedTechnique.name}
+              </h2>
+              <p className="text-sm text-muted-foreground mb-2">
+                {selectedTechnique.description}
+              </p>
+              <div className="mb-3">
+                <p className="font-semibold">Use Case:</p>
+                <p className="text-sm mb-2">{selectedTechnique.useCase}</p>
+              </div>
+              <div className="mb-3">
+                <p className="font-semibold">Prompt Template:</p>
+                <pre className="bg-muted p-2 rounded text-sm whitespace-pre-wrap">
+                  {selectedTechnique.template}
+                </pre>
+              </div>
+              <Button
+                onClick={() => {
+                  setPrompt({
+                    id: "technique-" + selectedTechnique.id,
+                    value: selectedTechnique.template,
+                    isSending: false,
+                  });
+                  toast.success("Technique template inserted into prompt!");
+                }}
+              >
+                Use This Template
+              </Button>
+            </>
+          )}
+        </SidebarContent>
+      </>
+    );
+  }
 
   if (isPending) {
     return (
@@ -223,7 +370,7 @@ export function PromptGeneratorSidebar() {
             <Button
               variant="ghost"
               className="h-8 w-8"
-              onClick={() => window.history.back()}
+              onClick={() => setMode("choose")}
             >
               <ChevronLeft />
             </Button>

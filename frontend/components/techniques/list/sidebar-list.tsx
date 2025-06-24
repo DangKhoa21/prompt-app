@@ -14,7 +14,7 @@ interface SidebarListProps {
   handleTechniqueSelect: (technique: Technique) => void;
 }
 
-export default function SidebarList({
+export function SidebarList({
   selectedCategory,
   setSelectedCategory,
   filteredTechniques,

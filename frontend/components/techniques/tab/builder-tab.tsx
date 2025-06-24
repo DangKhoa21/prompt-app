@@ -27,7 +27,7 @@ interface BuilderTabProps {
   saveAsTemplate: () => void;
 }
 
-export default function BuilderTab({
+export function BuilderTab({
   technique,
   builder,
   generatePrompt,
