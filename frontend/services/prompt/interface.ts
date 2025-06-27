@@ -74,6 +74,7 @@ export interface PromptTemplate {
   description: string;
   stringTemplate: string;
   systemInstruction?: string | null;
+  exampleResult?: string;
   creatorId: string;
 }
 
