@@ -61,9 +61,9 @@ export function TemplateEditTag({ tags, allTags }: TemplateEditTagProps) {
 
   return (
     <>
-      <div className="flex items-center m-1 gap-2">
+      <div className="flex items-center gap-2">
         <div className="basis-1/5 text-lg font-semibold">Tags</div>
-        <div className="basis-4/5 flex flex-wrap gap-2">
+        <div className="basis-4/5 flex flex-wrap items-center min-h-11 p-2 gap-1">
           {tags?.map((tag, i) => (
             <Badge
               key={i}
