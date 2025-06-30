@@ -41,4 +41,7 @@ export const config = {
       apiKey: process.env.RESEND_API_KEY || '',
     },
   },
+  redis: {
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+  },
 };

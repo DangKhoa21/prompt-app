@@ -1,4 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { RedisService } from 'src/processors/redis/redis.service';
 import { PromptRepository } from './prompt.repository';
 import { PromptConfigRepository } from './config.repository';
 import { ConfigValueRepository } from './value.repository';
@@ -48,6 +49,7 @@ export class PromptService {
     private readonly starService: StarService,
     @Inject(forwardRef(() => PromptPinService))
     private readonly promptPinService: PromptPinService,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(
@@ -63,6 +65,7 @@ export class PromptService {
       stringTemplate: data.stringTemplate,
       systemInstruction: data.systemInstruction ?? null,
       usageCount: 0,
+      viewCount: 0,
       creatorId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -332,6 +335,28 @@ export class PromptService {
     }
 
     await this.promptRepo.increaseUsageCount(id);
+  }
+
+  async viewPrompt(promptId: string, userIp: string): Promise<void> {
+    const existedPrompt = await this.promptRepo.findByIdWithConfigs(promptId);
+
+    if (!existedPrompt) {
+      throw AppError.from(ErrPromptNotFound, 400);
+    }
+
+    // cache the userIp
+    const cacheKey = `prompt:${promptId}:viewed:${userIp}`;
+    const cached = await this.redisService.getCache<boolean>(cacheKey);
+
+    if (cached) {
+      // if the user has already viewed this prompt, do nothing
+      return;
+    }
+
+    // update view count
+    await this.promptRepo.increaseViewCount(promptId);
+    // cache the view for 24 hours
+    await this.redisService.setCache(cacheKey, true, 24 * 60 * 60);
   }
 
   async remove(id: string, creatorId: string): Promise<void> {
