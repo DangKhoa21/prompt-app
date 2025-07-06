@@ -68,6 +68,7 @@ export async function getPrompt(id: string | null): Promise<Prompt> {
       systemInstruction: null,
       exampleResult: null,
       usageCount: 0,
+      viewCount: 0,
       creatorId: "",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -89,6 +90,7 @@ export async function getPromptWithConfigs(
       systemInstruction: null,
       exampleResult: null,
       usageCount: 0,
+      viewCount: 0,
       creatorId: "",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -198,4 +200,9 @@ export async function updatePromptResult(id: string, promptResult: string) {
   });
 
   return response.data;
+}
+
+export async function viewPrompt(id: string): Promise<boolean> {
+  const response = await axiosInstance.post(`/prompts/${id}/view`);
+  return response.data.data;
 }

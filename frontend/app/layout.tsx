@@ -5,9 +5,10 @@ import AppProviders from "@/providers/app-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { GOOGLE_ANALYTICS_ID, IS_PRODUCTION } from "@/config";
 import localFont from "next/font/local";
 import "./globals.css";
-import { IS_PRODUCTION } from "@/config";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -100,6 +101,7 @@ export default function RootLayout({
           </ThemeProvider>
         </AppProviders>
       </body>
+      <GoogleAnalytics gaId={GOOGLE_ANALYTICS_ID} />
     </html>
   );
 }

@@ -13,7 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { LoadingSpinner } from "@/components/icons";
-import { getPrompts } from "@/services/prompt";
+import { getPrompts, viewPrompt } from "@/services/prompt";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useDebounceCallback } from "usehooks-ts";
@@ -72,6 +72,8 @@ export function PromptSearch() {
       }
     });
     setOpen(false);
+
+    viewPrompt(promptId); // no error handling needed for now
   };
 
   const handleQueryChange = useDebounceCallback((value: string) => {

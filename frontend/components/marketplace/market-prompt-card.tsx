@@ -11,10 +11,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
-import { getPrompt } from "@/services/prompt";
+import { getPrompt, viewPrompt } from "@/services/prompt";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChartColumn, Star } from "lucide-react";
+import { ChartColumn, Star, Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
@@ -35,9 +35,11 @@ export function MarketplacePromptCard({
   hasStarred,
   starCount,
   usageCount,
+  viewCount,
 }: MarketplacePromptCardProps) {
   const rating = formatRating(starCount);
   const usage = formatRating(usageCount);
+  const view = formatRating(viewCount);
   const detailURL = createPromptDetailURL(id, title);
   const starMutation = useStarPrompt({ filter, promptId: id });
   const unstarMutation = useUnstarPrompt({ filter, promptId: id });
@@ -83,6 +85,7 @@ export function MarketplacePromptCard({
         ref={triggerRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={() => viewPrompt(id)}
         className={className}
       >
         {children}
@@ -173,7 +176,7 @@ export function MarketplacePromptCard({
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">
             <CardTitle className="flex items-start justify-between mt-2 text-xl">
               <div className="pl-1 line-clamp-2">{title}</div>
-              <div className="flex flex-col gap-1 items-center">
+              <div className="flex flex-col gap-1 items-end">
                 <Badge
                   variant="secondary"
                   className="flex border-2 items-center gap-1 ml-2 group"
@@ -186,13 +189,22 @@ export function MarketplacePromptCard({
                   />
                   {rating}
                 </Badge>
-                <Badge
-                  variant="secondary"
-                  className="flex border-2 items-center gap-1 ml-2 bg-transparent hover:bg-transparent text-muted-foreground"
-                >
-                  <ChartColumn className="h-3 w-3" />
-                  {usage}
-                </Badge>
+                <div className="flex flex-row items-center">
+                  <Badge
+                    variant="secondary"
+                    className="flex border-2 items-center gap-1 ml-2 bg-transparent hover:bg-transparent text-muted-foreground"
+                  >
+                    <ChartColumn className="h-3 w-3" />
+                    {usage}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="flex border-2 items-center gap-1 ml-2 bg-transparent hover:bg-transparent text-muted-foreground"
+                  >
+                    <Eye className="h-3 w-3" />
+                    {view}
+                  </Badge>
+                </div>
               </div>
             </CardTitle>
           </CardHeader>
@@ -215,6 +227,7 @@ export function MarketplacePromptCard({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
+                  viewPrompt(id);
                   router.push(`/?promptId=${id}`);
                 }}
               >

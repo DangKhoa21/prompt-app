@@ -13,6 +13,9 @@ export const EXTENSION_URL =
 export const EXTENSION_INSTALLED_KEY =
   process.env.NEXT_PUBLIC_EXTENSION_INSTALLED_KEY ?? "extension_installed";
 
+export const GOOGLE_ANALYTICS_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID ?? "G-XYZ";
+
 export const IS_PRODUCTION =
   process.env.NODE_ENV === "production" ||
   process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ||

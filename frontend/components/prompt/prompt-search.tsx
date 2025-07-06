@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { getPrompts } from "@/services/prompt";
+import { getPrompts, viewPrompt } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PencilRuler, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -47,6 +47,8 @@ export function PromptSearch() {
     params.set("promptId", promptId);
     window.history.replaceState(null, "", `?${params.toString()}`);
     setOpen(false);
+
+    viewPrompt(promptId); // no error handling needed for now
   };
 
   useEffect(() => {
@@ -95,10 +97,10 @@ export function PromptSearch() {
             {status === "error"
               ? "Failed to fetch prompts."
               : status === "pending"
-                ? "Loading ..."
-                : prompts.length === 0
-                  ? "No results found."
-                  : null}
+              ? "Loading ..."
+              : prompts.length === 0
+              ? "No results found."
+              : null}
           </CommandEmpty>
 
           {prompts.length > 0 && (

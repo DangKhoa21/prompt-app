@@ -9,6 +9,7 @@ export interface Prompt {
   systemInstruction: string | null;
   exampleResult: string | null;
   usageCount: number;
+  viewCount: number;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;

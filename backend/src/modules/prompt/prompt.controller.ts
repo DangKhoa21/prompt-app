@@ -86,8 +86,6 @@ export class PromptController {
       userIp = req.socket.remoteAddress ?? 'unknown';
     }
 
-    console.log(`User IP: ${userIp}`);
-
     await this.promptService.viewPrompt(id, userIp);
     return { data: true };
   }
