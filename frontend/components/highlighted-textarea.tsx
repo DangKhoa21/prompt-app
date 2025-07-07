@@ -37,8 +37,8 @@ function renderHighlightedText(
     const before = text.slice(lastIndex, match.index);
     if (before) parts.push(<span key={lastIndex}>{before}</span>);
 
-    const key = match[1].trim();
-    const bgColor = config[key] || "#e5e7eb";
+    const matchedKey = match[1].trim();
+    const bgColor = config[matchedKey] || "#e5e7eb";
     const textColor = getContrastTextColor(bgColor);
 
     parts.push(
@@ -47,7 +47,7 @@ function renderHighlightedText(
         className="inline px-[0.675rem] rounded transition-colors duration-200"
         style={{ backgroundColor: bgColor, color: textColor }}
       >
-        {key}
+        {matchedKey}
       </span>
     );
 
