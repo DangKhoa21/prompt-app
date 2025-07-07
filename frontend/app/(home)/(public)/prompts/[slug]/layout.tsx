@@ -1,13 +1,10 @@
 import { DetailsHeader } from "@/components/details/details-header";
-import { SERVER_URL, VERSION_PREFIX } from "@/config";
+import axiosInstance from "@/lib/axios/axiosIntance";
 import { getIdFromDetailURL } from "@/lib/utils";
 import { Prompt } from "@/services/prompt/interface";
-import axios from "axios";
 
 async function getPrompt(id: string | null): Promise<Prompt> {
-  const response = await axios.get(
-    `${SERVER_URL}/${VERSION_PREFIX}/prompts/${id}`,
-  );
+  const response = await axiosInstance.get(`/prompts/${id}`);
   return response.data.data;
 }
 
@@ -19,12 +16,24 @@ export async function generateMetadata({
   const { slug } = params;
   const promptId = getIdFromDetailURL(slug);
 
-  const prompt = await getPrompt(promptId);
-
-  return {
-    title: `Prompt: ${prompt.title}`,
-    description: `Prompt Detail: ${prompt.description}`,
-  };
+  try {
+    const prompt = await getPrompt(promptId);
+    if (!prompt) {
+      return {
+        title: "Prompt not found",
+        description: "The requested prompt does not exist.",
+      };
+    }
+    return {
+      title: prompt.title,
+      description: `${prompt.description}`,
+    };
+  } catch {
+    return {
+      title: "Error",
+      description: "An error occurred while fetching the prompt.",
+    };
+  }
 }
 
 export default function PromptDetailLayout({

@@ -130,6 +130,7 @@ const stats = [
 ];
 
 export default function HomePage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -322,8 +323,8 @@ export default function HomePage() {
                       technique.difficulty === "Beginner"
                         ? "secondary"
                         : technique.difficulty === "Intermediate"
-                          ? "default"
-                          : "destructive"
+                        ? "default"
+                        : "destructive"
                     }
                   >
                     {technique.difficulty}

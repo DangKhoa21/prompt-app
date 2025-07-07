@@ -1,11 +1,8 @@
-import { SERVER_URL, VERSION_PREFIX } from "@/config";
+import axiosInstance from "@/lib/axios/axiosIntance";
 import { Chat } from "@/services/chat/interface";
-import axios from "axios";
 
 async function getChatById(id: string): Promise<Chat | null> {
-  const response = await axios.get(
-    `${SERVER_URL}/${VERSION_PREFIX}/chat/${id}`,
-  );
+  const response = await axiosInstance.get(`/chat/${id}`);
   return response.data.data;
 }
 
@@ -16,12 +13,24 @@ export async function generateMetadata({
     id: string;
   };
 }) {
-  const prompt = await getChatById(params.id);
-
-  return {
-    title: prompt?.title ?? "Unnamed Chat",
-    description: `Conversation for ${prompt?.title ?? "Unnamed chat"}`,
-  };
+  try {
+    const chat = await getChatById(params.id);
+    if (!chat) {
+      return {
+        title: "Chat not found",
+        description: "The requested chat does not exist.",
+      };
+    }
+    return {
+      title: `${chat.title}`,
+      description: `ID ${chat.id}`,
+    };
+  } catch {
+    return {
+      title: "Error",
+      description: "An error occurred while fetching the chat.",
+    };
+  }
 }
 
 export default function ChatIdLayout({

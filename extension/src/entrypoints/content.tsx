@@ -17,7 +17,10 @@ export default defineContentScript({
     });
 
     onMessage("setPrompt", (msg) => {
-      const { value } = msg.data;
+      // Strip HTML tags from the value
+      const tempElement = document.createElement("div");
+      tempElement.textContent = msg.data.value;
+      const value = tempElement.innerHTML;
 
       const currentUrl = window.location.href;
       //console.log("Current URL in content script:", currentUrl);
