@@ -1,4 +1,4 @@
-import { Technique } from "@/app/(home)/techniques/technique-type";
+import { Technique } from "@/app/(home)/(public)/techniques/technique-type";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,7 +1,7 @@
 import {
   Technique,
   TechniqueBuilder,
-} from "@/app/(home)/techniques/technique-type";
+} from "@/app/(home)/(public)/techniques/technique-type";
 import { Button } from "@/components/ui/button";
 import {
   Card,
