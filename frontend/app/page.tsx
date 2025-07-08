@@ -220,8 +220,8 @@ export default function HomePage() {
                       technique.difficulty === "Beginner"
                         ? "secondary"
                         : technique.difficulty === "Intermediate"
-                          ? "default"
-                          : "destructive"
+                        ? "default"
+                        : "destructive"
                     }
                   >
                     {technique.difficulty}

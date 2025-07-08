@@ -97,27 +97,39 @@ export function LoginForm({
   };
 
   const handleGoogleLogin = () => {
-    const popup = openCenteredPopup(
-      `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=extension`,
-      500,
-      600
-    );
+    const clientId =
+      "553566387069-m05c0rj5bvsefl4v07mi4h0msoh79goq.apps.googleusercontent.com"; // Replace with your actual Google OAuth client ID
+    const redirectUri = browser.identity.getRedirectURL(); // Get a valid redirect URI for the extension
 
-    if (!popup) {
-      toast.error("Please allow popups for this site to login with Google.");
-      return;
-    }
+    // Construct the Google OAuth URL
+    const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=openid profile email`;
 
-    window.addEventListener("message", (event) => {
-      if (event.origin !== WEB_URL) return;
+    // Start OAuth flow using browser.identity
+    browser.identity.launchWebAuthFlow(
+      {
+        url: oauthUrl,
+        interactive: true, // Allow interaction with the login flow
+      },
+      (redirectUrl) => {
+        if (browser.runtime.lastError || !redirectUrl) {
+          console.error("OAuth flow failed: ", browser.runtime.lastError);
+          return;
+        }
 
-      const token = event.data?.token;
-      if (token) {
-        setToken(token);
+        // Extract the access token from the redirect URL hash
+        const urlParams = new URLSearchParams(
+          new URL(redirectUrl).hash.substring(1)
+        );
+        const token = urlParams.get("access_token");
+
+        if (token) {
+          setToken(token); // Store the token securely (e.g., localStorage or in state)
+          props.onSuccess(); // Proceed with the successful login
+        } else {
+          console.error("No token received from Google.");
+        }
       }
-
-      props.onSuccess();
-    });
+    );
   };
 
   return (

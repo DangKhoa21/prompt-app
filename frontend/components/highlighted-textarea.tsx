@@ -25,7 +25,7 @@ function parseTemplateText(text: string): string {
 
 function renderHighlightedText(
   text: string,
-  isFocused: boolean,
+  isFocused: boolean
 ): JSX.Element[] {
   if (isFocused) return [];
   const parts: JSX.Element[] = [];
@@ -37,8 +37,8 @@ function renderHighlightedText(
     const before = text.slice(lastIndex, match.index);
     if (before) parts.push(<span key={lastIndex}>{before}</span>);
 
-    const key = match[1].trim();
-    const bgColor = config[key] || "#e5e7eb";
+    const matchedKey = match[1].trim();
+    const bgColor = config[matchedKey] || "#e5e7eb";
     const textColor = getContrastTextColor(bgColor);
 
     parts.push(
@@ -47,8 +47,8 @@ function renderHighlightedText(
         className="inline px-[0.675rem] rounded transition-colors duration-200"
         style={{ backgroundColor: bgColor, color: textColor }}
       >
-        {key}
-      </span>,
+        {matchedKey}
+      </span>
     );
 
     lastIndex = regex.lastIndex;
@@ -108,16 +108,16 @@ export default function HighlightedTextarea({
 
     textarea.addEventListener(
       "beforeinput",
-      handleBeforeInput as EventListener,
+      handleBeforeInput as EventListener
     );
 
     return () => {
       textarea.removeEventListener(
         "beforeinput",
-        handleBeforeInput as EventListener,
+        handleBeforeInput as EventListener
       );
     };
-  }, []);
+  }, [textareaRef]);
 
   // Handle smart typing inside `onChange`
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -160,7 +160,7 @@ export default function HighlightedTextarea({
       <div
         ref={backdropRef}
         className={cn(
-          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 opacity-100 group-focus-within:opacity-0 pointer-events-none",
+          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 opacity-100 group-focus-within:opacity-0 pointer-events-none"
         )}
         aria-hidden
       >
@@ -175,7 +175,7 @@ export default function HighlightedTextarea({
         onBlur={handleBlur}
         onChange={handleChange}
         className={cn(
-          "relative z-10 bg-transparent text-transparent group-focus-within:text-inherit",
+          "relative z-10 bg-transparent text-transparent group-focus-within:text-inherit"
         )}
         spellCheck={false}
       />
