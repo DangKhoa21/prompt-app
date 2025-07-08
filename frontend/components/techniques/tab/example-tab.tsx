@@ -1,4 +1,5 @@
-import { Technique } from "@/app/(home)/(public)/techniques/technique-type";
+import { HelpCircle } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -7,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { HelpCircle } from "lucide-react";
+import { Technique } from "@/types/techniques/technique";
 
 interface ExampleTabProps {
   technique: Technique;

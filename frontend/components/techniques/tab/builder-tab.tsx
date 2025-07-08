@@ -1,7 +1,6 @@
-import {
-  Technique,
-  TechniqueBuilder,
-} from "@/app/(home)/(public)/techniques/technique-type";
+import { ArrowRight, Copy, Download, Zap } from "lucide-react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, Copy, Download, Zap } from "lucide-react";
-import Link from "next/link";
+import { Technique, TechniqueBuilder } from "@/types/techniques/technique";
 
 interface BuilderTabProps {
   technique: Technique;

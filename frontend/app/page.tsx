@@ -1,7 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+  ArrowRight,
+  Award,
+  CheckCircle,
+  ChevronRight,
+  Play,
+  Shield,
+  Sparkles,
+  Star,
+  Zap,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,176 +24,60 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ArrowRight,
-  Zap,
-  Users,
-  BookOpen,
-  MessageSquare,
-  Star,
-  TrendingUp,
-  Shield,
-  Lightbulb,
-  Code,
-  Brain,
-  Target,
-  ChevronRight,
-  Play,
-  CheckCircle,
-  Globe,
-  Award,
-  Sparkles,
-} from "lucide-react";
-
-const features = [
-  {
-    icon: BookOpen,
-    title: "Smart Templates",
-    description:
-      "Create reusable prompt templates with variables and configurations for consistent results.",
-    href: "/templates",
-  },
-  {
-    icon: Users,
-    title: "Community Marketplace",
-    description:
-      "Discover and share prompts with a vibrant community of AI enthusiasts and professionals.",
-    href: "/marketplace",
-  },
-  {
-    icon: Brain,
-    title: "Advanced Techniques",
-    description:
-      // "Master prompt engineering with interactive guides for few-shot, chain-of-thought, and more.",
-      "Master prompt engineering with guides for few-shot, chain-of-thought, and more.",
-    href: "/techniques",
-  },
-  {
-    icon: MessageSquare,
-    title: "AI Chat Assistant",
-    description:
-      "Test your prompts in real-time with our integrated chat interface and technique builders.",
-    href: "/chat",
-  },
-];
-
-const techniques = [
-  {
-    icon: Lightbulb,
-    name: "Few-Shot Prompting",
-    description: "Guide AI with examples",
-    difficulty: "Beginner",
-  },
-  {
-    icon: Brain,
-    name: "Chain of Thought",
-    description: "Step-by-step reasoning",
-    difficulty: "Intermediate",
-  },
-  {
-    icon: Target,
-    name: "Constraint Prompting",
-    description: "Focused responses",
-    difficulty: "Beginner",
-  },
-  {
-    icon: Code,
-    name: "Program-Aided",
-    description: "Code + natural language",
-    difficulty: "Advanced",
-  },
-];
-
-const testimonials = [
-  {
-    name: "Sarah Chen",
-    role: "AI Researcher",
-    company: "TechCorp",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "This platform revolutionized how our team approaches prompt engineering. The templates save us hours every week.",
-    rating: 5,
-  },
-  {
-    name: "Marcus Rodriguez",
-    role: "Content Creator",
-    company: "Creative Studio",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "The technique guides are incredibly helpful. I went from struggling with prompts to creating professional-quality content.",
-    rating: 5,
-  },
-  {
-    name: "Dr. Emily Watson",
-    role: "Data Scientist",
-    company: "Research Institute",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content:
-      "The marketplace is a goldmine of proven prompts. It's like having a library of expert knowledge at your fingertips.",
-    rating: 5,
-  },
-];
-
-const stats = [
-  { label: "Active Users", value: "100+", icon: Users },
-  { label: "Prompt Templates", value: "100+", icon: BookOpen },
-  { label: "Success Rate", value: "94%", icon: TrendingUp },
-  { label: "Countries", value: "120+", icon: Globe },
-];
+import { features, stats, techniques, testimonials } from "@/constants/home";
 
 export default function HomePage() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+    <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="border-b backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
+              <div className="h-8 w-8 flex items-center justify-center">
+                <Image
+                  src="/icon.ico"
+                  alt="Website logo"
+                  width={32}
+                  height={32}
+                  className=""
+                />
+                {/* <Sparkles className="h-5 w-5 text-primary-foreground" /> */}
               </div>
               <span className="text-xl font-bold">Prompt Crafter</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="/marketplace"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
               >
                 Marketplace
               </Link>
               <Link
                 href="/templates"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
               >
                 Templates
               </Link>
               <Link
                 href="/techniques"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
               >
                 Techniques
               </Link>
               <Link
                 href="/chat"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
               >
                 Chat
               </Link>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" asChild>
-                <Link href="/auth/signin">Sign In</Link>
+                <Link href="/login">Sign In</Link>
               </Button>
               <Button asChild>
-                <Link href="/auth/signup">Get Started</Link>
+                <Link href="/register">Get Started</Link>
               </Button>
             </div>
           </div>
@@ -188,7 +86,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+        <div className="absolute inset-0 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge variant="secondary" className="mb-4">
@@ -206,7 +104,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8" asChild>
-                <Link href="/marketplace">
+                <Link href="/marketplace" aria-label="Explore Marketplace">
                   Explore Marketplace
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -228,7 +126,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white border-y">
+      <section className="py-16 border-y">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -290,7 +188,7 @@ export default function HomePage() {
       </section>
 
       {/* Techniques Preview */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -363,7 +261,8 @@ export default function HomePage() {
                     <Avatar>
                       <AvatarImage
                         src={testimonial.avatar || "/placeholder.svg"}
-                        alt={testimonial.name}
+                        alt={`Avatar of ${testimonial.name}`}
+                        loading="lazy"
                       />
                       <AvatarFallback>
                         {testimonial.name.charAt(0)}
@@ -397,7 +296,7 @@ export default function HomePage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -477,7 +376,11 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section
+        role="region"
+        aria-labelledby="cta-title"
+        className="py-20 bg-primary text-primary-foreground"
+      >
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Transform Your AI Workflow?
@@ -571,22 +474,22 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold text-white mb-4">Resources</h3>
               <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/docs"
-                    className="hover:text-white transition-colors"
-                  >
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/blog"
-                    className="hover:text-white transition-colors"
-                  >
-                    Blog
-                  </Link>
-                </li>
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/docs" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     Documentation */}
+                {/*   </Link> */}
+                {/* </li> */}
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/blog" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     Blog */}
+                {/*   </Link> */}
+                {/* </li> */}
                 <li>
                   <Link
                     href="/tutorials"
@@ -595,14 +498,14 @@ export default function HomePage() {
                     Tutorials
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/community"
-                    className="hover:text-white transition-colors"
-                  >
-                    Community
-                  </Link>
-                </li>
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/community" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     Community */}
+                {/*   </Link> */}
+                {/* </li> */}
               </ul>
             </div>
             <div>
@@ -616,14 +519,14 @@ export default function HomePage() {
                     About
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/careers"
-                    className="hover:text-white transition-colors"
-                  >
-                    Careers
-                  </Link>
-                </li>
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/careers" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     Careers */}
+                {/*   </Link> */}
+                {/* </li> */}
                 <li>
                   <Link
                     href="/contact"
@@ -632,14 +535,14 @@ export default function HomePage() {
                     Contact
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="hover:text-white transition-colors"
-                  >
-                    Privacy
-                  </Link>
-                </li>
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/privacy" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     Privacy */}
+                {/*   </Link> */}
+                {/* </li> */}
               </ul>
             </div>
           </div>

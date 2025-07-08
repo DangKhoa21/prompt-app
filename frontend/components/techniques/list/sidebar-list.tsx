@@ -1,9 +1,9 @@
-import { Technique } from "@/app/(home)/(public)/techniques/technique-type";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { categories } from "@/constants/technique-category";
+import { categories } from "@/constants/techniques";
+import { Technique } from "@/types/techniques/technique";
 import { BookOpen } from "lucide-react";
 
 interface SidebarListProps {

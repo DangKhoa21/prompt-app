@@ -1,4 +1,5 @@
-import { Technique } from "@/app/(home)/(public)/techniques/technique-type";
+import { CheckCircle, Copy, Zap } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle, Copy, Zap } from "lucide-react";
+import { Technique } from "@/types/techniques/technique";
 
 interface OverviewProps {
   technique: Technique;

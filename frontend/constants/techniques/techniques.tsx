@@ -1,4 +1,4 @@
-import { Technique } from "../app/(home)/(public)/techniques/technique-type";
+import { Technique } from "@/types/techniques/technique";
 import {
   BookOpen,
   Brain,
