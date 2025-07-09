@@ -19,8 +19,8 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { GeneratorMode } from "./enum-generator-mode";
 import {
-  ArrayConfigInStates,
-  ConfigInpStates,
+  ArrayConfigInputState,
+  ConfigInputState,
   PromptFillState,
 } from "./hooks/usePromptConfigState";
 
@@ -29,9 +29,9 @@ interface PromptTabFooterProps {
   promptId: string;
   idea: string;
   data: PromptWithConfigs | undefined;
-  selectedValues: ConfigInpStates;
-  textareaValues: ConfigInpStates;
-  arrayValues: ArrayConfigInStates;
+  selectedValues: ConfigInputState;
+  textareaValues: ConfigInputState;
+  arrayValues: ArrayConfigInputState;
   isFilled: PromptFillState;
 }
 

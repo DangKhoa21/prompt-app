@@ -25,7 +25,7 @@ import {
   CheckCircle,
   Clock,
   Github,
-  HelpCircle,
+  // HelpCircle,
   Linkedin,
   Mail,
   MapPin,
@@ -373,21 +373,21 @@ export default function ContactPage() {
             </Card>
 
             {/* FAQ */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <HelpCircle className="h-5 w-5" /> Need Quick Answers?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Check our FAQ for help with common issues.
-                </p>
-                <Button variant="outline" className="w-full bg-transparent">
-                  View FAQ
-                </Button>
-              </CardContent>
-            </Card>
+            {/* <Card> */}
+            {/*   <CardHeader> */}
+            {/*     <CardTitle className="flex items-center gap-2"> */}
+            {/*       <HelpCircle className="h-5 w-5" /> Need Quick Answers? */}
+            {/*     </CardTitle> */}
+            {/*   </CardHeader> */}
+            {/*   <CardContent> */}
+            {/*     <p className="text-muted-foreground mb-4"> */}
+            {/*       Check our FAQ for help with common issues. */}
+            {/*     </p> */}
+            {/*     <Button variant="outline" className="w-full bg-transparent"> */}
+            {/*       View FAQ */}
+            {/*     </Button> */}
+            {/*   </CardContent> */}
+            {/* </Card> */}
           </div>
         </div>
       </div>

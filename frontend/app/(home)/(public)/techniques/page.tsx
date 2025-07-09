@@ -2,7 +2,7 @@
 
 import { Brain, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   BuilderTab,
@@ -16,7 +16,6 @@ import { Technique, TechniqueBuilder } from "@/types/techniques/technique";
 import { techniques } from "@/constants/techniques";
 
 export default function TechniquesPage() {
-  const [isClient, setIsClient] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
     null,
@@ -29,10 +28,6 @@ export default function TechniquesPage() {
     parameters: {},
     generatedPrompt: "",
   });
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const filteredTechniques = techniques.filter(
     (technique) =>
@@ -86,12 +81,10 @@ export default function TechniquesPage() {
   };
 
   const copyToClipboard = (text: string) => {
-    if (!isClient) return;
     navigator.clipboard.writeText(text);
   };
 
   const saveAsTemplate = () => {
-    if (!isClient) return;
     // In a real app, this would save to the user's templates
   };
 
@@ -111,20 +104,6 @@ export default function TechniquesPage() {
       },
     }));
   };
-
-  if (!isClient) {
-    return (
-      <div className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 rounded w-1/4"></div>
-            <div className="h-32 rounded"></div>
-            <div className="h-64 rounded"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen">

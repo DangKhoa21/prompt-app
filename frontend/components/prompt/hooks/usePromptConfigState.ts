@@ -2,11 +2,12 @@ import { validateFilledConfigs } from "@/lib/utils/utils.generate-prompt";
 import { PromptConfig } from "@/services/prompt/interface";
 import { useEffect, useState } from "react";
 
-export type ConfigInpStates = Record<string, string>;
-export type ArrayConfigInStates = Record<
+export type ConfigInputState = Record<string, string>;
+export type ArrayConfigInputState = Record<
   string,
   { id: string; values: string[] }[]
 >;
+
 export type PromptFillState = {
   isValid: boolean;
   unfilledConfigs: string[];
@@ -15,9 +16,9 @@ export type PromptFillState = {
 };
 
 export function usePromptConfigState(configs: PromptConfig[]) {
-  const [selectedValues, setSelectedValues] = useState<ConfigInpStates>({});
-  const [textareaValues, setTextareaValues] = useState<ConfigInpStates>({});
-  const [arrayValues, setArrayValues] = useState<ArrayConfigInStates>({});
+  const [selectedValues, setSelectedValues] = useState<ConfigInputState>({});
+  const [textareaValues, setTextareaValues] = useState<ConfigInputState>({});
+  const [arrayValues, setArrayValues] = useState<ArrayConfigInputState>({});
   const [isFilled, setIsFilled] = useState<PromptFillState>({
     isValid: false,
     unfilledConfigs: [] as string[],

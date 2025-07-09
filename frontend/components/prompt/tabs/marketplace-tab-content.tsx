@@ -29,8 +29,8 @@ import {
 import { toast } from "sonner";
 import RenderConfigInput from "../generator-items/generator-config-item";
 import {
-  ArrayConfigInStates,
-  ConfigInpStates,
+  ArrayConfigInputState,
+  ConfigInputState,
   PromptFillState,
 } from "../hooks/usePromptConfigState";
 import { PromptSearch } from "../prompt-search";
@@ -45,12 +45,12 @@ interface MarketplaceTabContentProps {
   refetch: (
     options?: RefetchOptions,
   ) => Promise<QueryObserverResult<PromptWithConfigs, Error>>;
-  selectedValues: ConfigInpStates;
-  setSelectedValues: Dispatch<SetStateAction<ConfigInpStates>>;
-  textareaValues: ConfigInpStates;
-  setTextareaValues: Dispatch<SetStateAction<ConfigInpStates>>;
-  arrayValues: ArrayConfigInStates;
-  setArrayValues: Dispatch<SetStateAction<ArrayConfigInStates>>;
+  selectedValues: ConfigInputState;
+  setSelectedValues: Dispatch<SetStateAction<ConfigInputState>>;
+  textareaValues: ConfigInputState;
+  setTextareaValues: Dispatch<SetStateAction<ConfigInputState>>;
+  arrayValues: ArrayConfigInputState;
+  setArrayValues: Dispatch<SetStateAction<ArrayConfigInputState>>;
   isFilled: PromptFillState;
 }
 
@@ -86,9 +86,9 @@ export function MarketplaceTabContent({
       const { data: res } = await axios.get(`/option/${optionId}`);
       const parsed = JSON.parse(res.data.option);
 
-      const newSelected: ConfigInpStates = {};
-      const newTextarea: ConfigInpStates = {};
-      const newArray: ArrayConfigInStates = {};
+      const newSelected: ConfigInputState = {};
+      const newTextarea: ConfigInputState = {};
+      const newArray: ArrayConfigInputState = {};
 
       parsed.configs.forEach(
         (config: { label: string; type: ConfigType; value: string }) => {

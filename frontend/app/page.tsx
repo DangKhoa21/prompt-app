@@ -220,8 +220,8 @@ export default function HomePage() {
                       technique.difficulty === "Beginner"
                         ? "secondary"
                         : technique.difficulty === "Intermediate"
-                        ? "default"
-                        : "destructive"
+                          ? "default"
+                          : "destructive"
                     }
                   >
                     {technique.difficulty}
@@ -250,7 +250,7 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Join thousands of AI practitioners who&apos;ve transformed their
-              workflow with PromptCraft.
+              workflow with Prompt Crafter.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -301,7 +301,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Why Choose PromptCraft?
+                Why Choose Prompt Crafter?
               </h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -410,9 +410,9 @@ export default function HomePage() {
               <Link href="/marketplace">Explore Marketplace</Link>
             </Button>
           </div>
-          <p className="text-sm opacity-75 mt-6">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
+          {/* <p className="text-sm opacity-75 mt-6"> */}
+          {/*   No credit card required • 14-day free trial • Cancel anytime */}
+          {/* </p> */}
         </div>
       </section>
 
@@ -426,7 +426,7 @@ export default function HomePage() {
                   <Sparkles className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="text-xl font-bold text-white">
-                  PromptCraft
+                  Prompt Crafter
                 </span>
               </div>
               <p className="text-slate-400 mb-4">
@@ -535,19 +535,19 @@ export default function HomePage() {
                     Contact
                   </Link>
                 </li>
-                {/* <li> */}
-                {/*   <Link */}
-                {/*     href="/privacy" */}
-                {/*     className="hover:text-white transition-colors" */}
-                {/*   > */}
-                {/*     Privacy */}
-                {/*   </Link> */}
-                {/* </li> */}
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="hover:text-white transition-colors"
+                  >
+                    Privacy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 PromptCraft. All rights reserved.</p>
+            <p>&copy; 2024 Prompt Crafter. All rights reserved.</p>
           </div>
         </div>
       </footer>
