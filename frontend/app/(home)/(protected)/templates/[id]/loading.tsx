@@ -3,15 +3,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TemplateLoading() {
   function HeadComponent({
-    key,
+    keyValue,
     isTags = false,
   }: {
-    key: string;
+    keyValue: string;
     isTags?: boolean;
   }) {
     return (
       <div
-        key={key}
+        key={keyValue}
         className="w-full flex flex-col gap-1 md:flex-row md:gap-0 justify-start md:items-center"
       >
         <Skeleton className="h-7 my-2 basis-2/12" />
@@ -36,7 +36,7 @@ export default function TemplateLoading() {
         <div className="w-full h-full mx-auto space-y-6">
           <div className="flex flex-col gap-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <HeadComponent key={`item-${i}`} isTags={i === 2} />
+              <HeadComponent key={i} keyValue={`item-${i}`} isTags={i === 2} />
             ))}
           </div>
 

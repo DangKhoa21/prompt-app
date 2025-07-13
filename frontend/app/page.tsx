@@ -220,8 +220,8 @@ export default function HomePage() {
                       technique.difficulty === "Beginner"
                         ? "secondary"
                         : technique.difficulty === "Intermediate"
-                          ? "default"
-                          : "destructive"
+                        ? "default"
+                        : "destructive"
                     }
                   >
                     {technique.difficulty}
@@ -547,7 +547,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 Prompt Crafter. All rights reserved.</p>
+            <p>&copy; 2025 Prompt Crafter. All rights reserved.</p>
           </div>
         </div>
       </footer>

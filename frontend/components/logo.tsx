@@ -1,28 +1,30 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
+import * as React from "react";
+import Link from "next/link";
 
 import {
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
-} from "@/components/ui/sidebar"
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/context/auth-context";
 
 export function Logo({
-  logoInfo
+  logoInfo,
 }: {
   logoInfo: {
-    name: string
-    logo: React.ElementType
-  }
+    name: string;
+    logo: React.ElementType;
+  };
 }) {
+  const { isAuthenticated } = useAuth();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <Link href="/">
-          <SidebarMenuButton 
+        <Link href={isAuthenticated ? "/chat" : "/"} className="w-full">
+          <SidebarMenuButton
             size="lg"
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
@@ -33,9 +35,8 @@ export function Logo({
               <span className="truncate font-semibold">{logoInfo.name}</span>
             </div>
           </SidebarMenuButton>
-        
         </Link>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

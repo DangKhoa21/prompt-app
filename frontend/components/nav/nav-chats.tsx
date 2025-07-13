@@ -131,7 +131,7 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
     setShowDeleteDialog(false);
 
     if (deleteId === id) {
-      router.push("/");
+      router.push("/chat");
     }
   };
 
@@ -219,7 +219,7 @@ export function NavChats({ isAuthenticated }: { isAuthenticated: boolean }) {
         lastWeek: [],
         lastMonth: [],
         older: [],
-      } as GroupedChats,
+      } as GroupedChats
     );
   };
 

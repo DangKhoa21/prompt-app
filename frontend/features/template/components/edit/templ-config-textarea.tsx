@@ -1,16 +1,11 @@
 "use client";
 
 import HighlightedTextarea from "@/components/highlighted-textarea";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
+import { PromptEnhancer } from "@/features/template";
 import { useTemplate } from "@/context/template-context";
-import { cn } from "@/lib/utils";
-import { createEnhancePrompt } from "@/services/prompt";
-import { useMutation } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
-import { toast } from "sonner";
 
 interface configTextareaProp {
   id: string;
@@ -29,7 +24,6 @@ export function TemplatesConfigTextarea({
 }: configTextareaProp) {
   const { template, setTemplate } = useTemplate();
   const { textareaRef } = useAutoResizeTextarea(value);
-
   const handleTextareaChange = (texting: string) => {
     const newTemplate = {
       ...template,
@@ -39,49 +33,20 @@ export function TemplatesConfigTextarea({
     setTemplate(newTemplate);
   };
 
-  const enhancePromptMutation = useMutation({
-    mutationFn: createEnhancePrompt,
-    onSuccess: (enhancedPrompt) => {
-      if (enhancedPrompt) {
-        const newTemplate = {
-          ...template,
-          [id]: enhancedPrompt,
-        };
-
-        setTemplate(newTemplate);
-        toast.success("Prompt enhanced successfully!");
-      }
-    },
-    onError: (e) => {
-      try {
-        const err = JSON.parse(e.message);
-        toast.error(err.message);
-      } catch {
-        toast.error("Something went wrong, please try again!");
-      }
-    },
-  });
+  const handleEnhance = (enhancedPrompt: string) => {
+    const newTemplate = {
+      ...template,
+      [id]: enhancedPrompt,
+    };
+    setTemplate(newTemplate);
+  };
 
   return (
     <Card className="mb-4">
       <CardHeader className="flex flex-row justify-between items-center space-y-0">
         <CardTitle className="text-xl font-medium">{label}</CardTitle>
         {id === "stringTemplate" && (
-          <Button
-            variant="ghost"
-            className={cn("h-8 p-2 text-base font-semibold", {
-              "text-muted-foreground": enhancePromptMutation.isPending,
-            })}
-            disabled={enhancePromptMutation.isPending || value.length === 0}
-            onClick={() => {
-              enhancePromptMutation.mutate(value);
-            }}
-          >
-            <Sparkles />
-            {enhancePromptMutation.isPending
-              ? "Enhancing..."
-              : "Enhance Prompt"}
-          </Button>
+          <PromptEnhancer value={value} onEnhance={handleEnhance} />
         )}
       </CardHeader>
       <CardContent>

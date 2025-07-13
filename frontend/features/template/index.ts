@@ -11,6 +11,8 @@ export * from "./components/edit/templ-config-value";
 export * from "./components/edit/templ-generator";
 export * from "./components/edit/templ-tag";
 export * from "./components/edit/templ-text";
+export * from "./components/edit/generator-input";
+export * from "./components/edit/prompt-enhancer";
 
 // evaluate
 export * from "./components/evaluate/evaluate-prompt";
