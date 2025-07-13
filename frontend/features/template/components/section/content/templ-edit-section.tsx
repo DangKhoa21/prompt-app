@@ -9,6 +9,7 @@ import {
   EvaluatePrompt,
   handleParseTemplate,
   TemplateEditTag,
+  TemplateEditTextArea,
   TemplateEditTextField,
   useUpdatePromptTemplate,
   useUpdateTag,
@@ -80,7 +81,7 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`,
+          .join(", ")}`
       );
       return;
     }
@@ -122,7 +123,7 @@ export function TemplateEditSection({
             className=""
           />
 
-          <TemplateEditTextField
+          <TemplateEditTextArea
             label="description"
             text={template.description}
             className="text-muted-foreground"

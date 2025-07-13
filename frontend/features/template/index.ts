@@ -10,7 +10,8 @@ export * from "./components/edit/templ-config-textarea";
 export * from "./components/edit/templ-config-value";
 export * from "./components/edit/templ-generator";
 export * from "./components/edit/templ-tag";
-export * from "./components/edit/templ-text";
+export * from "./components/edit/templ-text-field";
+export * from "./components/edit/templ-text-area";
 export * from "./components/edit/generator-input";
 export * from "./components/edit/prompt-enhancer";
 
