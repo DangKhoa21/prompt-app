@@ -1,65 +1,44 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useState } from "react";
-import Joyride from "react-joyride";
+import CustomJoyride from "@/components/custom-joyride";
 
-export const ChatTutorial = () => {
-  const [{ run, steps }] = useState({
-    run: true,
-    steps: [
-      {
-        target: "body",
-        content: <h2>Let&apos;s begin our journey!</h2>,
-        placement: "center" as const,
-      },
-      {
-        target: ".multimodal-input",
-        content: "Send messages and attach images, documents, or audio here.",
-      },
-      {
-        target: ".chat-header",
-        content: "This header lets you switch models or settings.",
-      },
-      {
-        target: ".prompt-editor",
-        content: "Edit your prompt here before chatting with the model.",
-      },
-    ],
-  });
+interface ChatTutorialProps {
+  run: boolean;
+  setRun: (val: boolean) => void;
+}
 
-  const { resolvedTheme } = useTheme();
+export const ChatTutorial = ({ run, setRun }: ChatTutorialProps) => {
+  const steps = [
+    {
+      target: "body",
+      content: <h2>Let&apos;s begin our journey!</h2>,
+      placement: "center" as const,
+    },
+    {
+      target: ".multimodal-input",
+      content: "Send messages and attach images, documents, or audio here.",
+    },
+    {
+      target: ".chat-header",
+      content: "This header lets you switch models or settings.",
+    },
+    {
+      target: ".prompt-menu",
+      content: "Edit your prompt here before chatting with the model.",
+    },
+    {
+      target: ".new-ai-prompt",
+      content: "Create new prompt for your purpose with the help of AI",
+    },
+    {
+      target: ".marketplace",
+      content: "Search for existing prompts which is shared by the community",
+    },
+    {
+      target: ".techniques-handbook",
+      content: "Or you can use our handbook to use quick prompt techniques",
+    },
+  ];
 
-  const defaultOptions = {
-    arrowColor: "#fff",
-    backgroundColor: "#fff",
-    beaconSize: 36,
-    overlayColor: "rgba(0, 0, 0, 0.5)",
-    primaryColor: "#f04",
-    spotlightShadow: "0 0 15px rgba(0, 0, 0, 0.5)",
-    textColor: "#333",
-    // width: undefined,
-    zIndex: 100,
-  };
-
-  if (resolvedTheme === "dark") {
-    defaultOptions.arrowColor = "#010017";
-    defaultOptions.backgroundColor = "#010017";
-    defaultOptions.primaryColor = "#779cff";
-    defaultOptions.textColor = "#fff";
-  }
-
-  return (
-    <Joyride
-      run={run}
-      steps={steps}
-      callback={() => {}}
-      continuous
-      showProgress
-      showSkipButton
-      styles={{
-        options: defaultOptions,
-      }}
-    />
-  );
+  return <CustomJoyride run={run} steps={steps} setRun={setRun} />;
 };

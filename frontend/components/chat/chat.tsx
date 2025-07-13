@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { Attachment, Message } from "ai";
 import { useChat } from "ai/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ChatTutorial } from "./chat-tutorial";
 // import { motion } from "framer-motion";
@@ -36,6 +36,14 @@ export function Chat({
   const { prompt, setPrompt, systemInstruction } = usePrompt();
 
   const isFirstVisit = useFirstVisit();
+  const [runTutorial, setRunTutorial] = useState(false);
+
+  useEffect(() => {
+    if (isFirstVisit) {
+      setRunTutorial(true);
+    }
+  }, [isFirstVisit]);
+
   //const { toggleSidebar: toggleSidebarLeft } = useSidebar();
   //const { toggleSidebar: toggleSidebarRight } = useSidebar2();
 
@@ -101,10 +109,15 @@ export function Chat({
 
   return (
     <>
-      {isFirstVisit && <ChatTutorial />}
+      {runTutorial && (
+        <ChatTutorial run={runTutorial} setRun={setRunTutorial} />
+      )}
 
       <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader selectedModelId={selectedModelId} />
+        <ChatHeader
+          selectedModelId={selectedModelId}
+          setRunTutorial={setRunTutorial}
+        />
 
         {/* <motion.div */}
         {/*   drag="x" */}

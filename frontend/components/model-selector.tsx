@@ -1,6 +1,6 @@
 "use client";
 
-import { saveModelId } from "@/app/(home)/(chat)/action";
+import { saveModelId } from "@/app/(home)/chat/action";
 import { CheckCirclFillIcon, ChevronDownIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ export function ModelSelector({
 
   const selectModel = useMemo(
     () => models.find((model) => model.id === optimisticModelId),
-    [optimisticModelId],
+    [optimisticModelId]
   );
 
   return (
@@ -34,7 +34,7 @@ export function ModelSelector({
         asChild
         className={cn(
           "w-fit data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-          className,
+          className
         )}
       >
         <Button variant="ghost" className="md:px-2 md:h-[34px]">

@@ -45,7 +45,9 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   });
 
   useEffect(() => {
-    if (user?.id !== promptTemplateData?.creatorId) {
+    if (!user || !promptTemplateData) return;
+
+    if (user.id !== promptTemplateData.creatorId) {
       router.push("/templates");
     }
   }, [user, promptTemplateData, router]);
@@ -57,8 +59,8 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   if (isTemplateError) {
     console.error(`Test error ${templateError}`);
     return (
-      <div className="flex h-full items-center justify-center gap-4">
-        <p>An error has occured, please try again!</p>
+      <div className="flex flex-col h-full items-center justify-center gap-4">
+        <p>An error has occured, please try again! {templateError.message}</p>
         <BetterTooltip content="Refetching prompt">
           <Button onClick={() => templateRefetch()}>Reload</Button>
         </BetterTooltip>

@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const config: Record<string, string> = {
-  topic: "#fde68a",
-  additional_notes: "#bfdbfe",
+  // topic: "#fde68a",
+  // additional_notes: "#bfdbfe",
 };
 
 function getContrastTextColor(bgColor: string): string {
@@ -20,12 +20,12 @@ function getContrastTextColor(bgColor: string): string {
 }
 
 function parseTemplateText(text: string): string {
-  return text.replace(/{{(.*?)}}/g, (_, key) => `{{ ${key.trim()} }}`);
+  return text.replace(/{{(.*?)}}/g, (_, key) => `{{${key.trim()}}}`);
 }
 
 function renderHighlightedText(
   text: string,
-  isFocused: boolean,
+  isFocused: boolean
 ): JSX.Element[] {
   if (isFocused) return [];
   const parts: JSX.Element[] = [];
@@ -37,18 +37,18 @@ function renderHighlightedText(
     const before = text.slice(lastIndex, match.index);
     if (before) parts.push(<span key={lastIndex}>{before}</span>);
 
-    const key = match[1].trim();
-    const bgColor = config[key] || "#e5e7eb";
+    const matchedKey = match[1].trim();
+    const bgColor = config[matchedKey] || "#e5e7eb";
     const textColor = getContrastTextColor(bgColor);
 
     parts.push(
       <span
         key={match.index}
-        className="rounded transition-colors duration-200"
+        className="inline px-[0.675rem] rounded transition-colors duration-200"
         style={{ backgroundColor: bgColor, color: textColor }}
       >
-        {`{{ ${key} }}`}
-      </span>,
+        {matchedKey}
+      </span>
     );
 
     lastIndex = regex.lastIndex;
@@ -96,27 +96,52 @@ export default function HighlightedTextarea({
     return () => textarea.removeEventListener("scroll", syncScroll);
   }, [textareaRef]);
 
+  const inputTypeRef = useRef<string | null>(null);
+
+  const handleBeforeInput = (e: InputEvent) => {
+    inputTypeRef.current = e.inputType;
+  };
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.addEventListener(
+      "beforeinput",
+      handleBeforeInput as EventListener
+    );
+
+    return () => {
+      textarea.removeEventListener(
+        "beforeinput",
+        handleBeforeInput as EventListener
+      );
+    };
+  }, [textareaRef]);
+
   // Handle smart typing inside `onChange`
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const el = e.target;
     const text = el.value;
     const pos = el.selectionStart;
 
-    // Detect if `{{` was just typed
-    if (pos >= 2 && text.slice(pos - 2, pos) === "{{") {
-      const newText = text.slice(0, pos) + "  }}" + text.slice(pos); // Add `  }}`
-      setLocalText(newText);
+    const inputType = inputTypeRef.current;
 
-      // Move cursor between the spaces
-      requestAnimationFrame(() => {
-        if (textareaRef.current) {
-          textareaRef.current.selectionStart = pos + 1;
-          textareaRef.current.selectionEnd = pos + 1;
-        }
-      });
+    // Only auto-insert `}}` if not deleting
+    if (inputType && !inputType.startsWith("delete")) {
+      if (pos >= 2 && text.slice(pos - 2, pos) === "{{") {
+        const newText = text.slice(0, pos) + "}}" + text.slice(pos);
+        setLocalText(newText);
 
-      // Don't call onChange — you can debounce or force it on blur
-      return;
+        requestAnimationFrame(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = pos;
+            textareaRef.current.selectionEnd = pos;
+          }
+        });
+
+        return;
+      }
     }
 
     setLocalText(text);
@@ -126,16 +151,16 @@ export default function HighlightedTextarea({
   const handleBlur = () => {
     const parsed = parseTemplateText(localText);
     setLocalText(parsed);
+    onChange({ target: { value: parsed } } as ChangeEvent<HTMLTextAreaElement>);
     setFocused(false);
   };
 
   return (
-    <div className="relative w-full font-normal text-base md:text-sm leading-loose tracking-wider">
+    <div className="group relative w-full font-normal text-base md:text-sm leading-loose tracking-wider">
       <div
         ref={backdropRef}
         className={cn(
-          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 transition-opacity duration-200 pointer-events-none",
-          focused ? "opacity-0" : "opacity-100",
+          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 opacity-100 group-focus-within:opacity-0 pointer-events-none"
         )}
         aria-hidden
       >
@@ -150,8 +175,7 @@ export default function HighlightedTextarea({
         onBlur={handleBlur}
         onChange={handleChange}
         className={cn(
-          "relative z-10 bg-transparent transition-colors duration-200",
-          focused ? "text-inherit" : "text-transparent",
+          "relative z-10 bg-transparent text-transparent group-focus-within:text-inherit"
         )}
         spellCheck={false}
       />

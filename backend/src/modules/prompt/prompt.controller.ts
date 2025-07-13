@@ -12,6 +12,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { JwtAuthGuard, JwtAuthGuardOptional } from 'src/common/guard';
 import {
   PromptFilterDTO,
@@ -66,6 +67,27 @@ export class PromptController {
   @Post('evaluate')
   async evaluate(@Body() dto: PromptGenDTO, @Res() res: Response) {
     await this.promptGenService.evaluatePrompt(dto, res);
+  }
+
+  @Post(':id/view')
+  async viewPrompt(@Request() req: ExpressRequest, @Param('id') id: string) {
+    let userIp = req.ip;
+
+    if (!userIp) {
+      const xff = req.headers['x-forwarded-for'];
+      if (Array.isArray(xff)) {
+        userIp = xff[0]; // take first IP from array
+      } else if (typeof xff === 'string') {
+        userIp = xff.split(',')[0].trim(); // take first IP if comma-separated
+      }
+    }
+
+    if (!userIp) {
+      userIp = req.socket.remoteAddress ?? 'unknown';
+    }
+
+    await this.promptService.viewPrompt(id, userIp);
+    return { data: true };
   }
 
   @Get()

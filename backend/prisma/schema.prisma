@@ -79,6 +79,7 @@ model Prompt {
   systemInstruction String? // nullable
   exampleResult     Json? // nullable
   usageCount        Int      @default(0)
+  viewCount         Int      @default(0)
   creator           User     @relation(fields: [creatorId], references: [id])
   creatorId         String
   createdAt         DateTime @default(now())
@@ -167,4 +168,12 @@ model Comment {
   updatedAt DateTime @updatedAt
 
   replyComments Comment[] @relation("CommentParent")
+}
+
+model Feedback {
+  id        String   @id @default(uuid(7))
+  message   String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

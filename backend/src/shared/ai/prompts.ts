@@ -56,7 +56,7 @@ Each prompt configuration consists of:
 
 1. **Title**: A concise, descriptive name for your prompt
 2. **Description**: Detailed explanation of the prompt's purpose and usage
-3. **String Template**: The prompt template with variables in ${`varName`} format
+3. **String Template**: The prompt template with variables in {{varName}} format
 4. **Configs**: An array of configuration fields that users can modify
 
 ## Configuration Field Types
@@ -85,7 +85,7 @@ A translation prompt using dropdown, combobox and textarea might be:
 {
   "title": "Translator",
   "description": "Create translation based on the source and target languages, the tone of the translation, and the context in which the translation will be used.",
-  "stringTemplate": "Translate the following text from ${`Source Language`} to ${`Target Language`}. The translation should have a ${`Tone`} tone, suitable for ${`Context`}. Notes that ${`Additional Notes`}.",
+  "stringTemplate": "Translate the following text from {{Source Language}} to {{Target Language}}. The translation should have a {{Tone}} tone, suitable for {{Context}}. Notes that {{Additional Notes}}.",
   "configs": [
     {
       "label": "Source Language",
@@ -146,7 +146,7 @@ A Chaint of Thought prompt using array type, which we will have a thought block 
 {
   "title": "Chain-of-Thought Prompting",
   "description": "Start by providing one or few reasoning step by step examples to perform similar questions that you're asking the model. Then, provide your wanted question to the model.",
-  "stringTemplate": "Examples: ${`Examples`} \n\nHence, let's think step by step, the answer to my question ${`Question`} would be: ",
+  "stringTemplate": "Examples: {{Examples}} \n\nHence, let's think step by step, the answer to my question {{Question}} would be: ",
   "configs": [
     {
       "label": "Examples",
@@ -181,8 +181,8 @@ You will receive an original prompt and then follow these steps:
 3. Brainstorm potential enhancements for the prompt.
 4. Enhance the prompt by adding necessary context, clarifying instructions, and optimizing its structure.
 5. Ensure that the improved prompt clearly specifies the desired output format and any relevant constraints or requirements.
-6. If the original prompt contains variables (such as ${`Career Goal`} or ${`Skills`}), make sure to properly demarcate them in the improved version.
-7. If you want to add new variables, check if the orginal prompt has variables, if it's true then make sure to add them under the string template format like this: ${`New Variable`}
+6. If the original prompt contains variables (such as {{Career Goal}} or {{Skills}}), make sure to properly demarcate them in the improved version.
+7. If you want to add new variables, check if the orginal prompt has variables, if it's true then make sure to add them under the string template format like this: {{New Variable}}
 8. Consider both structured (with predefined variables) and unstructured input formats when improving the prompt.
 9. If the task is complex, break it down into smaller, more manageable steps.
 10. Include examples or sample responses if they would be helpful in clarifying the expected output.
@@ -193,10 +193,10 @@ REMEMBER: YOU MUST ONLY RETURN THE IMPROVED PROMPT, NOT THE ANALYSIS, THOUGHT PR
 Below is an example of how you should respond based on the orginal prompt (noted we have 2 types: no variables type & having variables type):
 
 Sample Input 1:
-I am seeking career advice. My career goal is ${`Career Goal`}. I possess the following skills: ${`Skills`}. My experience includes: ${`Experience`}. My education background is: ${`Education`}. My interests are: ${`Interests`}. My values are: ${`Values`}. Based on this information, what career paths might be suitable for me? What steps should I take to achieve my career goals?
+I am seeking career advice. My career goal is {{Career Goal}}. I possess the following skills: {{Skills}}. My experience includes: {{Experience}}. My education background is: {{Education}}. My interests are: {{Interests}}. My values are: {{Values}}. Based on this information, what career paths might be suitable for me? What steps should I take to achieve my career goals?
 
 Sample Output 1:
-I am seeking career advice as I work toward achieving my career goal of ${`Career Goal`}. I have developed the following skills: ${`Skills`}, and my professional experience includes: ${`Experience`}. My educational background is in ${`Education`}, and I have a strong interest in ${`Interests`}. Additionally, I value ${`Values`} and seek opportunities that align with these principles.
+I am seeking career advice as I work toward achieving my career goal of {{Career Goal}}. I have developed the following skills: {{Skills}}, and my professional experience includes: {{Experience}}. My educational background is in {{Education}}, and I have a strong interest in {{Interests}}. Additionally, I value {{Values}} and seek opportunities that align with these principles.
 
 Given this information, I would appreciate guidance on the following:
 What career paths are best suited for someone with my background and skills?
@@ -237,8 +237,8 @@ You are a prompt improvement assistant. Your task is to analyze and enhance user
 Follow these steps:
 1. Identify ambiguity, vagueness, or lack of context in the prompt.
 2. Rewrite the prompt to improve clarity, precision, and intent.
-3. If the prompt includes variables (e.g., \${\`Goal\`}), retain or enhance their use.
-4. Optionally, introduce new helpful variables using \${\`New Variable\`} format if necessary.
+3. If the prompt includes variables (e.g., {{Goal}}), retain or enhance their use.
+4. Optionally, introduce new helpful variables using {{New Variable}} format if necessary.
 5. Break down multi-part prompts into numbered or bulleted instructions if it improves readability.
 6. Add any useful output format instructions or context that would help guide the AI.
 

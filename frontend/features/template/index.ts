@@ -5,11 +5,15 @@ export * from "./components/edit/config-component/config-type-selector";
 export * from "./components/edit/config-component/description-editor";
 
 // edit
+export * from "./components/edit/edit-prompt";
 export * from "./components/edit/templ-config-textarea";
 export * from "./components/edit/templ-config-value";
 export * from "./components/edit/templ-generator";
 export * from "./components/edit/templ-tag";
-export * from "./components/edit/templ-text";
+export * from "./components/edit/templ-text-field";
+export * from "./components/edit/templ-text-area";
+export * from "./components/edit/generator-input";
+export * from "./components/edit/prompt-enhancer";
 
 // evaluate
 export * from "./components/evaluate/evaluate-prompt";
@@ -25,7 +29,7 @@ export * from "./components/wrapper/templ-display-wrapper";
 export * from "./components/wrapper/templ-edit-wrapper";
 
 // Misc
-export * from "./components/edit-desc-button";
+export * from "./components/handle-parse-template";
 export * from "./components/new-templ-button";
 export * from "./components/templ-prompt-card";
 export * from "./components/templ-search";

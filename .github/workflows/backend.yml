@@ -2,8 +2,8 @@ name: Deploy Backend
 
 on:
   push:
-    branches:
-      - "*"
+    branches-ignore:
+      - main
     paths:
       - "backend/**"
   pull_request:

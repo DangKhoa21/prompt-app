@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   ConfigMapping,
+  deserializeResultConfigData,
   serializeMultipleResultsConfigData,
 } from "@/lib/utils/utils.details";
 import {
@@ -68,6 +69,50 @@ export function EvaluatePrompt() {
     filledCount: 0,
     totalCount: 0,
   });
+
+  useEffect(() => {
+    if (!template.exampleResult) return;
+    const deserialized = deserializeResultConfigData(template.exampleResult);
+
+    if (!deserialized) return;
+
+    // Step 2: Generate config values
+    const entries: Record<string, ConfigMapping[]> = {};
+    deserialized.forEach((result, index) => {
+      const entry: ConfigMapping[] = [];
+
+      Object.entries(result.selectedValues).forEach(([key, value]) => {
+        entry.push({ label: key, type: ConfigType.DROPDOWN, value });
+      });
+
+      Object.entries(result.textareaValues).forEach(([key, value]) => {
+        entry.push({ label: key, type: ConfigType.TEXTAREA, value });
+      });
+
+      Object.entries(result.arrayValues).forEach(([key, array]) => {
+        array.forEach((item, arrayIndex) => {
+          entry.push({
+            label: `${key} ${arrayIndex + 1}`,
+            type: ConfigType.ARRAY,
+            value: item.values.join(", "),
+          });
+        });
+      });
+
+      entries[index] = entry;
+    });
+
+    // Step 3: Final result only runs once
+    const results = deserialized.map((result, index) => ({
+      id: result.promptId,
+      configValues: entries[index],
+      result: result.exampleResult,
+      timestamp: new Date().toISOString(),
+      selected: true,
+    }));
+
+    setEvaluationResults(results);
+  }, [template.exampleResult]);
 
   const promptResultsRef = useRef<Record<string, HTMLDivElement | null>>({});
   const suggestImprovePromptRef = useRef<HTMLDivElement>(null);
@@ -198,6 +243,17 @@ export function EvaluatePrompt() {
   };
 
   const handleSelectResult = (resultId: string) => {
+    if (
+      evaluationResults.filter((result) => {
+        return result.selected;
+      }).length >= 3
+    ) {
+      toast.error(
+        "You can only get max of 3 example results, please remove some to add new!",
+      );
+      return;
+    }
+
     const updatedResults = evaluationResults.map((result) => ({
       ...result,
       selected: result.id === resultId ? !result.selected : result.selected,
@@ -368,7 +424,7 @@ export function EvaluatePrompt() {
             Evaluation Results
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 max-h-[500px] overflow-y-auto">
+        <CardContent className="space-y-4 max-h-[800px] overflow-y-auto">
           {evaluationResults.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
               No evaluations yet. Run the prompt with different configurations

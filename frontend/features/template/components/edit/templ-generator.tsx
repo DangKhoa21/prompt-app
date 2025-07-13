@@ -20,11 +20,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Textarea } from "@/components/ui/textarea";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { useTemplate } from "@/context/template-context";
-import { ConfigType } from "@/features/template";
+import { ConfigType, GeneratorInput } from "@/features/template";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
@@ -92,31 +91,6 @@ export function TemplateGenerator() {
     },
   });
 
-  function GeneratorInput() {
-    return (
-      <Textarea
-        //ref={textareaRef}
-        placeholder="Create a prompt that..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
-        rows={3}
-        autoFocus
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-
-            if (isLoading) {
-              toast.error("Please wait for the AI to finish its generating!");
-            } else {
-              submit({ prompt: input });
-            }
-          }
-        }}
-      />
-    );
-  }
-
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -142,7 +116,13 @@ export function TemplateGenerator() {
           </DrawerHeader>
 
           <div className="p-2 ">
-            <GeneratorInput />
+            <GeneratorInput
+              input={input}
+              setInput={setInput}
+              isLoading={isLoading}
+              submit={submit}
+              placeholder="e.g., 'Create a prompt that generates creative writing prompts', 'Generate a template for coding challenges', etc."
+            />
           </div>
 
           <DrawerFooter className="pt-2">
@@ -193,7 +173,13 @@ export function TemplateGenerator() {
             least 20 characters. Click Generate when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <GeneratorInput />
+        <GeneratorInput
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          submit={submit}
+          placeholder="e.g., 'Create a prompt that generates creative writing prompts', 'Generate a template for coding challenges', etc."
+        />
         <DialogFooter>
           {isLoading ? (
             <Button

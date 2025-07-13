@@ -56,10 +56,10 @@ export function EditTextField({
           className={cn(
             "md:basis-4/5 text-lg font-normal p-2 w-full text-wrap rounded-md",
             editable ? " hover:bg-accent" : "",
-            className,
+            className
           )}
         >
-          {text}
+          {text || "Click to add title..."}
         </div>
       )}
     </div>

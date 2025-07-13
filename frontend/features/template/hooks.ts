@@ -78,7 +78,7 @@ export const useDeletePromptTemplate = () => {
     mutationFn: deletePromptTemplate,
     onSuccess: (deletedId) => {
       console.log("Deleting prompt template: ", deletedId);
-      queryClient.invalidateQueries({ queryKey: ["templates"] });
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
       console.error("Error creating template:", error);
@@ -111,7 +111,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        },
+        }
       );
 
       queryClient.invalidateQueries({
@@ -152,7 +152,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        },
+        }
       );
 
       queryClient.invalidateQueries({

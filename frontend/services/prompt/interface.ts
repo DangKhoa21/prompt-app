@@ -9,6 +9,7 @@ export interface Prompt {
   systemInstruction: string | null;
   exampleResult: string | null;
   usageCount: number;
+  viewCount: number;
   creatorId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -74,6 +75,7 @@ export interface PromptTemplate {
   description: string;
   stringTemplate: string;
   systemInstruction?: string | null;
+  exampleResult?: string;
   creatorId: string;
 }
 

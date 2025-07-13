@@ -10,12 +10,18 @@ import { PromptCard } from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
 import { User } from "@/services/user/interface";
 import { useQueryClient } from "@tanstack/react-query";
-import { Compass, PencilRuler, Plus } from "lucide-react";
+import { CircleHelp, Compass, PencilRuler, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
 
-export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
+export function ChatHeader({
+  selectedModelId,
+  setRunTutorial,
+}: {
+  selectedModelId: string;
+  setRunTutorial: (val: boolean) => void;
+}) {
   const { isAuthenticated } = useAuth();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
@@ -83,6 +89,19 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
         <Separator orientation="vertical" className="h-4" />
 
         <ModelSelector selectedModelId={selectedModelId} />
+
+        <Separator orientation="vertical" className="h-4" />
+
+        <BetterTooltip content={"Show tutorial again"}>
+          <Button
+            variant="ghost"
+            className="h-8 w-8"
+            onClick={() => setRunTutorial(true)}
+            aria-label="Show tutorial again"
+          >
+            <CircleHelp />
+          </Button>
+        </BetterTooltip>
 
         <div className="flex items-center gap-2 ml-auto">
           {isAuthenticated && (

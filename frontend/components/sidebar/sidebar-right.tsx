@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Sidebar2, SidebarRail2 } from "@/components/ui/sidebar2";
-import { PromptGeneratorSidebar } from "@/components/prompt/prompt-generator";
+import { PromptGeneratorSidebar } from "@/components/prompt/prompt-generator-sidebar";
 
 export function SidebarRight({
   ...props
