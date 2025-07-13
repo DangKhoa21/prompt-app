@@ -12,6 +12,7 @@ import { PromptPinModule } from './modules/prompt-pin/prompt-pin.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { OptionModule } from './modules/option/option.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CommentModule } from './modules/comment/comment.module';
     UploadModule,
     OptionModule,
     CommentModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
