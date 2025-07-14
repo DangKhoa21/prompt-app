@@ -1,13 +1,19 @@
 import { SidebarRight } from "@/components/sidebar/sidebar-right";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { SidebarProvider2 } from "@/components/ui/sidebar2";
+import { appURL } from "@/config/url.config";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: appURL.chat,
+  },
+
   title: "New Chat",
-  description: "Powerful UI for promptings",
+  description:
+    "Start a new AI conversation and craft powerful prompts effortlessly with Prompt Crafter.",
 };
 
 export default function PromptChatLayout({

@@ -6,6 +6,7 @@ import ConfirmDialog from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { appURL } from "@/config/url.config";
 import { useDeletePromptTemplate } from "@/features/template";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -20,7 +21,7 @@ export function TemplatesIdHeader({ id }: { id: string }) {
     toast.promise(deletePromptTemplate, {
       loading: "Deleting prompt template...",
       success: () => {
-        router.push("/templates");
+        router.push(appURL.templates);
         router.refresh();
         return "Prompt template deleted successfully";
       },

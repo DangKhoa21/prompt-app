@@ -8,13 +8,11 @@ import {
   Play,
   Shield,
   Sparkles,
-  Star,
   Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +22,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { features, stats, techniques, testimonials } from "@/constants/home";
+import { appConfig } from "@/config/app.config";
+import { appURL } from "@/config/url.config";
+import { features, stats, techniques } from "@/constants/home";
 
 export default function HomePage() {
+  const { name } = appConfig;
+
+  const links = [
+    {
+      name: "Marketplace",
+      url: appURL.marketplace,
+    },
+    {
+      name: "Templates",
+      url: appURL.templates,
+    },
+    {
+      name: "Techniques",
+      url: appURL.techniques,
+    },
+    {
+      name: "Chat",
+      url: appURL.chat,
+    },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -40,44 +61,27 @@ export default function HomePage() {
                   alt="Website logo"
                   width={32}
                   height={32}
-                  className=""
                 />
-                {/* <Sparkles className="h-5 w-5 text-primary-foreground" /> */}
               </div>
-              <span className="text-xl font-bold">Prompt Crafter</span>
+              <span className="text-xl font-bold">{name}</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <Link
-                href="/marketplace"
-                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
-              >
-                Marketplace
-              </Link>
-              <Link
-                href="/templates"
-                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
-              >
-                Templates
-              </Link>
-              <Link
-                href="/techniques"
-                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
-              >
-                Techniques
-              </Link>
-              <Link
-                href="/chat"
-                className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
-              >
-                Chat
-              </Link>
+              {links.map(({ name, url }) => (
+                <Link
+                  key={`url-${name}`}
+                  href={url}
+                  className="text-foreground/90 hover:text-foreground hover:underline transition-colors"
+                >
+                  {name}
+                </Link>
+              ))}
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" asChild>
-                <Link href="/login">Sign In</Link>
+                <Link href={appURL.login}>Sign In</Link>
               </Button>
               <Button asChild>
-                <Link href="/register">Get Started</Link>
+                <Link href={appURL.signup}>Get Started</Link>
               </Button>
             </div>
           </div>
@@ -104,7 +108,10 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8" asChild>
-                <Link href="/marketplace" aria-label="Explore Marketplace">
+                <Link
+                  href={appURL.marketplace}
+                  aria-label="Explore Marketplace"
+                >
                   Explore Marketplace
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -115,7 +122,7 @@ export default function HomePage() {
                 className="text-lg px-8 bg-transparent"
                 asChild
               >
-                <Link href="/chat">
+                <Link href={appURL.chat}>
                   <Play className="mr-2 h-5 w-5" />
                   Try Live Demo
                 </Link>
@@ -128,7 +135,7 @@ export default function HomePage() {
       {/* Stats Section */}
       <section className="py-16 border-y">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
@@ -232,7 +239,7 @@ export default function HomePage() {
           </div>
           <div className="text-center mt-12">
             <Button size="lg" variant="outline" asChild>
-              <Link href="/techniques">
+              <Link href={appURL.techniques}>
                 View All Techniques
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
@@ -242,58 +249,58 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Trusted by Professionals
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of AI practitioners who&apos;ve transformed their
-              workflow with Prompt Crafter.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-md">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarImage
-                        src={testimonial.avatar || "/placeholder.svg"}
-                        alt={`Avatar of ${testimonial.name}`}
-                        loading="lazy"
-                      />
-                      <AvatarFallback>
-                        {testimonial.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {testimonial.role} at {testimonial.company}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    &quot;{testimonial.content}&quot;
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* <section className="py-20"> */}
+      {/*   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> */}
+      {/*     <div className="text-center mb-16"> */}
+      {/*       <h2 className="text-3xl md:text-4xl font-bold mb-4"> */}
+      {/*         Trusted by Professionals */}
+      {/*       </h2> */}
+      {/*       <p className="text-xl text-muted-foreground max-w-2xl mx-auto"> */}
+      {/*         Join thousands of AI practitioners who&apos;ve transformed their */}
+      {/*         workflow with {name}. */}
+      {/*       </p> */}
+      {/*     </div> */}
+      {/*     <div className="grid md:grid-cols-3 gap-8"> */}
+      {/*       {testimonials.map((testimonial, index) => ( */}
+      {/*         <Card key={index} className="border-0 shadow-md"> */}
+      {/*           <CardHeader> */}
+      {/*             <div className="flex items-center gap-4"> */}
+      {/*               <Avatar> */}
+      {/*                 <AvatarImage */}
+      {/*                   src={testimonial.avatar || "/placeholder.svg"} */}
+      {/*                   alt={`Avatar of ${testimonial.name}`} */}
+      {/*                   loading="lazy" */}
+      {/*                 /> */}
+      {/*                 <AvatarFallback> */}
+      {/*                   {testimonial.name.charAt(0)} */}
+      {/*                 </AvatarFallback> */}
+      {/*               </Avatar> */}
+      {/*               <div> */}
+      {/*                 <div className="font-semibold">{testimonial.name}</div> */}
+      {/*                 <div className="text-sm text-muted-foreground"> */}
+      {/*                   {testimonial.role} at {testimonial.company} */}
+      {/*                 </div> */}
+      {/*               </div> */}
+      {/*             </div> */}
+      {/*             <div className="flex gap-1"> */}
+      {/*               {[...Array(testimonial.rating)].map((_, i) => ( */}
+      {/*                 <Star */}
+      {/*                   key={i} */}
+      {/*                   className="h-4 w-4 fill-amber-400 text-amber-400" */}
+      {/*                 /> */}
+      {/*               ))} */}
+      {/*             </div> */}
+      {/*           </CardHeader> */}
+      {/*           <CardContent> */}
+      {/*             <p className="text-muted-foreground"> */}
+      {/*               &quot;{testimonial.content}&quot; */}
+      {/*             </p> */}
+      {/*           </CardContent> */}
+      {/*         </Card> */}
+      {/*       ))} */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* </section> */}
 
       {/* Benefits Section */}
       <section className="py-20">
@@ -301,7 +308,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Why Choose Prompt Crafter?
+                Why Choose {name}?
               </h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -407,7 +414,7 @@ export default function HomePage() {
               className="text-lg px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary bg-transparent"
               asChild
             >
-              <Link href="/marketplace">Explore Marketplace</Link>
+              <Link href={appURL.marketplace}>Explore Marketplace</Link>
             </Button>
           </div>
           {/* <p className="text-sm opacity-75 mt-6"> */}
@@ -425,9 +432,7 @@ export default function HomePage() {
                 <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
                   <Sparkles className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-white">
-                  Prompt Crafter
-                </span>
+                <span className="text-xl font-bold text-white">{name}</span>
               </div>
               <p className="text-slate-400 mb-4">
                 The ultimate platform for mastering AI prompt engineering and
@@ -439,7 +444,7 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/marketplace"
+                    href={appURL.marketplace}
                     className="hover:text-white transition-colors"
                   >
                     Marketplace
@@ -447,7 +452,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/templates"
+                    href={appURL.templates}
                     className="hover:text-white transition-colors"
                   >
                     Templates
@@ -455,7 +460,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/techniques"
+                    href={appURL.techniques}
                     className="hover:text-white transition-colors"
                   >
                     Techniques
@@ -463,7 +468,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/chat"
+                    href={appURL.chat}
                     className="hover:text-white transition-colors"
                   >
                     AI Chat
@@ -511,14 +516,14 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold text-white mb-4">Company</h3>
               <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/about"
-                    className="hover:text-white transition-colors"
-                  >
-                    About
-                  </Link>
-                </li>
+                {/* <li> */}
+                {/*   <Link */}
+                {/*     href="/about" */}
+                {/*     className="hover:text-white transition-colors" */}
+                {/*   > */}
+                {/*     About */}
+                {/*   </Link> */}
+                {/* </li> */}
                 {/* <li> */}
                 {/*   <Link */}
                 {/*     href="/careers" */}
@@ -547,7 +552,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 Prompt Crafter. All rights reserved.</p>
+            <p>&copy; 2025 {name}. All rights reserved.</p>
           </div>
         </div>
       </footer>

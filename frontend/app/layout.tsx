@@ -5,8 +5,9 @@ import AppProviders from "@/providers/app-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { GOOGLE_ANALYTICS_ID, IS_PRODUCTION } from "@/config";
+import { appConfig } from "@/config/app.config";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -23,46 +24,46 @@ const geistMono = localFont({
 
 // TODO: change metadataBase url to github link
 export const metadata: Metadata = {
-  title: "Prompt App",
-  description: "Powerful UI for promptings",
-  keywords: [
-    "AI",
-    "prompting",
-    "chat interface",
-    "LLM UI",
-    "prompt engineering",
-  ],
-  authors: [
-    { name: "Hao Nhat", url: "https://www.facebook.com/haonhatht/" },
-    { name: "Dang Khoa", url: "https://www.facebook.com/ng.khoa21" },
-  ],
-  creator: "Prompt Crafter",
-  metadataBase: new URL("https://promptcrafter.studio"),
+  metadataBase: new URL(appConfig.seo.url),
+  alternates: {
+    canonical: "/",
+  },
 
-  // openGraph: {
-  //   title: "Prompt Chat - Powerful UI for Promptings",
-  //   description: "Explore advanced chat interfaces designed for prompt engineering.",
-  //   url: "https://promptcrafter.studio/chat",
-  //   siteName: "Prompt Chat",
-  //   // images: [
-  //   //   {
-  //   //     url: "https://yourdomain.com/og-image.png",
-  //   //     width: 1200,
-  //   //     height: 630,
-  //   //     alt: "Prompt Chat Preview",
-  //   //   },
-  //   // ],
-  //   locale: "en_US",
-  //   type: "website",
-  // },
-  //
-  // twitter: {
-  //   card: "summary_large_image",
-  //   title: "Prompt Chat",
-  //   description: "Powerful UI for promptings",
-  //   images: ["https://yourdomain.com/twitter-card.png"],
-  //   creator: "@yourTwitterHandle",
-  // },
+  title: {
+    default: appConfig.title,
+    template: `%s - ${appConfig.title}`,
+  },
+  description: appConfig.description,
+  keywords: appConfig.keywords,
+  authors: { name: appConfig.authors.map(({ name }) => name).join(", ") },
+  creator: appConfig.creator,
+
+  openGraph: {
+    locale: "en_US",
+    type: "website",
+    title: appConfig.title,
+    description: appConfig.description,
+    url: "https://promptcrafter.studio/",
+    siteName: appConfig.name,
+    images: `${appConfig.seo.url}/logo.png`,
+    // images: [
+    //   {
+    //     url: "https://yourdomain.com/og-image.png",
+    //     width: 1200,
+    //     height: 630,
+    //     alt: "Prompt Chat Preview",
+    //   },
+    // ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: appConfig.title,
+    description: appConfig.description,
+    images: `${appConfig.seo.url}/logo.png`,
+    // images: ["https://yourdomain.com/twitter-card.png"],
+    creator: `@${appConfig.name.replace(" ", "")}`,
+  },
 
   robots: {
     index: true,

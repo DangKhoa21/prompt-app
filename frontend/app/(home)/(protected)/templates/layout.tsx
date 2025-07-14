@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Your Templates",
+  title: "Templates",
   description: "Configuring your Template",
 };
 

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Forgot Password",
-  description: "Powerful UI for promptings",
+  description: "Reset your password",
 };
 
 export default function LoginLayout({

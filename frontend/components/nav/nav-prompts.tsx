@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { appURL } from "@/config/url.config";
 import { useUnpinPrompt } from "@/features/template";
 import { getPinnedPrompts } from "@/services/prompt-pin";
 import { PromptPinItem } from "@/services/prompt-pin/interface";
@@ -40,7 +41,7 @@ export function NavPrompts({ isAuthenticated }: { isAuthenticated: boolean }) {
   });
 
   const handlePromptChange = (promptId: string) => {
-    if (pathname === "/" || pathname.includes("/chat")) {
+    if (pathname === "/" || pathname.includes(appURL.chat)) {
       const params = new URLSearchParams(searchParams.toString());
       params.set("promptId", promptId);
       window.history.replaceState(null, "", `?${params.toString()}`);

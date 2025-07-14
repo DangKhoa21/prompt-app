@@ -1,6 +1,16 @@
 "use client";
 
+import {
+  CheckCircle,
+  Clock,
+  Github,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+} from "lucide-react";
 import type React from "react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,42 +31,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  CheckCircle,
-  Clock,
-  Github,
-  // HelpCircle,
-  Linkedin,
-  Mail,
-  MapPin,
-  MessageSquare,
-  Phone,
-  Send,
-  Twitter,
-} from "lucide-react";
-import { useState } from "react";
+import { appConfig } from "@/config/app.config";
+import Link from "next/link";
+import { sendFeedback } from "@/services/feedback";
+import { toast } from "sonner";
 
 const contactMethods = [
   {
     icon: Mail,
-    title: "Email Support",
+    title: "Contact member",
     description: "Get help from our support team",
-    contact: "support@promptcraft.ai",
+    contact: "htnhao21@apcs.fitus.edu.vn",
     availability: "24/7 response within 4 hours",
   },
   {
-    icon: MessageSquare,
-    title: "Live Chat",
-    description: "Chat with us in real-time",
-    contact: "Available in app",
-    availability: "Mon-Fri, 9AM-6PM PST",
+    icon: Mail,
+    title: "Contact member",
+    description: "Get help from our support team",
+    contact: "nldkhoa21@apcs.fitus.edu.vn",
+    availability: "24/7 response within 4 hours",
   },
   {
-    icon: Phone,
-    title: "Phone Support",
-    description: "Speak directly with our team",
-    contact: "+1 (555) 123-4567",
-    availability: "Enterprise customers only",
+    icon: Mail,
+    title: "Contact leader",
+    description: "Get help from our support team",
+    contact: "nhkhanh@fit.hcmus.edu.vn",
+    availability: "24/7 response within 4 hours",
   },
 ];
 
@@ -68,20 +68,6 @@ const offices = [
     phone: "+1 (555) 123-4567",
     email: "sf@promptcraft.ai",
   },
-  // {
-  //   city: "New York",
-  //   address: "456 Tech Avenue, Floor 12",
-  //   zipCode: "New York, NY 10001",
-  //   phone: "+1 (555) 987-6543",
-  //   email: "ny@promptcraft.ai",
-  // },
-  // {
-  //   city: "London",
-  //   address: "789 AI Street, Level 8",
-  //   zipCode: "London, UK EC2A 4DP",
-  //   phone: "+44 20 1234 5678",
-  //   email: "london@promptcraft.ai",
-  // },
 ];
 
 const inquiryTypes = [
@@ -91,6 +77,10 @@ const inquiryTypes = [
   { value: "partnership", label: "Partnership" },
   { value: "press", label: "Press & Media" },
   { value: "careers", label: "Careers" },
+];
+
+const socialLinks = [
+  { name: "Github", url: appConfig.links.github, Icon: Github },
 ];
 
 export default function ContactPage() {
@@ -113,11 +103,23 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const submitMessage = `Subject: ${formData.subject}\nCustomer ${formData.name}, from company: ${formData.company}, type of feedback: ${formData.inquiryType}\n\n${formData.message}`;
+
+    try {
+      const { id } = await sendFeedback({
+        email: formData.email,
+        message: submitMessage,
+      });
+
+      console.log("Feedback saved with ID:", id);
+
       setIsSubmitted(true);
-    }, 2000);
+    } catch (error) {
+      toast.error("Failed to send feedback.");
+      console.error("Error sending feedback", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -362,11 +364,16 @@ export default function ContactPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex gap-4">
-                {[Twitter, Linkedin, Github].map((Icon, i) => (
-                  <Button key={i} variant="outline" size="icon" asChild>
-                    <a href="#" target="_blank" rel="noopener noreferrer">
+                {socialLinks.map(({ name, url, Icon }, i) => (
+                  <Button
+                    key={`${i.toString()}-${name}`}
+                    variant="outline"
+                    size="icon"
+                    asChild
+                  >
+                    <Link href={url} target="_blank" rel="noopener noreferrer">
                       <Icon className="h-4 w-4" />
-                    </a>
+                    </Link>
                   </Button>
                 ))}
               </CardContent>

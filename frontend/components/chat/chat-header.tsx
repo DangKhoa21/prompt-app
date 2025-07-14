@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarTrigger2 } from "@/components/ui/sidebar2";
 import { BetterTooltip } from "@/components/ui/tooltip";
+import { appURL } from "@/config/url.config";
 import { useAuth } from "@/context/auth-context";
 import { getPrompts } from "@/services/prompt";
 import { PromptCard } from "@/services/prompt/interface";
@@ -119,7 +120,7 @@ export function ChatHeader({
           )}
           <div ref={triggerMarketplaceRef} onMouseEnter={prefetchPrompts}>
             {/* <div> */}
-            <Link href="/marketplace">
+            <Link href={appURL.marketplace}>
               <Button variant="ghost" className="h-8 p-2">
                 <Compass />
                 {!isMobile && "Marketplace"}

@@ -1,3 +1,4 @@
+import { appConfig } from "@/config/app.config";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -25,7 +26,7 @@ export const Overview = () => {
           You can start exploring our project more by visiting our{" "}
           <Link
             className="font-semibold underline underline-offset-4"
-            href="https://github.com/DangKhoa21/prompt-app"
+            href={appConfig.links.github}
             target="_blank"
           >
             GitHub

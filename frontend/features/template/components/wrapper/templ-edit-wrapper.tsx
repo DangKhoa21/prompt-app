@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { BetterTooltip } from "@/components/ui/tooltip";
+import { appURL } from "@/config/url.config";
 import { TemplateEditSection } from "@/features/template";
 import {
-  getPromptTemplate,
-  getTags,
-  getTagsForTemplate,
+    getPromptTemplate,
+    getTags,
+    getTagsForTemplate,
 } from "@/services/prompt";
 import { getUserProfile } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
@@ -48,7 +49,7 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     if (!user || !promptTemplateData) return;
 
     if (user.id !== promptTemplateData.creatorId) {
-      router.push("/templates");
+      router.push(appURL.templates);
     }
   }, [user, promptTemplateData, router]);
 

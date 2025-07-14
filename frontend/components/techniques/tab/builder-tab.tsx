@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Technique, TechniqueBuilder } from "@/types/techniques/technique";
+import { appURL } from "@/config/url.config";
 
 interface BuilderTabProps {
   technique: Technique;
@@ -217,7 +218,7 @@ export function BuilderTab({
                       Save as Template
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href="/chat">
+                      <Link href={appURL.chat}>
                         <ArrowRight className="h-4 w-4 mr-2" />
                         Test in Chat
                       </Link>

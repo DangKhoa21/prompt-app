@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Sign up",
-  description: "Powerful UI for promptings",
+  description: "Sign up for new users",
 };
 
 export default function SignUpLayout({
