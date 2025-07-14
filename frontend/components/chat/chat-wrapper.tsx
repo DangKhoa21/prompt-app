@@ -31,9 +31,9 @@ export function ChatWrapper({
   useEffect(() => {
     if (messagesError) {
       toastIdRef.current = toast.error(
-        `Failed to load messages for chat ${id} (${messagesError.message})`,
+        `Failed to load messages for chat ${id} (${messagesError.message})`
       );
-      router.replace("/");
+      router.replace("/chat");
     } else if (!messagesLoading && toastIdRef.current) {
       toast.dismiss(toastIdRef.current);
       toastIdRef.current = null;

@@ -20,16 +20,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Textarea } from "@/components/ui/textarea";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { useTemplate } from "@/context/template-context";
-import { ConfigType } from "@/features/template";
+import { ConfigType, GeneratorInput } from "@/features/template";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Sparkles } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
@@ -122,6 +121,7 @@ export function TemplateGenerator() {
               setInput={setInput}
               isLoading={isLoading}
               submit={submit}
+              placeholder="e.g., 'Create a prompt that generates creative writing prompts', 'Generate a template for coding challenges', etc."
             />
           </div>
 
@@ -178,6 +178,7 @@ export function TemplateGenerator() {
           setInput={setInput}
           isLoading={isLoading}
           submit={submit}
+          placeholder="e.g., 'Create a prompt that generates creative writing prompts', 'Generate a template for coding challenges', etc."
         />
         <DialogFooter>
           {isLoading ? (
@@ -199,40 +200,5 @@ export function TemplateGenerator() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function GeneratorInput({
-  input,
-  setInput,
-  isLoading,
-  submit,
-}: {
-  input: string;
-  setInput: Dispatch<SetStateAction<string>>;
-  isLoading: boolean;
-  submit: (input: any) => void;
-}) {
-  return (
-    <Textarea
-      //ref={textareaRef}
-      placeholder="Create a prompt that..."
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      className="min-h-[200px] max-h-[calc(75dvh)] overflow-auto resize-none rounded-xl !text-base bg-muted"
-      rows={3}
-      autoFocus
-      onKeyDown={(event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-
-          if (isLoading) {
-            toast.error("Please wait for the AI to finish its generating!");
-          } else {
-            submit({ prompt: input });
-          }
-        }
-      }}
-    />
   );
 }
