@@ -63,9 +63,6 @@ export function PromptGeneratorSidebar() {
 
   const createShareOptionMutation = useMutation({
     mutationFn: createShareOption,
-    onSuccess: () => {
-      toast.success("Create share option successfully");
-    },
     onError: (e) => {
       if (e.message) {
         toast.error(e.message);
@@ -228,7 +225,7 @@ export function PromptGeneratorSidebar() {
             url.search = params.toString();
 
             const encodedUrl = encodeURIComponent(url.toString());
-            const sharedUrl = `https://www.promptcrafter.studio/?redirect=${encodedUrl}`;
+            const sharedUrl = `https://www.promptcrafter.studio/chat?redirect=${encodedUrl}`;
             navigator.clipboard.writeText(sharedUrl);
 
             return "Creating share option successfully, shareable URL copied to clipboard!";

@@ -27,11 +27,13 @@ import { toast } from "sonner";
 
 export const useCreatePromptTemplate = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: createPromptTemplate,
     onSuccess: (newTemplateId: string) => {
       router.push(`/templates/${newTemplateId}`);
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
       console.error("Error creating template:", error);
@@ -40,10 +42,13 @@ export const useCreatePromptTemplate = () => {
 };
 
 export const useUpdatePromptTemplate = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updatePromptTemplate,
     onSuccess: (res: boolean) => {
       console.log("Updating prompt template status: ", res);
+      queryClient.refetchQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
       console.error("Error updating template:", error);
@@ -78,7 +83,7 @@ export const useDeletePromptTemplate = () => {
     mutationFn: deletePromptTemplate,
     onSuccess: (deletedId) => {
       console.log("Deleting prompt template: ", deletedId);
-      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+      queryClient.refetchQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
       console.error("Error creating template:", error);

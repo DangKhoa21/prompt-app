@@ -3,7 +3,7 @@ import { defineConfig } from "wxt";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   manifest: {
-    permissions: ["sidePanel", "storage", "tabs", "identity"],
+    permissions: ["sidePanel", "storage", "tabs"],
     action: {},
     name: "Prompt Crafter",
     description: "A helpful tool for quicker prompting",
