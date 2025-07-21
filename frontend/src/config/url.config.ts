@@ -1,4 +1,6 @@
 export const appURL = {
+  base: "/",
+
   marketplace: "/marketplace",
   templates: "/templates",
   techniques: "/techniques",

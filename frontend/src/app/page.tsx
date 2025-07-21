@@ -562,7 +562,8 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/privacy"
+                    // href="/privacy"
+                    href="https://www.freeprivacypolicy.com/live/efd0d244-802c-4be5-aa5a-d36fa038dcee"
                     className="hover:text-white transition-colors"
                   >
                     Privacy

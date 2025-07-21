@@ -11,7 +11,7 @@ import { PromptCard } from "@/services/prompt/interface";
 import { Paginated } from "@/services/shared";
 import { User } from "@/services/user/interface";
 import { useQueryClient } from "@tanstack/react-query";
-import { CircleHelp, Compass, PencilRuler, Plus } from "lucide-react";
+import { CircleHelp, Compass, House, PencilRuler, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import { useWindowSize } from "usehooks-ts";
@@ -90,6 +90,20 @@ export function ChatHeader({
         <Separator orientation="vertical" className="h-4" />
 
         <ModelSelector selectedModelId={selectedModelId} />
+
+        <Separator orientation="vertical" className="h-4" />
+
+        <BetterTooltip content={"Back to home"}>
+          <Link href={appURL.base}>
+            <Button
+              variant="ghost"
+              className="h-8 w-8"
+              aria-label="Back to home"
+            >
+              <House />
+            </Button>
+          </Link>
+        </BetterTooltip>
 
         <Separator orientation="vertical" className="h-4" />
 
