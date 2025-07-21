@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { SidebarContent } from "@/components/ui/sidebar";
+import { Label } from "@/components/ui/label";
+import {
+  SidebarContent,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+} from "@/components/ui/sidebar";
 import { techniques } from "@/constants/techniques";
 import { usePrompt } from "@/context/prompt-context";
 import { Technique } from "@/types/techniques/technique";
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,60 +22,82 @@ export function TechniqueTabContent() {
     <>
       <SidebarContent className="p-4 overflow-y-auto">
         {!selectedTechnique ? (
-          <div>
-            <h2 className="text-lg font-semibold mt-4 mb-2">
-              Prompt Techniques
-            </h2>
-            <div className="flex flex-col gap-2">
-              {techniques.map((tech) => (
-                <Button
-                  key={tech.id}
-                  variant="outline"
-                  className="flex justify-start gap-2"
-                  onClick={() => setSelectedTechnique(tech)}
-                >
-                  {tech.icon}
-                  <div className="text-left truncate">
-                    <p className="font-semibold">{tech.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {tech.description}
-                    </p>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </div>
+          <>
+            <SidebarGroupLabel>
+              <Label htmlFor="prompt-techniques">Prompt Techniques</Label>
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="px-3">
+              <div className="flex flex-col gap-2">
+                {techniques.map((tech) => (
+                  <Button
+                    key={tech.id}
+                    variant="outline"
+                    className="flex justify-start gap-2"
+                    onClick={() => setSelectedTechnique(tech)}
+                  >
+                    {tech.icon}
+                    <div className="text-left truncate">
+                      <p className="font-semibold">{tech.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {tech.description}
+                      </p>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </SidebarGroupContent>
+          </>
         ) : (
-          <div>
-            <h2 className="text-lg font-semibold mb-1">
-              {selectedTechnique.name}
-            </h2>
-            <p className="text-sm text-muted-foreground mb-2">
-              {selectedTechnique.description}
-            </p>
-            <div className="mb-3">
-              <p className="font-semibold">Use Case:</p>
+          <>
+            <SidebarGroupLabel>
+              <Label htmlFor="prompt-techniques" className="w-full">
+                <div className="flex items-center justify-between">
+                  {selectedTechnique.name}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedTechnique(null);
+                    }}
+                  >
+                    <ArrowLeft />
+                  </Button>
+                </div>
+              </Label>
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="px-3">
+              <p className="text-sm mb-2">{selectedTechnique.description}</p>
+            </SidebarGroupContent>
+
+            <SidebarGroupLabel>
+              <Label htmlFor="prompt-techniques">Use Case:</Label>
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="px-3">
               <p className="text-sm mb-2">{selectedTechnique.useCase}</p>
-            </div>
-            <div className="mb-3">
-              <p className="font-semibold">Prompt Template:</p>
+            </SidebarGroupContent>
+
+            <SidebarGroupLabel>
+              <Label htmlFor="prompt-techniques">Prompt Template:</Label>
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="px-3">
               <pre className="bg-muted p-2 rounded text-sm whitespace-pre-wrap">
                 {selectedTechnique.template}
               </pre>
-            </div>
-            <Button
-              onClick={() => {
-                setPrompt({
-                  id: `technique-${selectedTechnique.id}`,
-                  value: selectedTechnique.template,
-                  isSending: false,
-                });
-                toast.success("Technique template inserted into prompt!");
-              }}
-            >
-              Use This Template
-            </Button>
-          </div>
+              <Button
+                onClick={() => {
+                  setPrompt({
+                    id: `technique-${selectedTechnique.id}`,
+                    value: selectedTechnique.template,
+                    isSending: false,
+                  });
+                  toast.success("Technique template inserted into prompt!");
+                }}
+                className="mt-2"
+              >
+                Use This Template
+              </Button>
+            </SidebarGroupContent>
+          </>
         )}
       </SidebarContent>
     </>
