@@ -15,8 +15,8 @@ export const promptWithConfigGenSchema = z.object({
         values: z.array(
           z.object({
             value: z.string(),
-          })
+          }),
         ),
-      })
+      }),
   ),
 });

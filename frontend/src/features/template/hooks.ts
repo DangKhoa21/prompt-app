@@ -25,14 +25,16 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export const useCreatePromptTemplate = () => {
+export const useCreatePromptTemplate = (redirect: boolean = true) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: createPromptTemplate,
     onSuccess: (newTemplateId: string) => {
-      router.push(`/templates/${newTemplateId}`);
+      if (redirect) {
+        router.push(`/templates/${newTemplateId}`);
+      }
       queryClient.invalidateQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
@@ -116,7 +118,7 @@ export const useStarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
 
       queryClient.invalidateQueries({
@@ -157,7 +159,7 @@ export const useUnstarPrompt = ({
             return { ...group, data: newGroup };
           });
           return { ...oldData, pages: newPages };
-        }
+        },
       );
 
       queryClient.invalidateQueries({

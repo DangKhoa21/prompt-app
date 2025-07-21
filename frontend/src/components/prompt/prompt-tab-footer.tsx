@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
@@ -10,10 +10,13 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { usePrompt } from "@/context/prompt-context";
-import { ConfigType } from "@/features/template";
+import { ConfigType, useCreatePromptTemplate } from "@/features/template";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { fillPromptTemplate } from "@/lib/utils/utils.generate-prompt";
-import { PromptWithConfigs } from "@/services/prompt/interface";
+import {
+  PromptWithConfigs,
+  PromptWithConfigsCreation,
+} from "@/services/prompt/interface";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -50,6 +53,8 @@ export default function PromptTabFooter({
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const { mutateAsync } = useCreatePromptTemplate(false);
+
   // -- Handlers --
   const handlePrompt = useCallback(
     (isSending: boolean) => {
@@ -67,10 +72,10 @@ export default function PromptTabFooter({
     [data, selectedValues, textareaValues, arrayValues, setPrompt],
   );
 
-  const newPromptId = v7();
+  const idRef = useRef<string>(v7());
 
   const { submit, isLoading, stop } = useObject({
-    id: newPromptId,
+    id: idRef.current,
     api: `${SERVER_URL}/${VERSION_PREFIX}/prompts/generate-template`,
     schema: promptWithConfigGenSchema,
     headers: { Authorization: "Bearer " + token },
@@ -88,20 +93,37 @@ export default function PromptTabFooter({
               ...config,
               type: config.type as ConfigType,
               id: configId,
-              promptId: newPromptId,
               values: config.values.map((value) => {
                 return {
                   ...value,
                   id: v7(),
-                  promptConfigId: configId,
                 };
               }),
             };
           }),
         };
 
-        queryClient.setQueryData(["prompt", newPromptId], newPrompt);
-        router.push(`?promptId=${newPromptId}`);
+        queryClient.setQueryData(["prompt", idRef.current], newPrompt);
+        router.push(`?promptId=${idRef.current}`);
+
+        const template: PromptWithConfigsCreation = {
+          id: idRef.current,
+          title: newPrompt.title,
+          description: newPrompt.description,
+          stringTemplate: newPrompt.stringTemplate,
+          configs: newPrompt.configs,
+        };
+
+        const createPromptTemplatePromise = mutateAsync(template);
+
+        toast.promise(createPromptTemplatePromise, {
+          // loading: "Creating prompt template...",
+          // success: "Creating prompt template successfully",
+          error: (e) => {
+            console.error(e);
+            return "Failed to create new prompt template";
+          },
+        });
       }
 
       // error, undefined if schema validation succeeds:
@@ -133,7 +155,11 @@ export default function PromptTabFooter({
           ) : (
             <Button
               disabled={idea.trim().length < 20}
-              onClick={() => submit({ prompt: idea })}
+              onClick={() => {
+                submit({ prompt: idea });
+                const id = v7();
+                idRef.current = id;
+              }}
               className=""
             >
               Create new Prompt
