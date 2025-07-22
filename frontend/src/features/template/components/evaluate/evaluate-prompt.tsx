@@ -364,8 +364,8 @@ export function EvaluatePrompt() {
                   variant="outline"
                   className="flex-1"
                   onClick={handleSuggestImprovements}
-                  // disabled={loadingStates.suggesting}
-                  disabled={true}
+                  disabled={loadingStates.suggesting}
+                  // disabled={true}
                 >
                   {loadingStates.suggesting ? (
                     <>Analyzing...</>
@@ -376,21 +376,6 @@ export function EvaluatePrompt() {
               </BetterTooltip>
             </CardFooter>
           </Card>
-
-          {improvementSuggestions && (
-            <Card ref={suggestImprovePromptRef}>
-              <CardHeader>
-                <CardTitle className="text-md font-semibold">
-                  Improvement Suggestions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="p-4 rounded-md border whitespace-pre-wrap">
-                  <Markdown>{improvementSuggestions}</Markdown>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         <div className="space-y-4 h-fit md:sticky md:top-28">
@@ -418,6 +403,22 @@ export function EvaluatePrompt() {
           </Card>
         </div>
       </div>
+
+      {improvementSuggestions && (
+        <Card ref={suggestImprovePromptRef}>
+          <CardHeader>
+            <CardTitle className="text-md font-semibold">
+              Improvement Suggestions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 rounded-md border">
+              <Markdown>{improvementSuggestions}</Markdown>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="flex-1 w-full">
         <CardHeader>
           <CardTitle className="text-md font-semibold">

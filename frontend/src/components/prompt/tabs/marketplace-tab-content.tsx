@@ -34,6 +34,8 @@ import {
   PromptFillState,
 } from "../hooks/usePromptConfigState";
 import { PromptSearch } from "../prompt-search";
+import { appURL } from "@/config/url.config";
+import Link from "next/link";
 
 interface MarketplaceTabContentProps {
   promptId: string;
@@ -43,7 +45,7 @@ interface MarketplaceTabContentProps {
   isError: boolean;
   error: Error | null;
   refetch: (
-    options?: RefetchOptions
+    options?: RefetchOptions,
   ) => Promise<QueryObserverResult<PromptWithConfigs, Error>>;
   selectedValues: ConfigInputState;
   setSelectedValues: Dispatch<SetStateAction<ConfigInputState>>;
@@ -106,7 +108,7 @@ export function MarketplaceTabContent({
               newArray[config.label] = JSON.parse(config.value);
               break;
           }
-        }
+        },
       );
 
       setSelectedValues(newSelected);
@@ -227,7 +229,9 @@ export function MarketplaceTabContent({
 
         <SidebarGroupContent className="px-3">
           <div className="text-base leading-tight">
-            <span className="font-semibold">{data.title}</span>
+            <Link href={`${appURL.templates}/${data.id}`}>
+              <span className="font-semibold">{data.title}</span>
+            </Link>
           </div>
         </SidebarGroupContent>
 

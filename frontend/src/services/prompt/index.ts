@@ -81,7 +81,7 @@ export async function getPrompt(id: string | null): Promise<Prompt> {
 }
 
 export async function getPromptWithConfigs(
-  id: string | null
+  id: string | null,
 ): Promise<PromptWithConfigs> {
   if (!id) {
     return {
@@ -109,14 +109,14 @@ export async function getTagsForTemplate(id: string): Promise<TemplateTag[]> {
 }
 
 export async function getPromptTemplate(
-  id: string
+  id: string,
 ): Promise<TemplateWithConfigs> {
   const response = await axiosWithAuth.get(`/prompts/${id}`);
   return response.data.data;
 }
 
 export async function createPromptTemplate(
-  data: PromptWithConfigsCreation
+  data: PromptWithConfigsCreation,
 ): Promise<string> {
   // Change config type to lowercase
   data.configs = data.configs.map((config) => ({
@@ -128,7 +128,7 @@ export async function createPromptTemplate(
 }
 
 export async function updatePromptTemplate(
-  data: TemplateWithConfigs
+  data: TemplateWithConfigs,
 ): Promise<boolean> {
   data.configs = data.configs.map((config) => ({
     ...config,
@@ -140,7 +140,7 @@ export async function updatePromptTemplate(
 
 export async function updateTag(
   id: string,
-  data: TemplateTag[]
+  data: TemplateTag[],
 ): Promise<boolean> {
   const response = await axiosWithAuth.put(`/prompts/${id}/tags`, {
     tagIds: data.map((tag) => tag.id),
@@ -177,16 +177,14 @@ export async function evaluatePrompt(prompt: string): Promise<string> {
     prompt,
   });
 
-  // return response.data;
-
-  const regex = /<improved_prompt>\s*([\s\S]*?)\s*<\/improved_prompt>/i;
+  const regex = /<analysis>\s*([\s\S]*?)\s*<\/analysis>/i;
   const data = response.data.match(regex);
 
   return data ? data[1].trim() : "";
 }
 
 export async function getPromptsOfCreator(
-  creatorId: string
+  creatorId: string,
 ): Promise<Array<PromptCard>> {
   const response = await axiosWithAuth.get("/prompts", {
     params: {
