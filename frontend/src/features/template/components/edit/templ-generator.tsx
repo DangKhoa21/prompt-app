@@ -66,6 +66,7 @@ export function TemplateGenerator() {
                   promptConfigId: configId,
                 };
               }),
+              info: config.info,
             };
           }),
         };

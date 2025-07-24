@@ -93,7 +93,7 @@ export function ChatHeader({
 
         <Separator orientation="vertical" className="h-4" />
 
-        <BetterTooltip content={"Back to home"}>
+        <BetterTooltip content={"Home"}>
           <Link href={appURL.base}>
             <Button
               variant="ghost"

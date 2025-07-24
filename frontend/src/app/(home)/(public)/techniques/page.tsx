@@ -4,15 +4,10 @@ import { Brain, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import {
-  BuilderTab,
-  ExampleTab,
-  OverviewTab,
-  SidebarList,
-} from "@/components/techniques";
+import { ExampleTab, OverviewTab, SidebarList } from "@/components/techniques";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Technique, TechniqueBuilder } from "@/types/techniques/technique";
+import { Technique } from "@/types/techniques/technique";
 import { techniques } from "@/constants/techniques";
 
 export default function TechniquesPage() {
@@ -21,13 +16,13 @@ export default function TechniquesPage() {
     null,
   );
   const [activeTab, setActiveTab] = useState("overview");
-  const [builder, setBuilder] = useState<TechniqueBuilder>({
-    id: "",
-    userPrompt: "",
-    selectedTechnique: "",
-    parameters: {},
-    generatedPrompt: "",
-  });
+  // const [builder, setBuilder] = useState<TechniqueBuilder>({
+  //   id: "",
+  //   userPrompt: "",
+  //   selectedTechnique: "",
+  //   parameters: {},
+  //   generatedPrompt: "",
+  // });
 
   const filteredTechniques = techniques.filter(
     (technique) =>
@@ -39,71 +34,71 @@ export default function TechniquesPage() {
     setActiveTab("overview");
   };
 
-  const handleBuildPrompt = (technique: Technique) => {
-    setBuilder({
-      id: technique.id,
-      userPrompt: "",
-      selectedTechnique: technique.id,
-      parameters: {},
-      generatedPrompt: "",
-    });
-    setActiveTab("builder");
-  };
+  // const handleBuildPrompt = (technique: Technique) => {
+  //   setBuilder({
+  //     id: technique.id,
+  //     userPrompt: "",
+  //     selectedTechnique: technique.id,
+  //     parameters: {},
+  //     generatedPrompt: "",
+  //   });
+  //   setActiveTab("builder");
+  // };
 
-  const generatePrompt = () => {
-    if (!builder.userPrompt || !selectedTechnique) return;
-
-    let generated = selectedTechnique.template;
-
-    // Replace common placeholders
-    generated = generated.replace(/\[task\]/g, builder.userPrompt);
-    generated = generated.replace(/\[user_input\]/g, builder.userPrompt);
-    generated = generated.replace(
-      /\[Your request\/question\]/g,
-      builder.userPrompt,
-    );
-    generated = generated.replace(
-      /\[Your original request\]/g,
-      builder.userPrompt,
-    );
-    generated = generated.replace(/\[Your request\]/g, builder.userPrompt);
-
-    // Replace parameter placeholders
-    Object.entries(builder.parameters).forEach(([key, value]) => {
-      const placeholder = `{{${key}}}`;
-      generated = generated.replace(
-        new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
-        value,
-      );
-    });
-
-    setBuilder((prev) => ({ ...prev, generatedPrompt: generated }));
-  };
+  // const generatePrompt = () => {
+  //   if (!builder.userPrompt || !selectedTechnique) return;
+  //
+  //   let generated = selectedTechnique.template;
+  //
+  //   // Replace common placeholders
+  //   generated = generated.replace(/\[task\]/g, builder.userPrompt);
+  //   generated = generated.replace(/\[user_input\]/g, builder.userPrompt);
+  //   generated = generated.replace(
+  //     /\[Your request\/question\]/g,
+  //     builder.userPrompt,
+  //   );
+  //   generated = generated.replace(
+  //     /\[Your original request\]/g,
+  //     builder.userPrompt,
+  //   );
+  //   generated = generated.replace(/\[Your request\]/g, builder.userPrompt);
+  //
+  //   // Replace parameter placeholders
+  //   Object.entries(builder.parameters).forEach(([key, value]) => {
+  //     const placeholder = `{{${key}}}`;
+  //     generated = generated.replace(
+  //       new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
+  //       value,
+  //     );
+  //   });
+  //
+  //   setBuilder((prev) => ({ ...prev, generatedPrompt: generated }));
+  // };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
 
-  const saveAsTemplate = () => {
-    // In a real app, this would save to the user's templates
-  };
-
-  const updateUserPrompt = (value: string) => {
-    setBuilder((prev) => ({
-      ...prev,
-      userPrompt: value,
-    }));
-  };
-
-  const updateParameter = (key: string, value: string) => {
-    setBuilder((prev) => ({
-      ...prev,
-      parameters: {
-        ...prev.parameters,
-        [key]: value,
-      },
-    }));
-  };
+  // const saveAsTemplate = () => {
+  //   // In a real app, this would save to the user's templates
+  // };
+  //
+  // const updateUserPrompt = (value: string) => {
+  //   setBuilder((prev) => ({
+  //     ...prev,
+  //     userPrompt: value,
+  //   }));
+  // };
+  //
+  // const updateParameter = (key: string, value: string) => {
+  //   setBuilder((prev) => ({
+  //     ...prev,
+  //     parameters: {
+  //       ...prev.parameters,
+  //       [key]: value,
+  //     },
+  //   }));
+  // };
 
   return (
     <div className="min-h-screen">
@@ -146,17 +141,17 @@ export default function TechniquesPage() {
             <div className="lg:col-span-2">
               {selectedTechnique ? (
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="examples">Examples</TabsTrigger>
-                    <TabsTrigger value="builder">Builder</TabsTrigger>
+                    {/* <TabsTrigger value="builder">Builder</TabsTrigger> */}
                   </TabsList>
 
                   <TabsContent value="overview" className="space-y-6">
                     <OverviewTab
                       technique={selectedTechnique}
                       copyToClipboard={copyToClipboard}
-                      handleBuildPrompt={handleBuildPrompt}
+                      // handleBuildPrompt={handleBuildPrompt}
                     />
                   </TabsContent>
 
@@ -164,17 +159,17 @@ export default function TechniquesPage() {
                     <ExampleTab technique={selectedTechnique} />
                   </TabsContent>
 
-                  <TabsContent value="builder" className="space-y-6">
-                    <BuilderTab
-                      technique={selectedTechnique}
-                      builder={builder}
-                      generatePrompt={generatePrompt}
-                      copyToClipboard={copyToClipboard}
-                      updateUserPrompt={updateUserPrompt}
-                      updateParameter={updateParameter}
-                      saveAsTemplate={saveAsTemplate}
-                    />
-                  </TabsContent>
+                  {/* <TabsContent value="builder" className="space-y-6"> */}
+                  {/*   <BuilderTab */}
+                  {/*     technique={selectedTechnique} */}
+                  {/*     builder={builder} */}
+                  {/*     generatePrompt={generatePrompt} */}
+                  {/*     copyToClipboard={copyToClipboard} */}
+                  {/*     updateUserPrompt={updateUserPrompt} */}
+                  {/*     updateParameter={updateParameter} */}
+                  {/*     saveAsTemplate={saveAsTemplate} */}
+                  {/*   /> */}
+                  {/* </TabsContent> */}
                 </Tabs>
               ) : (
                 <Card className="h-[600px] flex items-center justify-center">

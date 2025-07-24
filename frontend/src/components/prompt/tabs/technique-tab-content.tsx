@@ -5,10 +5,12 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { appURL } from "@/config/url.config";
 import { techniques } from "@/constants/techniques";
 import { usePrompt } from "@/context/prompt-context";
 import { Technique } from "@/types/techniques/technique";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LinkIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +26,12 @@ export function TechniqueTabContent() {
         {!selectedTechnique ? (
           <>
             <SidebarGroupLabel>
-              <Label htmlFor="prompt-techniques">Prompt Techniques</Label>
+              <div className="w-full flex items-center justify-between">
+                <Label htmlFor="prompt-techniques">Prompt Techniques</Label>
+                <Link href={appURL.techniques}>
+                  <LinkIcon className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </SidebarGroupLabel>
             <SidebarGroupContent className="px-3">
               <div className="flex flex-col gap-2">

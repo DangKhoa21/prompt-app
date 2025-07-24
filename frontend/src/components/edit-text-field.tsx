@@ -54,9 +54,9 @@ export function EditTextField({
         <div
           onClick={handleEdit}
           className={cn(
-            "md:basis-4/5 text-lg font-normal p-2 w-full text-wrap rounded-md",
+            "md:basis-4/5 text-base font-medium p-2 w-full text-wrap rounded-md",
             editable ? " hover:bg-accent" : "",
-            className
+            className,
           )}
         >
           {text || "Click to add title..."}

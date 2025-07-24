@@ -3,6 +3,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const config: Record<string, string> = {
@@ -10,14 +11,14 @@ const config: Record<string, string> = {
   // additional_notes: "#bfdbfe",
 };
 
-function getContrastTextColor(bgColor: string): string {
-  const hex = bgColor.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5 ? "#111827" : "#ffffff";
-}
+// function getContrastTextColor(bgColor: string, resolvedTheme: string): string {
+//   const hex = bgColor.replace("#", "");
+//   const r = parseInt(hex.substring(0, 2), 16);
+//   const g = parseInt(hex.substring(2, 4), 16);
+//   const b = parseInt(hex.substring(4, 6), 16);
+//   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+//   return luminance > 0.5 ? "#111827" : "#ffffff";
+// }
 
 function parseTemplateText(text: string): string {
   return text.replace(/{{(.*?)}}/g, (_, key) => `{{${key.trim()}}}`);
@@ -25,7 +26,8 @@ function parseTemplateText(text: string): string {
 
 function renderHighlightedText(
   text: string,
-  isFocused: boolean
+  isFocused: boolean,
+  resolvedTheme: string,
 ): JSX.Element[] {
   if (isFocused) return [];
   const parts: JSX.Element[] = [];
@@ -38,8 +40,10 @@ function renderHighlightedText(
     if (before) parts.push(<span key={lastIndex}>{before}</span>);
 
     const matchedKey = match[1].trim();
-    const bgColor = config[matchedKey] || "#e5e7eb";
-    const textColor = getContrastTextColor(bgColor);
+    const bgColor =
+      config[matchedKey] || resolvedTheme === "dark" ? "#e5e7eb" : "#111827";
+    // const textColor = getContrastTextColor(bgColor, resolvedTheme);
+    const textColor = resolvedTheme === "dark" ? "#111827" : "#ffffff";
 
     parts.push(
       <span
@@ -48,7 +52,7 @@ function renderHighlightedText(
         style={{ backgroundColor: bgColor, color: textColor }}
       >
         {matchedKey}
-      </span>
+      </span>,
     );
 
     lastIndex = regex.lastIndex;
@@ -72,6 +76,7 @@ export default function HighlightedTextarea({
 }: HighlightedTextareaProps) {
   const [focused, setFocused] = useState(false);
   const [localText, setLocalText] = useState(value);
+  const { resolvedTheme } = useTheme();
 
   const backdropRef = useRef<HTMLDivElement>(null);
   const { textareaRef } = useAutoResizeTextarea(localText);
@@ -108,13 +113,13 @@ export default function HighlightedTextarea({
 
     textarea.addEventListener(
       "beforeinput",
-      handleBeforeInput as EventListener
+      handleBeforeInput as EventListener,
     );
 
     return () => {
       textarea.removeEventListener(
         "beforeinput",
-        handleBeforeInput as EventListener
+        handleBeforeInput as EventListener,
       );
     };
   }, [textareaRef]);
@@ -160,11 +165,11 @@ export default function HighlightedTextarea({
       <div
         ref={backdropRef}
         className={cn(
-          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 opacity-100 group-focus-within:opacity-0 pointer-events-none"
+          "absolute inset-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-transparent px-3 py-2 opacity-100 group-focus-within:opacity-0 pointer-events-none",
         )}
         aria-hidden
       >
-        {renderHighlightedText(localText, focused)}
+        {renderHighlightedText(localText, focused, resolvedTheme ?? "light")}
       </div>
 
       <Textarea
@@ -175,7 +180,7 @@ export default function HighlightedTextarea({
         onBlur={handleBlur}
         onChange={handleChange}
         className={cn(
-          "relative z-10 bg-transparent text-transparent group-focus-within:text-inherit"
+          "relative z-10 bg-transparent text-transparent group-focus-within:text-inherit",
         )}
         spellCheck={false}
       />

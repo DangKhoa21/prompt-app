@@ -81,7 +81,7 @@ export function TemplateEditSection({
       toast.error(
         `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
           .map((config) => config)
-          .join(", ")}`
+          .join(", ")}`,
       );
       return;
     }
@@ -116,7 +116,7 @@ export function TemplateEditSection({
   return (
     <>
       <div className="w-full h-full bg-background mx-auto space-y-6">
-        <div className="flex flex-col gap-4">
+        <div className="mt-2 flex flex-col gap-4">
           <TemplateEditTextField
             label="title"
             text={template.title}

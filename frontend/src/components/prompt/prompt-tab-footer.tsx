@@ -99,6 +99,7 @@ export default function PromptTabFooter({
                   id: v7(),
                 };
               }),
+              info: config.info,
             };
           }),
         };

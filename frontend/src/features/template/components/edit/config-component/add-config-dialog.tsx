@@ -57,8 +57,10 @@ export function AddConfigDialog({ id, label, values }: AddConfigDialogProps) {
         setAddingError(`Already have config name: "${newConfigValue}"`);
         return;
       }
-      if (!/^[a-zA-Z0-9_-]+$/.test(newConfigValue)) {
-        setAddingError("Only alphanumeric, underscore and dash are allowed");
+      if (!/^[a-zA-Z0-9_ -]+$/.test(newConfigValue)) {
+        setAddingError(
+          "Only alphanumeric characters, spaces, underscore, and dash are allowed",
+        );
         return;
       }
 
@@ -109,7 +111,6 @@ export function AddConfigDialog({ id, label, values }: AddConfigDialogProps) {
   );
 }
 
-// Move this OUTSIDE:
 function AddNewValue({
   isMobile,
   open,
@@ -206,7 +207,6 @@ function AddNewValue({
   );
 }
 
-// Move this OUTSIDE:
 function AddingForm({
   newConfigValue,
   setNewConfigValue,

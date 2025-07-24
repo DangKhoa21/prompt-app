@@ -21,7 +21,7 @@ export function fillPromptTemplate({
   arrayValues: Record<string, { id: string; values: string[] }[]>;
 }) {
   let prompt = parseTemplateText(template);
-  const FALLBACK_CONFIG = "NOT_FILLED";
+  const FALLBACK_CONFIG = "N/A";
 
   configs.forEach((config) => {
     const placeholder = `{{${config.label}}}`;

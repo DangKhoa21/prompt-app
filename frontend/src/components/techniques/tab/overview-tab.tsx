@@ -14,13 +14,13 @@ import { Technique } from "@/types/techniques/technique";
 interface OverviewProps {
   technique: Technique;
   copyToClipboard: (text: string) => void;
-  handleBuildPrompt: (technique: Technique) => void;
+  // handleBuildPrompt: (technique: Technique) => void;
 }
 
 export function OverviewTab({
   technique,
   copyToClipboard,
-  handleBuildPrompt,
+  // handleBuildPrompt,
 }: OverviewProps) {
   const {
     icon,
@@ -99,14 +99,14 @@ export function OverviewTab({
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Template
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBuildPrompt(technique)}
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                Use Builder
-              </Button>
+              {/* <Button */}
+              {/*   variant="outline" */}
+              {/*   size="sm" */}
+              {/*   // onClick={() => handleBuildPrompt(technique)} */}
+              {/* > */}
+              {/*   <Zap className="h-4 w-4 mr-2" /> */}
+              {/*   Use Builder */}
+              {/* </Button> */}
             </div>
           </div>
         </CardContent>

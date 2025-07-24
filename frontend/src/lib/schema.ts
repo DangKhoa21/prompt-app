@@ -10,6 +10,7 @@ export const promptWithConfigGenSchema = z.object({
       .object({
         label: z.string(),
         type: z.enum(["dropdown", "textarea", "combobox", "array"]),
+        info: z.string(),
       })
       .extend({
         values: z.array(

@@ -43,7 +43,7 @@ export function TemplatesIdHeader({ id }: { id: string }) {
           variant="ghost"
           className="h-8 p-2"
           onClick={() => {
-            router.back();
+            router.push(appURL.templates);
             router.refresh();
           }}
         >
