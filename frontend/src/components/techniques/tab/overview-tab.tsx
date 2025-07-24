@@ -1,4 +1,4 @@
-import { CheckCircle, Copy, Zap } from "lucide-react";
+import { CheckCircle, Copy } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

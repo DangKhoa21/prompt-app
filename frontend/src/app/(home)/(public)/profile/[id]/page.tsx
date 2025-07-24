@@ -11,6 +11,7 @@ import TagsList from "@/components/marketplace/tags-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
+import { PromptFilter } from "@/services/prompt/interface";
 import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Mail } from "lucide-react";
@@ -36,8 +37,8 @@ export default function ProfilePage({
     search: "",
     sort: "newest",
   };
-  const userDataId = id;
-  const filter = { tagId, search, userDataId, sort };
+  const creatorId = id;
+  const filter: PromptFilter = { tagId, search, creatorId, sort };
 
   const { data: userData } = useQuery({
     queryKey: ["user", id],
