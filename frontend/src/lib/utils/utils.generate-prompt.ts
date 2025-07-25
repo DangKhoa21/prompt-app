@@ -21,7 +21,7 @@ export function fillPromptTemplate({
   arrayValues: Record<string, { id: string; values: string[] }[]>;
 }) {
   let prompt = parseTemplateText(template);
-  const FALLBACK_CONFIG = "";
+  const FALLBACK_CONFIG = "N/A";
 
   configs.forEach((config) => {
     const placeholder = `{{${config.label}}}`;
@@ -31,14 +31,14 @@ export function fillPromptTemplate({
       case "combobox":
         prompt = prompt.replace(
           placeholder,
-          selectedValues[config.label] ?? FALLBACK_CONFIG
+          selectedValues[config.label] ?? FALLBACK_CONFIG,
         );
         break;
 
       case "textarea":
         prompt = prompt.replace(
           placeholder,
-          textareaValues[config.label] ?? FALLBACK_CONFIG
+          textareaValues[config.label] ?? FALLBACK_CONFIG,
         );
         break;
 
@@ -48,9 +48,9 @@ export function fillPromptTemplate({
             item.values
               .map(
                 (value, i) =>
-                  `\n\t${config.values[i].value} ${index + 1}: ${value}`
+                  `\n\t${config.values[i].value} ${index + 1}: ${value}`,
               )
-              .join("")
+              .join(""),
           )
           .join("\n");
         prompt = prompt.replace(placeholder, lines ?? FALLBACK_CONFIG);
@@ -65,7 +65,7 @@ export function validateFilledConfigs(
   configs: PromptConfig[] | TemplateConfig[],
   selectedValues: Record<string, string>,
   textareaValues: Record<string, string>,
-  arrayValues: Record<string, { id: string; values: string[] }[]>
+  arrayValues: Record<string, { id: string; values: string[] }[]>,
 ): {
   isValid: boolean;
   unfilledConfigs: string[];
@@ -85,8 +85,8 @@ export function validateFilledConfigs(
       config.type === ConfigType.TEXTAREA
         ? textareaValues[config.label]
         : config.type === ConfigType.ARRAY
-        ? arrayValues[config.label]
-        : selectedValues[config.label];
+          ? arrayValues[config.label]
+          : selectedValues[config.label];
 
     const isFilled =
       config.type === ConfigType.ARRAY
@@ -96,7 +96,7 @@ export function validateFilledConfigs(
             (item) =>
               Array.isArray(item.values) &&
               item.values.length > 0 &&
-              item.values.some((v) => v.trim() !== "")
+              item.values.some((v) => v.trim() !== ""),
           )
         : typeof value === "string" &&
           value.trim() !== "" &&

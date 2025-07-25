@@ -26,6 +26,7 @@ import {
 } from 'src/shared/ai';
 import { v7 } from 'uuid';
 import { PromptService } from '../prompt/prompt.service';
+import { z } from 'zod';
 
 @Injectable()
 export class ChatService {
@@ -123,6 +124,23 @@ export class ChatService {
           model: customModel(model.apiIdentifier),
           system: systemInstruction ?? systemPrompt,
           messages: coreMessages,
+          tools: {
+            getWeather: {
+              description: 'Get the current weather at a location',
+              parameters: z.object({
+                latitude: z.number().describe('Latitude coordinate'),
+                longitude: z.number().describe('Longitude coordinate'),
+              }),
+              execute: async ({ latitude, longitude }) => {
+                const response = await fetch(
+                  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`,
+                );
+
+                const weatherData = await response.json();
+                return weatherData;
+              },
+            },
+          },
           onFinish: async ({ response }) => {
             if (userId) {
               const responseMessagesWithoutIncompleteToolCalls =

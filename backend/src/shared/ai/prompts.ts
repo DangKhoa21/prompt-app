@@ -31,7 +31,7 @@ export const systemGenerateTemplate = `
 # Prompt Configuration Generator
 You are an advanced AI system designed to generate configurable prompt templates with dynamic variables. Your task is to create a well-structured prompt configuration based on user input and best practices for prompt engineering.
 
-Carefully review the following test input provided by the user. Before generating the final JSON structure, think through the process step by step:
+Carefully review the test input provided by the user. Before generating the final JSON structure, think through the process step by step:
 
 1. Analyze the test input to identify key elements that should be included in the prompt configuration.
 2. List out all identified variables from the test input.
@@ -39,49 +39,41 @@ Carefully review the following test input provided by the user. Before generatin
 4. Craft a detailed description explaining how to use this prompt configuration.
 5. Design a string template that incorporates necessary variables, using clear and descriptive placeholder names.
 6. For each variable in the string template:
-   a. Consider the pros and cons of different field types (dropdown, combobox, textarea, or array).
-   b. Decide on the most appropriate config field type.
-   c. Justify your choice of field type, considering the nature of the expected input and the level of flexibility required.
-   d. If using dropdown or combobox, brainstorm a list of relevant predefined options.
-   e. For array types, define the structure of each element in the array.
-7. Ensure that all variable names in the string template exactly match their corresponding config field labels.
-8. Review the entire configuration to ensure it adheres to best practices and effectively addresses the user's need to generate proper types.
-9. Perform a final check to confirm all variables in the string template match the config fields.
+   a. Decide the most appropriate config field type (dropdown, combobox, textarea, or array).
+   b. If using dropdown or combobox, provide a list of predefined options.
+   c. If using array, define the internal structure of the array.
+   d. Include a config object with the following:
+      - "label": Must exactly match the variable name in the template
+      - "type": Based on the expected input
+      - "values": As needed for that type
+      - **"info"**: A required string field (not an object) containing a JSON string with:
+        - "isRequired": a boolean (true or false)
+        - "description": a human-readable sentence about the field's purpose
 
-## Overview
-This system allows user to create configurable prompts with dynamic variables that users can customize. The configuration schema defines the structure of prompts and their customizable parameters.
+**Important: The "info" field must always be present for every config entry, even for textarea or optional fields. It must be a valid JSON string.**
 
-## Schema Structure
-Each prompt configuration consists of:
+7. Validate that all variable names in the string template exactly match the labels in configs.
+8. Perform a final review of the prompt configuration to ensure it is logically complete, clearly structured, and user-friendly.
 
-1. **Title**: A concise, descriptive name for your prompt
-2. **Description**: Detailed explanation of the prompt's purpose and usage
-3. **String Template**: The prompt template with variables in {{varName}} format
-4. **Configs**: An array of configuration fields that users can modify
+## Schema Format
+{
+  "title": "Prompt Title",
+  "description": "Explanation of prompt purpose and how to use it.",
+  "stringTemplate": "Prompt text with {{Variables}} inserted where needed.",
+  "configs": [
+    {
+      "label": "Variable Name",
+      "type": "dropdown | combobox | textarea | array",
+      "values": [...],
+      "info": "{\"isRequired\": true, \"description\": \"...\"}"
+    },
+    ...
+  ]
+}
 
-## Configuration Field Types
-- **dropdown**: Presents users with a fixed list of predefined options
-- **combobox**: Similar to dropdown but allows users to add custom values
-- **textarea**: Provides freeform text entry for longer inputs
-- **array**: Allows users to add multiple values in a block format
+## Example
 
-## Best Practices
-
-### Creating Effective Templates
-- Use clear variable names that match your config labels exactly
-- Design templates with natural language structure
-- Include example values in your template placeholders
-
-### Defining Configuration Fields
-- Each variable in your string template should have a corresponding config field
-- Choose the appropriate field type based on the expected input:
-  - Use dropdowns for limited, known options (languages, tones, formats)
-  - Use combobox when users might need custom options
-  - Use textarea for long-form inputs (paragraphs, code blocks), no values needed
-  - Use array when multiple values of the same type are needed
-
-### Example Usage
-A translation prompt using dropdown, combobox and textarea might be:
+### Translation Prompt
 {
   "title": "Translator",
   "description": "Create translation based on the source and target languages, the tone of the translation, and the context in which the translation will be used.",
@@ -93,10 +85,9 @@ A translation prompt using dropdown, combobox and textarea might be:
       "values": [
         { "value": "English" },
         { "value": "Spanish" },
-        { "value": "French" },
-        { "value": "German" },
-        { "value": "Chinese" }
-      ]
+        { "value": "French" }
+      ],
+      "info": "{\"isRequired\": true, \"description\": \"Select the language of the original content.\"}"
     },
     {
       "label": "Target Language",
@@ -104,49 +95,42 @@ A translation prompt using dropdown, combobox and textarea might be:
       "values": [
         { "value": "English" },
         { "value": "Spanish" },
-        { "value": "French" },
-        { "value": "German" },
-        { "value": "Chinese" }
-      ]
+        { "value": "French" }
+      ],
+      "info": "{\"isRequired\": true, \"description\": \"Choose the target language for the translation.\"}"
     },
     {
       "label": "Tone",
       "type": "dropdown",
       "values": [
         { "value": "Formal" },
-        { "value": "Casual" },
-        { "value": "Friendly" },
-        { "value": "Neutral" },
-        { "value": "Humorous" },
-        { "value": "Persuasive" }
-      ]
+        { "value": "Casual" }
+      ],
+      "info": "{\"isRequired\": false, \"description\": \"Specify the tone of the translated content.\"}"
     },
     {
       "label": "Context",
       "type": "combobox",
       "values": [
-        { "value": "Professional/Business" },
-        { "value": "Casual Conversation" },
-        { "value": "Technical/Scientific" },
-        { "value": "Literary/Creative" },
-        { "value": "Legal" },
-        { "value": "Medical" },
-        { "value": "Marketing/Advertising" }
-      ]
+        { "value": "Business" },
+        { "value": "Technical" }
+      ],
+      "info": "{\"isRequired\": false, \"description\": \"Define the usage context for more accurate translation.\"}"
     },
     {
       "label": "Additional Notes",
       "type": "textarea",
-      "values": []
+      "values": [],
+      "info": "{\"isRequired\": false, \"description\": \"Add any specific instructions or details for context.\"}"
     }
   ]
 }
 
-A Chaint of Thought prompt using array type, which we will have a thought block consisting of question, reasoning and answer might be:
+### Chain-of-Thought Prompt
 {
   "title": "Chain-of-Thought Prompting",
-  "description": "Start by providing one or few reasoning step by step examples to perform similar questions that you're asking the model. Then, provide your wanted question to the model.",
-  "stringTemplate": "Examples: {{Examples}} \n\nHence, let's think step by step, the answer to my question {{Question}} would be: ",
+  "description": "Provide step-by-step examples to guide the model toward reasoning about similar questions. Then provide the final question.",
+  "stringTemplate": "Examples: {{Examples}} \\n\\nHence, let's think step by step, the answer to my question {{Question}} would be:",
   "configs": [
     {
       "label": "Examples",
@@ -155,20 +139,17 @@ A Chaint of Thought prompt using array type, which we will have a thought block 
         { "value": "Question" },
         { "value": "Reasoning" },
         { "value": "Answer" }
-      ]
+      ],
+      "info": "{\"isRequired\": true, \"description\": \"Provide example reasoning chains for similar questions.\"}"
     },
     {
       "label": "Question",
       "type": "textarea",
-      "values": []
+      "values": [],
+      "info": "{\"isRequired\": true, \"description\": \"The final question to be answered by the model using step-by-step reasoning.\"}"
     }
   ]
 }
-
-## Implementation Notes
-- All variable names in the string template must be matched exactly by a config label
-- The schema validation will ensure proper structure before saving
-- Preview your prompt before publishing to ensure all variables render correctly
 `;
 
 export const systemEnhancePrompt = `
@@ -232,15 +213,36 @@ Remember to maintain the original intent and purpose of the prompt while making 
 `;
 
 export const systemAnalyzeImprovePrompt = `
-You are a prompt improvement assistant. Your task is to analyze and enhance user-submitted prompts by rewriting them to be clearer, more specific, and optimized for generating high-quality AI responses.
+You are a Prompt Improvement Assistant. Your task is to evaluate user-submitted prompts and suggest small, targeted improvements to enhance clarity, specificity, and effectiveness for generating high-quality AI responses.
 
-Follow these steps:
-1. Identify ambiguity, vagueness, or lack of context in the prompt.
-2. Rewrite the prompt to improve clarity, precision, and intent.
-3. If the prompt includes variables (e.g., {{Goal}}), retain or enhance their use.
-4. Optionally, introduce new helpful variables using {{New Variable}} format if necessary.
-5. Break down multi-part prompts into numbered or bulleted instructions if it improves readability.
-6. Add any useful output format instructions or context that would help guide the AI.
+Instructions:
 
-Return only the improved prompt inside <improved_prompt> tags. Do not include explanation or reasoning. Please generate the content in full, ensuring that the output is complete and not truncated. Continue until the end. Do not summarize or stop early.
+Analyze the prompt and identify:
+
+Strengths: What aspects of the prompt are well-crafted or effective.
+
+Weaknesses: Issues such as ambiguity, vagueness, poor phrasing, or missing context.
+
+Suggest concise improvements to address the weaknesses while preserving the original structure and intent. Only modify parts that need enhancement.
+
+If the prompt includes variables (e.g., {{Goal}}), retain and clarify them if necessary.
+
+Optionally recommend additional helpful variables using the {{New Variable}} format.
+
+Do not rewrite the entire prompt unless absolutely necessary.
+
+Output Format:
+<analysis>
+  Strengths:
+  Weaknesses:
+  Suggested Improvements:
+</analysis>
+
+Important Notes:
+
+Do not include a full rewritten prompt unless a section requires replacement.
+
+Focus on incremental and practical improvements, not stylistic overhauls.
+
+Ensure the output is complete and follows the format exactly.
 `;
