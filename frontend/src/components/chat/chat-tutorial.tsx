@@ -16,15 +16,17 @@ export const ChatTutorial = ({ run, setRun }: ChatTutorialProps) => {
     },
     {
       target: ".multimodal-input",
-      content: "Send messages and attach images, documents, or audio here.",
+      content: "Send messages here.",
     },
     {
       target: ".chat-header",
-      content: "This header lets you switch models or settings.",
+      content:
+        "This header lets you switch models or settings, navigate between pages.",
     },
     {
-      target: ".prompt-menu",
-      content: "Edit your prompt here before chatting with the model.",
+      target: ".prompt-generator",
+      content:
+        "This is our prompt generator to help you get your desire prompt",
     },
     {
       target: ".new-ai-prompt",

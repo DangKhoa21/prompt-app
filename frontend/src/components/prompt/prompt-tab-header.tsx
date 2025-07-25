@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarHeader } from "@/components/ui/sidebar";
 
 import { GeneratorMode } from "./enum-generator-mode";
+import { cn } from "@/lib/utils";
 
 interface PromptTabHeaderProps {
   mode: GeneratorMode;
@@ -20,16 +21,19 @@ export default function PromptTabHeader({
       mode: GeneratorMode.NEW_AI,
       icon: <BotIcon />,
       label: "New",
+      className: "new-ai-prompt",
     },
     {
       mode: GeneratorMode.MARKETPLACE,
       icon: <Compass />,
       label: "Marketplace",
+      className: "marketplace",
     },
     {
       mode: GeneratorMode.TECHNIQUE,
       icon: <BookOpenIcon />,
       label: "Techniques",
+      className: "techniques-handbook",
     },
   ];
 
@@ -45,7 +49,10 @@ export default function PromptTabHeader({
                 onClick={() => onChangeMode(item.mode)}
                 variant={isActive ? "default" : "ghost"}
                 size="sm"
-                className="flex flex-col md:flex-row gap-2 items-center justify-between"
+                className={cn(
+                  "flex flex-col md:flex-row gap-2 items-center justify-between",
+                  item.className,
+                )}
               >
                 {item.icon}
                 {isActive && <span className="">{item.label}</span>}

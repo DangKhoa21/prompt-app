@@ -48,7 +48,7 @@ export function PromptGeneratorSidebar() {
 
   // -- Render --
   return (
-    <>
+    <div className="prompt-generator">
       <PromptTabHeader mode={mode} onChangeMode={setMode} />
 
       <SidebarContent>
@@ -84,6 +84,6 @@ export function PromptGeneratorSidebar() {
         arrayValues={arrayValues}
         isFilled={isFilled}
       />
-    </>
+    </div>
   );
 }
