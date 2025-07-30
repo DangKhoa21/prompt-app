@@ -20,8 +20,8 @@ import {
 import { EXTENSION_URL } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { Settings } from "@/features/settings";
-import { getUserProfile } from "@/services/user";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeCheck,
   Bell,
@@ -38,12 +38,7 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
   const auth = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-    enabled: isAuthenticated,
-  });
+  const { data: user } = useUserProfile(isAuthenticated);
 
   const handleLogout = () => {
     auth.setToken(null);

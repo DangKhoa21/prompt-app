@@ -11,6 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { getPrompts, viewPrompt } from "@/services/prompt";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PencilRuler, Search } from "lucide-react";
@@ -19,7 +20,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useDebounceCallback } from "usehooks-ts";
 
-export function PromptSearch() {
+export function PromptSearch({ noWrap = false }: { noWrap?: boolean }) {
   const [open, setOpen] = useState(false);
   const [queryInput, setQueryInput] = useState("");
   const searchParams = useSearchParams();
@@ -73,12 +74,12 @@ export function PromptSearch() {
     <>
       <Button
         id="prompt-search"
-        variant="outline"
-        className="w-full justify-start text-muted-foreground"
+        variant={noWrap ? "ghost" : "outline"}
+        className={cn("w-full text-muted-foreground", noWrap && "px-0")}
         onClick={() => setOpen(true)}
       >
-        <Search className="mr-2 h-4 w-4" />
-        Search...
+        <Search className={cn("mr-2", noWrap ? "h-3 w-3" : "h-4 w-4")} />
+        <p>Search...</p>
         <Badge
           className="ml-auto text-muted-foreground font-medium"
           variant="secondary"
@@ -97,10 +98,10 @@ export function PromptSearch() {
             {status === "error"
               ? "Failed to fetch prompts."
               : status === "pending"
-              ? "Loading ..."
-              : prompts.length === 0
-              ? "No results found."
-              : null}
+                ? "Loading ..."
+                : prompts.length === 0
+                  ? "No results found."
+                  : null}
           </CommandEmpty>
 
           {prompts.length > 0 && (

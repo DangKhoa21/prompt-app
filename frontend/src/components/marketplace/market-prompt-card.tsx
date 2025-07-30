@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { appURL } from "@/config/url.config";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { getPrompt, viewPrompt } from "@/services/prompt";
@@ -37,13 +38,14 @@ export function MarketplacePromptCard({
   usageCount,
   viewCount,
 }: MarketplacePromptCardProps) {
+  const starMutation = useStarPrompt({ filter, promptId: id });
+  const unstarMutation = useUnstarPrompt({ filter, promptId: id });
+  const router = useRouter();
+
   const rating = formatRating(starCount);
   const usage = formatRating(usageCount);
   const view = formatRating(viewCount);
   const detailURL = createPromptDetailURL(id, title);
-  const starMutation = useStarPrompt({ filter, promptId: id });
-  const unstarMutation = useUnstarPrompt({ filter, promptId: id });
-  const router = useRouter();
 
   const handleStar = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -228,7 +230,7 @@ export function MarketplacePromptCard({
                   e.stopPropagation();
                   e.preventDefault();
                   viewPrompt(id);
-                  router.push(`/?promptId=${id}`);
+                  router.push(`${appURL.chat}/?promptId=${id}`);
                 }}
               >
                 Try it now

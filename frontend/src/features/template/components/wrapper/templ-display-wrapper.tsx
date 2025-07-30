@@ -2,10 +2,10 @@
 
 import { LoadingSpinner } from "@/components/icons";
 import { PromptTemplateCard } from "@/features/template";
+import { useUserProfile } from "@/hooks/use-user-profile";
 import { getPrompts, getStarredPrompts } from "@/services/prompt";
 import { PromptFilter } from "@/services/prompt/interface";
-import { getUserProfile } from "@/services/user";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
@@ -18,11 +18,7 @@ export function TemplateGridWrapper({
   tab: string;
 }) {
   const { ref, inView } = useInView();
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-  });
+  const { data: user } = useUserProfile();
 
   const creatorId = user?.id;
 

@@ -4,7 +4,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { Label } from "@radix-ui/react-label";
 import { Dispatch, SetStateAction } from "react";
 

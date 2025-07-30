@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePrompt } from "@/context/prompt-context";
 import { ConfigType, usePinPrompt } from "@/features/template";
-import { generateUUID } from "@/lib/utils";
+import { createPromptDetailURL, generateUUID } from "@/lib/utils";
 import { serializeOptionConfigData } from "@/lib/utils/utils.details";
 import { PromptWithConfigs } from "@/services/prompt/interface";
 import { createShareOption } from "@/services/share-option";
@@ -18,7 +18,7 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { Pin, RotateCcw, Share2 } from "lucide-react";
+import { Pin, RotateCcw, Share2, StepBackIcon } from "lucide-react";
 import {
   Dispatch,
   SetStateAction,
@@ -36,6 +36,7 @@ import {
 import { PromptSearch } from "../prompt-search";
 import { appURL } from "@/config/url.config";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 interface MarketplaceTabContentProps {
   promptId: string;
@@ -73,6 +74,8 @@ export function MarketplaceTabContent({
   isFilled,
 }: MarketplaceTabContentProps) {
   const { setSystemInstruction } = usePrompt();
+  const router = useRouter();
+  const pathName = usePathname();
 
   // -- Handlers --
   const pinPromptMutation = usePinPrompt();
@@ -210,9 +213,33 @@ export function MarketplaceTabContent({
   return (
     <>
       <SidebarGroup>
-        <SidebarGroupLabel className="flex justify-end items-center gap-1">
+        {data.id !== "1" && (
+          <SidebarGroupLabel className="py-6">
+            <div className="flex w-full justify-between items-center gap-2">
+              <PromptSearch noWrap />
+              <Button
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => {
+                  router.push(pathName);
+                }}
+              >
+                <StepBackIcon />
+              </Button>
+            </div>
+          </SidebarGroupLabel>
+        )}
+
+        <SidebarGroupContent className="flex items-center justify-between px-3 py-3">
+          <div className=" text-base leading-tight">
+            <Link
+              href={`/prompts/${data.title.toLowerCase().replace(/\s+/g, "-")}-pid${data.id}`}
+            >
+              <span className="font-semibold">{data.title}</span>
+            </Link>
+          </div>
           {data.id !== "1" && (
-            <div className="flex gap-2">
+            <div className="line-clamp-1 text-nowrap">
               <Button variant="ghost" className="h-8 w-8" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
               </Button>
@@ -225,14 +252,6 @@ export function MarketplaceTabContent({
               </Button>
             </div>
           )}
-        </SidebarGroupLabel>
-
-        <SidebarGroupContent className="px-3">
-          <div className="text-base leading-tight">
-            <Link href={`${appURL.templates}/${data.id}`}>
-              <span className="font-semibold">{data.title}</span>
-            </Link>
-          </div>
         </SidebarGroupContent>
 
         <SidebarGroupContent className="px-3">
@@ -240,18 +259,20 @@ export function MarketplaceTabContent({
         </SidebarGroupContent>
       </SidebarGroup>
 
-      <SidebarGroup>
-        <SidebarGroupLabel>
-          <Label htmlFor="prompt-search">
-            {data.id === "1"
-              ? "Explore the marketplace"
-              : "Search for another prompt"}
-          </Label>
-        </SidebarGroupLabel>
-        <SidebarGroupContent className="px-2">
-          <PromptSearch />
-        </SidebarGroupContent>
-      </SidebarGroup>
+      {data.id === "1" && (
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Label htmlFor="prompt-search">
+              {data.id === "1"
+                ? "Explore the marketplace"
+                : "Search for another prompt"}
+            </Label>
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="px-2">
+            <PromptSearch />
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
 
       {data.configs?.map((config, i) => (
         <RenderConfigInput

@@ -1,7 +1,7 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { ChangeEvent, useEffect, useRef, useState } from "react";

@@ -7,7 +7,7 @@ import { SidebarContent } from "@/components/ui/sidebar";
 
 import { GeneratorMode } from "./enum-generator-mode";
 import { usePromptConfigState } from "./hooks/usePromptConfigState";
-import { usePromptData } from "./hooks/usePromptData";
+import { usePromptConfigsData } from "../../hooks/use-prompt-configs-data";
 import PromptTabFooter from "./prompt-tab-footer";
 import PromptTabHeader from "./prompt-tab-header";
 import {
@@ -18,9 +18,9 @@ import {
 
 export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
+
   const promptId = searchParams.get("promptId") ?? "";
   const optionId = searchParams.get("optionId") ?? "";
-
   const defaultMode =
     promptId || optionId ? GeneratorMode.MARKETPLACE : GeneratorMode.NEW_AI;
 
@@ -32,8 +32,8 @@ export function PromptGeneratorSidebar() {
     }
   }, [optionId, promptId]);
 
-  const { data, isLoading, isError, error, refetch } = usePromptData(promptId);
-
+  const { data, isLoading, isError, error, refetch } =
+    usePromptConfigsData(promptId);
   const {
     selectedValues,
     setSelectedValues,
@@ -48,10 +48,10 @@ export function PromptGeneratorSidebar() {
 
   // -- Render --
   return (
-    <div className="prompt-generator">
+    <>
       <PromptTabHeader mode={mode} onChangeMode={setMode} />
 
-      <SidebarContent>
+      <SidebarContent className="prompt-generator">
         {mode === "new-ai" && <NewTabContent idea={idea} setIdea={setIdea} />}
         {mode === "marketplace" && (
           <MarketplaceTabContent
@@ -84,6 +84,6 @@ export function PromptGeneratorSidebar() {
         arrayValues={arrayValues}
         isFilled={isFilled}
       />
-    </div>
+    </>
   );
 }

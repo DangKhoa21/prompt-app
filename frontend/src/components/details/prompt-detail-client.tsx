@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  getPrompt,
-  getPromptStats,
-  getTagsForTemplate,
-} from "@/services/prompt";
+import { getPromptStats, getTagsForTemplate } from "@/services/prompt";
 import { getUser } from "@/services/user";
 import { useQuery } from "@tanstack/react-query";
 import PromptDetail from "@/components/details/prompt-detail";
@@ -14,6 +10,7 @@ import UserOverviewCard from "@/components/details/user-detail-comps/user-overvi
 import Container from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { BetterTooltip } from "@/components/ui/tooltip";
+import { usePromptData } from "@/hooks/use-prompt-data";
 
 const fallbackUser = {
   id: "",
@@ -32,10 +29,7 @@ export default function PromptDetailClient({ promptId }: { promptId: string }) {
     isError: isPromptError,
     // error: promptError,
     refetch: promptRefetch,
-  } = useQuery({
-    queryKey: ["prompt", promptId],
-    queryFn: () => getPrompt(promptId),
-  });
+  } = usePromptData(promptId);
 
   const { data: fetchedUserData } = useQuery({
     queryKey: ["user", fetchedPromptData?.creatorId],

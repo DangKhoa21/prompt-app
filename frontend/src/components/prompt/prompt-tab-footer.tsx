@@ -144,66 +144,68 @@ export default function PromptTabFooter({
 
   return (
     <>
-      {mode === GeneratorMode.NEW_AI && (
-        <SidebarFooter>
-          {isLoading ? (
-            <Button
-              className="bg-muted-foreground hover:bg-muted-foreground"
-              onClick={() => stop()}
-            >
-              Stop
-            </Button>
-          ) : (
-            <Button
-              disabled={idea.trim().length < 20}
-              onClick={() => {
-                submit({ prompt: idea });
-                const id = v7();
-                idRef.current = id;
-              }}
-              className=""
-            >
-              Create new Prompt
-            </Button>
-          )}
-        </SidebarFooter>
-      )}
-
-      {mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" && (
-        <SidebarFooter>
-          <BetterTooltip
-            content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
-              ", ",
-            )}`}
-          >
-            <div className="flex flex-col gap-1 px-2">
-              <Progress
-                value={(isFilled.filledCount / isFilled.totalCount) * 100}
-                className="w-full h-2 mt-2 bg-muted"
-              />
-              <p className="text-xs text-muted-foreground mt-1 text-right">
-                {isFilled.filledCount} / {isFilled.totalCount} fields filled
-              </p>
-            </div>
-          </BetterTooltip>
-          <div className="flex justify-around gap-4 p-2">
-            <Button
-              className="w-1/2"
-              disabled={!isFilled.isValid}
-              onClick={() => handlePrompt(false)}
-            >
-              Generate
-            </Button>
-            <Button
-              className="w-1/2"
-              disabled={!isFilled.isValid}
-              onClick={() => handlePrompt(true)}
-            >
-              Send
-            </Button>
+      <SidebarFooter>
+        {mode === GeneratorMode.NEW_AI && (
+          <div className="md:p-2">
+            {isLoading ? (
+              <Button
+                className="bg-muted-foreground hover:bg-muted-foreground"
+                onClick={() => stop()}
+              >
+                Stop
+              </Button>
+            ) : (
+              <Button
+                disabled={idea.trim().length < 20}
+                onClick={() => {
+                  submit({ prompt: idea });
+                  const id = v7();
+                  idRef.current = id;
+                }}
+                className="w-full"
+              >
+                Create new Prompt
+              </Button>
+            )}
           </div>
-        </SidebarFooter>
-      )}
+        )}
+
+        {mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" && (
+          <>
+            <BetterTooltip
+              content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
+                ", ",
+              )}`}
+            >
+              <div className="flex flex-col gap-1 px-2">
+                <Progress
+                  value={(isFilled.filledCount / isFilled.totalCount) * 100}
+                  className="w-full h-2 mt-2 bg-muted"
+                />
+                <p className="text-xs text-muted-foreground mt-1 text-right">
+                  {isFilled.filledCount} / {isFilled.totalCount} fields filled
+                </p>
+              </div>
+            </BetterTooltip>
+            <div className="flex justify-around gap-4 pt-2 md:p-2">
+              <Button
+                className="w-1/2"
+                disabled={!isFilled.isValid}
+                onClick={() => handlePrompt(false)}
+              >
+                Generate
+              </Button>
+              <Button
+                className="w-1/2"
+                disabled={!isFilled.isValid}
+                onClick={() => handlePrompt(true)}
+              >
+                Send
+              </Button>
+            </div>
+          </>
+        )}
+      </SidebarFooter>
     </>
   );
 }

@@ -6,6 +6,9 @@ export const appURL = {
   techniques: "/techniques",
   chat: "/chat",
 
+  prompts: "/prompts",
+  profile: "/profile",
+
   login: "/login",
   signup: "/register",
 };

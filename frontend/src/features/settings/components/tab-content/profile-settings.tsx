@@ -8,18 +8,10 @@ import {
   SettingsEditTextField,
   useUpdateUserProfile,
 } from "@/features/settings";
-import { getUserProfile } from "@/services/user";
-import { useQuery } from "@tanstack/react-query";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 export function ProfileSettings() {
-  const {
-    data: user,
-    isError,
-    isPending,
-  } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-  });
+  const { data: user, isError, isPending } = useUserProfile();
 
   const updateUserProfileMutation = useUpdateUserProfile();
 

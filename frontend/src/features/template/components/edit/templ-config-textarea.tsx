@@ -3,7 +3,7 @@
 import HighlightedTextarea from "@/components/highlighted-textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { PromptEnhancer } from "@/features/template";
 import { useTemplate } from "@/context/template-context";
 
@@ -24,6 +24,7 @@ export function TemplatesConfigTextarea({
 }: configTextareaProp) {
   const { template, setTemplate } = useTemplate();
   const { textareaRef } = useAutoResizeTextarea(value);
+
   const handleTextareaChange = (texting: string) => {
     const newTemplate = {
       ...template,

@@ -17,14 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/auth-context";
+import { useUserProfile } from "@/hooks/use-user-profile";
 import { formatDate } from "@/lib/utils";
 import { createComment, deleteAComment, getComments } from "@/services/comment";
 import { CommentItem } from "@/services/comment/interface";
-import { getUserProfile } from "@/services/user";
 import {
   useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import {
@@ -47,14 +46,11 @@ export default function Comment({
 }) {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const { data: user } = useUserProfile();
+
   const [showReplyList, setShowReplyList] = useState<boolean>(false);
   const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
   const [replyText, setReplyText] = useState("");
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-  });
 
   const {
     data,

@@ -26,17 +26,11 @@ import { appConfig } from "@/config/app.config";
 import { appURL } from "@/config/url.config";
 import { features, stats, techniques } from "@/constants/home";
 import { useAuth } from "@/context/auth-context";
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfile } from "@/services/user";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-  });
-
+  const { data: user } = useUserProfile();
   const { name } = appConfig;
 
   const links = [
