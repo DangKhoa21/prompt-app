@@ -69,7 +69,7 @@ export default function PromptTabFooter({
 
       setPrompt({ id: data.id, value: prompt, isSending });
     },
-    [data, selectedValues, textareaValues, arrayValues, setPrompt],
+    [data, selectedValues, textareaValues, arrayValues, setPrompt]
   );
 
   const idRef = useRef<string>(v7());
@@ -164,7 +164,7 @@ export default function PromptTabFooter({
                 }}
                 className="w-full"
               >
-                Create new Prompt
+                Create
               </Button>
             )}
           </div>
@@ -174,7 +174,7 @@ export default function PromptTabFooter({
           <>
             <BetterTooltip
               content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
-                ", ",
+                ", "
               )}`}
             >
               <div className="flex flex-col gap-1 px-2">

@@ -18,16 +18,16 @@ export default function PromptTabHeader({
 }: PromptTabHeaderProps) {
   const tabItems = [
     {
-      mode: GeneratorMode.NEW_AI,
-      icon: <BotIcon />,
-      label: "New",
-      className: "new-ai-prompt",
-    },
-    {
       mode: GeneratorMode.MARKETPLACE,
       icon: <Compass />,
       label: "Marketplace",
       className: "marketplace",
+    },
+    {
+      mode: GeneratorMode.NEW_AI,
+      icon: <BotIcon />,
+      label: "AI",
+      className: "new-ai-prompt",
     },
     {
       mode: GeneratorMode.TECHNIQUE,
@@ -51,7 +51,7 @@ export default function PromptTabHeader({
                 size="sm"
                 className={cn(
                   "flex flex-col md:flex-row gap-2 items-center justify-between",
-                  item.className,
+                  item.className
                 )}
               >
                 {item.icon}

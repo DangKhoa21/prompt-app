@@ -1,6 +1,7 @@
 "use client";
 
 import { DarkModeSwitch } from "@/components/nav/darkmode-switch";
+import { PreviewPromptSwitch } from "@/components/nav/preview-prompt-switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -30,6 +31,7 @@ import {
   Moon,
   Sparkles,
   Blocks,
+  ScanEye,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -120,6 +122,15 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
                 <Moon />
                 Dark Mode
                 <DarkModeSwitch />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="cursor-default"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <ScanEye />
+                Preview Prompt
+                <PreviewPromptSwitch />
               </DropdownMenuItem>
 
               {isAuthenticated && (

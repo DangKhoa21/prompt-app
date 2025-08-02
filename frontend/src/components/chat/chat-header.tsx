@@ -80,7 +80,7 @@ export function ChatHeader({
         {/* )} */}
 
         <BetterTooltip content="New chat">
-          <Link href={`/`}>
+          <Link href={`/chat`}>
             <Button variant="ghost" className="h-7 p-2">
               <Plus />
             </Button>
