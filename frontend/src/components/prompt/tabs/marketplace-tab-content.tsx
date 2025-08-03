@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePrompt } from "@/context/prompt-context";
 import { ConfigType, usePinPrompt } from "@/features/template";
-import { createPromptDetailURL, generateUUID } from "@/lib/utils";
+import { generateUUID } from "@/lib/utils";
 import { serializeOptionConfigData } from "@/lib/utils/utils.details";
 import { PromptWithConfigs } from "@/services/prompt/interface";
 import { createShareOption } from "@/services/share-option";
@@ -34,7 +34,6 @@ import {
   PromptFillState,
 } from "../hooks/usePromptConfigState";
 import { PromptSearch } from "../prompt-search";
-import { appURL } from "@/config/url.config";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 

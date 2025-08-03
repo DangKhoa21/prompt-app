@@ -15,6 +15,7 @@ import {
   NewTabContent,
   TechniqueTabContent,
 } from "./tabs";
+import { Technique } from "@/types/techniques/technique";
 
 export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
@@ -25,6 +26,9 @@ export function PromptGeneratorSidebar() {
     promptId || optionId ? GeneratorMode.MARKETPLACE : GeneratorMode.NEW_AI;
 
   const [mode, setMode] = useState<GeneratorMode>(defaultMode);
+  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
+    null,
+  );
 
   useEffect(() => {
     if (promptId || optionId) {
@@ -71,7 +75,12 @@ export function PromptGeneratorSidebar() {
             isFilled={isFilled}
           />
         )}
-        {mode === "technique" && <TechniqueTabContent />}
+        {mode === "technique" && (
+          <TechniqueTabContent
+            selectedTechnique={selectedTechnique}
+            setSelectedTechnique={setSelectedTechnique}
+          />
+        )}
       </SidebarContent>
 
       <PromptTabFooter
@@ -83,6 +92,7 @@ export function PromptGeneratorSidebar() {
         textareaValues={textareaValues}
         arrayValues={arrayValues}
         isFilled={isFilled}
+        selectedTechnique={selectedTechnique}
       />
     </>
   );

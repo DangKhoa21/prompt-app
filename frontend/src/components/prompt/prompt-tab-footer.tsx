@@ -26,6 +26,8 @@ import {
   ConfigInputState,
   PromptFillState,
 } from "./hooks/usePromptConfigState";
+import { Technique } from "@/types/techniques/technique";
+import { appURL } from "@/config/url.config";
 
 interface PromptTabFooterProps {
   mode: GeneratorMode;
@@ -36,6 +38,7 @@ interface PromptTabFooterProps {
   textareaValues: ConfigInputState;
   arrayValues: ArrayConfigInputState;
   isFilled: PromptFillState;
+  selectedTechnique: Technique | null;
 }
 
 export default function PromptTabFooter({
@@ -46,14 +49,15 @@ export default function PromptTabFooter({
   textareaValues,
   arrayValues,
   isFilled,
+  selectedTechnique,
 }: PromptTabFooterProps) {
   const { setPrompt } = usePrompt();
-
   const { token } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const { mutateAsync } = useCreatePromptTemplate(false);
+
+  const idRef = useRef<string>(v7());
 
   // -- Handlers --
   const handlePrompt = useCallback(
@@ -71,8 +75,6 @@ export default function PromptTabFooter({
     },
     [data, selectedValues, textareaValues, arrayValues, setPrompt],
   );
-
-  const idRef = useRef<string>(v7());
 
   const { submit, isLoading, stop } = useObject({
     id: idRef.current,
@@ -105,7 +107,7 @@ export default function PromptTabFooter({
         };
 
         queryClient.setQueryData(["prompt", idRef.current], newPrompt);
-        router.push(`?promptId=${idRef.current}`);
+        router.push(`/${appURL.chat}/?promptId=${idRef.current}`);
 
         const template: PromptWithConfigsCreation = {
           id: idRef.current,
@@ -145,11 +147,11 @@ export default function PromptTabFooter({
   return (
     <>
       <SidebarFooter>
-        {mode === GeneratorMode.NEW_AI && (
+        {mode === GeneratorMode.NEW_AI ? (
           <div className="md:p-2">
             {isLoading ? (
               <Button
-                className="bg-muted-foreground hover:bg-muted-foreground"
+                className="w-full bg-muted-foreground hover:bg-muted-foreground"
                 onClick={() => stop()}
               >
                 Stop
@@ -168,9 +170,7 @@ export default function PromptTabFooter({
               </Button>
             )}
           </div>
-        )}
-
-        {mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" && (
+        ) : mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" ? (
           <>
             <BetterTooltip
               content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
@@ -204,7 +204,21 @@ export default function PromptTabFooter({
               </Button>
             </div>
           </>
-        )}
+        ) : mode === GeneratorMode.TECHNIQUE && selectedTechnique !== null ? (
+          <div className="md:p-2">
+            <Button
+              onClick={() => {
+                console.log(selectedTechnique);
+                router.replace(
+                  `${appURL.chat}/?promptId=${selectedTechnique.id}`,
+                );
+              }}
+              className="w-full"
+            >
+              Use This Template
+            </Button>
+          </div>
+        ) : null}
       </SidebarFooter>
     </>
   );
