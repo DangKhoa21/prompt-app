@@ -22,7 +22,7 @@ export function MarketHeader() {
         <Separator orientation="vertical" className="h-4" />
 
         <BetterTooltip content="New chat">
-          <Link href={`/`}>
+          <Link href={`/chat`}>
             <Button variant="ghost" className="h-7 p-2">
               <Plus />
             </Button>

@@ -5,7 +5,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { PromptCard, PromptFilter } from "@/services/prompt/interface";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface MarketplaceHoverCardProps extends PromptCard {
   filter?: PromptFilter;
@@ -13,11 +13,27 @@ interface MarketplaceHoverCardProps extends PromptCard {
 }
 
 export default function MarketplaceHoverCard(
-  marketplaceCardProps: MarketplaceHoverCardProps,
+  marketplaceCardProps: MarketplaceHoverCardProps
 ) {
+  const [showHoverCard, setShowHoverCard] = useState(false);
+  const [showPreviewPrompt, setShowPreviewPrompt] = useState(false);
+
+  useEffect(() => {
+    setShowPreviewPrompt(localStorage.getItem("showPreviewPrompt") === "true");
+  }, []);
+
   return (
     <HoverCard
-      onOpenChange={marketplaceCardProps.setIsHovered}
+      open={showHoverCard && showPreviewPrompt}
+      onOpenChange={(open) => {
+        if (open && showPreviewPrompt) {
+          marketplaceCardProps.setIsHovered(true);
+          setShowHoverCard(true);
+        } else {
+          marketplaceCardProps.setIsHovered(false);
+          setShowHoverCard(false);
+        }
+      }}
       openDelay={1000}
     >
       <HoverCardTrigger asChild>

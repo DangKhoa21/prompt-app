@@ -98,10 +98,10 @@ export function PromptSearch({ noWrap = false }: { noWrap?: boolean }) {
             {status === "error"
               ? "Failed to fetch prompts."
               : status === "pending"
-                ? "Loading ..."
-                : prompts.length === 0
-                  ? "No results found."
-                  : null}
+              ? "Loading ..."
+              : prompts.length === 0
+              ? "No results found."
+              : null}
           </CommandEmpty>
 
           {prompts.length > 0 && (

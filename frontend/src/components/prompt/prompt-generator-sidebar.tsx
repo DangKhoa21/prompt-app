@@ -22,13 +22,7 @@ export function PromptGeneratorSidebar() {
 
   const promptId = searchParams.get("promptId") ?? "";
   const optionId = searchParams.get("optionId") ?? "";
-  const defaultMode =
-    promptId || optionId ? GeneratorMode.MARKETPLACE : GeneratorMode.NEW_AI;
-
-  const [mode, setMode] = useState<GeneratorMode>(defaultMode);
-  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
-    null,
-  );
+  const [mode, setMode] = useState<GeneratorMode>(GeneratorMode.MARKETPLACE);
 
   useEffect(() => {
     if (promptId || optionId) {
@@ -56,7 +50,6 @@ export function PromptGeneratorSidebar() {
       <PromptTabHeader mode={mode} onChangeMode={setMode} />
 
       <SidebarContent className="prompt-generator">
-        {mode === "new-ai" && <NewTabContent idea={idea} setIdea={setIdea} />}
         {mode === "marketplace" && (
           <MarketplaceTabContent
             promptId={promptId}

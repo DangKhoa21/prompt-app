@@ -18,7 +18,7 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { Pin, RotateCcw, Share2, StepBackIcon } from "lucide-react";
+import { Pin, RotateCcw, Share2 } from "lucide-react";
 import {
   Dispatch,
   SetStateAction,
@@ -35,7 +35,7 @@ import {
 } from "../hooks/usePromptConfigState";
 import { PromptSearch } from "../prompt-search";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface MarketplaceTabContentProps {
   promptId: string;
@@ -45,7 +45,7 @@ interface MarketplaceTabContentProps {
   isError: boolean;
   error: Error | null;
   refetch: (
-    options?: RefetchOptions,
+    options?: RefetchOptions
   ) => Promise<QueryObserverResult<PromptWithConfigs, Error>>;
   selectedValues: ConfigInputState;
   setSelectedValues: Dispatch<SetStateAction<ConfigInputState>>;
@@ -73,8 +73,7 @@ export function MarketplaceTabContent({
   isFilled,
 }: MarketplaceTabContentProps) {
   const { setSystemInstruction } = usePrompt();
-  const router = useRouter();
-  const pathName = usePathname();
+  const searchParams = useSearchParams();
 
   // -- Handlers --
   const pinPromptMutation = usePinPrompt();
@@ -110,7 +109,7 @@ export function MarketplaceTabContent({
               newArray[config.label] = JSON.parse(config.value);
               break;
           }
-        },
+        }
       );
 
       setSelectedValues(newSelected);
@@ -158,6 +157,14 @@ export function MarketplaceTabContent({
     arrayValues,
     createShareOptionMutation,
   ]);
+
+  const handleResetPrompt = () => {
+    if (!searchParams) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("promptId");
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  };
 
   const hasSetInstructionRef = useRef(false);
 
@@ -219,11 +226,9 @@ export function MarketplaceTabContent({
               <Button
                 variant="ghost"
                 className="h-6 w-6"
-                onClick={() => {
-                  router.push(pathName);
-                }}
+                onClick={() => handleResetPrompt()}
               >
-                <StepBackIcon />
+                <RotateCcw />
               </Button>
             </div>
           </SidebarGroupLabel>
@@ -232,7 +237,9 @@ export function MarketplaceTabContent({
         <SidebarGroupContent className="flex items-center justify-between px-3 py-3">
           <div className=" text-base leading-tight">
             <Link
-              href={`/prompts/${data.title.toLowerCase().replace(/\s+/g, "-")}-pid${data.id}`}
+              href={`/prompts/${data.title
+                .toLowerCase()
+                .replace(/\s+/g, "-")}-pid${data.id}`}
             >
               <span className="font-semibold">{data.title}</span>
             </Link>
@@ -261,11 +268,7 @@ export function MarketplaceTabContent({
       {data.id === "1" && (
         <SidebarGroup>
           <SidebarGroupLabel>
-            <Label htmlFor="prompt-search">
-              {data.id === "1"
-                ? "Explore the marketplace"
-                : "Search for another prompt"}
-            </Label>
+            <Label htmlFor="prompt-search">Explore the marketplace</Label>
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2">
             <PromptSearch />
