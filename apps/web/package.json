@@ -1,14 +1,16 @@
 {
-  "name": "my-app",
+  "name": "prompt-crafter-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --max-warnings 0",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/ui": "workspace:*",
     "@ai-sdk/google": "^1.1.6",
     "@ai-sdk/openai": "^1.1.5",
     "@ai-sdk/react": "^1.2.0",

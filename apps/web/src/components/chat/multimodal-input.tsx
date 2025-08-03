@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "@/components/icons";
-import useWindowSize from "@/components/use-window-size";
+import useWindowSize from "@/hooks/use-window-size";
 import { sanitizeUIMessages } from "@/lib/utils";
 import { Attachment, ChatRequestOptions, CreateMessage, Message } from "ai";
 import cx from "classnames";

@@ -4,7 +4,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { MultimodalInput } from "@/components/chat/multimodal-input";
 import { PreviewMessage, ThinkingMessage } from "@/components/message";
 import { Overview } from "@/components/overview";
-import { useScrollToBottom } from "@/components/use-scroll-to-bottom";
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 import { SERVER_URL, VERSION_PREFIX } from "@/config";
 import { useAuth } from "@/context/auth-context";
 import { usePrompt } from "@/context/prompt-context";
