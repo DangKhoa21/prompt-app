@@ -3,7 +3,7 @@ name: Deploy Frontend
 on:
   push:
     branches-ignore:
-      - main
+      - main, feature/*
     paths:
       - "frontend/**"
   pull_request:
