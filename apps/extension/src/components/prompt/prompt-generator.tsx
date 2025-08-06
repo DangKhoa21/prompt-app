@@ -1,9 +1,9 @@
 import { LoadingSpinner } from "@/components/icons";
 import RenderConfigInput from "@/components/prompt/generator-items/generator-config-item";
 import { PromptSearch } from "@/components/prompt/prompt-search";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@workspace/ui/components/button";
+import { Label } from "@workspace/ui/components/label";
+import { Progress } from "@workspace/ui/components/progress";
 import {
   SidebarContent,
   SidebarFooter,
@@ -11,8 +11,8 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-} from "@/components/ui/sidebar";
-import { BetterTooltip } from "@/components/ui/tooltip";
+} from "@workspace/ui/components/sidebar";
+import { BetterTooltip } from "@workspace/ui/components/tooltip";
 import { WebDropdown } from "@/components/web-dropdown";
 //import { usePrompt } from "@/context/prompt-context";
 import { usePinPrompt, useUnpinPrompt } from "@/features/template";

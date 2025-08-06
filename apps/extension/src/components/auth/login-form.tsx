@@ -6,16 +6,16 @@ import { useAuth } from "@/context/auth-context";
 import { login } from "@/services/auth";
 import { loginSchema } from "@/services/auth/interface";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import { cn, openCenteredPopup } from "@/lib/utils";
 import { SERVER_URL, VERSION_PREFIX, WEB_URL } from "@/config";
 

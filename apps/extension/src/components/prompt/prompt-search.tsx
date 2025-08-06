@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { PencilRuler, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,7 +11,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@workspace/ui/components/command";
 import { LoadingSpinner } from "@/components/icons";
 import { getPrompts, viewPrompt } from "@/services/prompt";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
