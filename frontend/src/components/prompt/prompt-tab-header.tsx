@@ -29,12 +29,12 @@ export default function PromptTabHeader({
       label: "AI",
       className: "new-ai-prompt",
     },
-    {
-      mode: GeneratorMode.TECHNIQUE,
-      icon: <BookOpenIcon />,
-      label: "Techniques",
-      className: "techniques-handbook",
-    },
+    // {
+    //   mode: GeneratorMode.TECHNIQUE,
+    //   icon: <BookOpenIcon />,
+    //   label: "Techniques",
+    //   className: "techniques-handbook",
+    // },
   ];
 
   return (
@@ -51,7 +51,7 @@ export default function PromptTabHeader({
                 size="sm"
                 className={cn(
                   "flex flex-col md:flex-row gap-2 items-center justify-between",
-                  item.className
+                  item.className,
                 )}
               >
                 {item.icon}

@@ -13,9 +13,9 @@ import PromptTabHeader from "./prompt-tab-header";
 import {
   MarketplaceTabContent,
   NewTabContent,
-  TechniqueTabContent,
+  // TechniqueTabContent,
 } from "./tabs";
-import { Technique } from "@/types/techniques/technique";
+// import { Technique } from "@/types/techniques/technique";
 
 export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
@@ -23,9 +23,9 @@ export function PromptGeneratorSidebar() {
   const promptId = searchParams.get("promptId") ?? "";
   const optionId = searchParams.get("optionId") ?? "";
 
-  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
-    null,
-  );
+  // const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
+  //   null,
+  // );
   const [mode, setMode] = useState<GeneratorMode>(GeneratorMode.MARKETPLACE);
 
   useEffect(() => {
@@ -73,12 +73,12 @@ export function PromptGeneratorSidebar() {
             isFilled={isFilled}
           />
         )}
-        {mode === "technique" && (
-          <TechniqueTabContent
-            selectedTechnique={selectedTechnique}
-            setSelectedTechnique={setSelectedTechnique}
-          />
-        )}
+        {/* {mode === "technique" && ( */}
+        {/*   <TechniqueTabContent */}
+        {/*     selectedTechnique={selectedTechnique} */}
+        {/*     setSelectedTechnique={setSelectedTechnique} */}
+        {/*   /> */}
+        {/* )} */}
       </SidebarContent>
 
       <PromptTabFooter

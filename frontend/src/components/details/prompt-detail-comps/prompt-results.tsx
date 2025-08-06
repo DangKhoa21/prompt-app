@@ -15,10 +15,8 @@ import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
 import { deserializeResultConfigData } from "@/lib/utils/utils.details";
 import { Prompt } from "@/services/prompt/interface";
-import { Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 
 interface PromptResultsProps {
   promptData: Prompt;
@@ -66,11 +64,6 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
 
   const handleUsePrompt = () => {
     router.push(`${appURL.chat}/?promptId=${promptData.id}`);
-  };
-
-  const handleCopySystemInstruction = () => {
-    navigator?.clipboard?.writeText(promptData.systemInstruction as string);
-    toast.success("System instruction copied to clipboard!");
   };
 
   const deserializedData = useMemo(() => {
@@ -148,7 +141,6 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
             onClick={handleUsePrompt}
             className="w-full"
           >
-            {/* <Copy className="h-4 w-4 mr-2" /> */}
             Use Prompt
           </Button>
         </TabsContent>
@@ -160,12 +152,11 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </div>
           <Button
             variant="outline"
-            onClick={handleCopySystemInstruction}
-            disabled={!promptData.systemInstruction}
+            aria-label="Use Prompt"
+            onClick={handleUsePrompt}
             className="w-full"
           >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy System Instruction
+            Use Prompt
           </Button>
         </TabsContent>
 

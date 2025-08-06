@@ -7,6 +7,7 @@ import { useAuth } from "@/context/auth-context";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { appURL } from "@/config/url.config";
 
 export function DetailsHeader({ pageName }: { pageName: string }) {
   const { isAuthenticated } = useAuth();
@@ -23,8 +24,7 @@ export function DetailsHeader({ pageName }: { pageName: string }) {
           variant="ghost"
           className="h-8 p-2"
           onClick={() => {
-            router.back();
-            router.refresh();
+            router.push(appURL.marketplace);
           }}
         >
           <ChevronLeft className="h-4 w-4" />

@@ -50,41 +50,48 @@ async function main() {
       title: 'Zero‑Shot Prompting',
       description:
         'Directly instruct the model to perform a task without using examples (no context).',
-      stringTemplate: `{{instruction}}\n\n{{task_description}}\n\nOutput:`,
+      stringTemplate: `{{Instruction}}\n\n{{Task Description}}\n\nOutput:`,
       systemInstruction:
         'Respond based purely on the instruction without examples or demonstrations.',
       tags: ['ai', 'techniques', 'zero-shot'],
       configs: [
-        { label: 'instruction', type: 'textarea' },
-        { label: 'task_description', type: 'textarea' },
+        { label: 'Instruction', type: 'textarea' },
+        { label: 'Task Description', type: 'textarea' },
       ],
     },
     {
       title: 'Few‑Shot Prompting',
       description:
         'Provide a few examples so the model understands the format and style.',
-      stringTemplate: `{{task_instruction}}\n\nExamples:\n{{examples}}\n\nNow you do:\nInput: {{user_input}}\nOutput:`,
-      systemInstruction:
-        'Mimic the format and style shown in the example examples.',
+      stringTemplate: `{{Task Instruction}}\n\nExamples:\n{{Examples}}\n\nNow you do:\nInput: {{User Input}}\nOutput:`,
+      systemInstruction: 'Mimic the format and style shown in the examples.',
       tags: ['ai', 'techniques', 'few-shot'],
       configs: [
-        { label: 'task_instruction', type: 'textarea' },
-        { label: 'examples', type: 'textarea' },
-        { label: 'user_input', type: 'textarea' },
+        { label: 'Task Instruction', type: 'textarea' },
+        {
+          label: 'Examples',
+          type: 'array',
+          values: [
+            'Input: ...\nOutput: ...',
+            'Input: ...\nOutput: ...',
+            'Input: ...\nOutput: ...',
+          ],
+        },
+        { label: 'User Input', type: 'textarea' },
       ],
     },
     {
       title: 'Chain of Thought',
       description:
         'Prompt the model to reason step‑by‑step before giving an answer.',
-      stringTemplate: `{{problem}}\n\nLet's think through this step by step:\n\n{{steps}}\n\nFinal answer:`,
+      stringTemplate: `{{Problem}}\n\nLet's think through this step by step:\n\n{{Reasoning Steps}}\n\nFinal answer:`,
       systemInstruction:
         'List each reasoning step clearly before the final answer.',
       tags: ['ai', 'techniques', 'reasoning'],
       configs: [
-        { label: 'problem', type: 'textarea' },
+        { label: 'Problem', type: 'textarea' },
         {
-          label: 'Reasoning step',
+          label: 'Reasoning Steps',
           type: 'array',
           values: ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
         },
@@ -93,40 +100,40 @@ async function main() {
     {
       title: 'Meta Prompting',
       description: 'Use AI to critique and refine a prompt itself.',
-      stringTemplate: `I want to generate a prompt for the task: {{task}}\n\nCurrent prompt:\n"{{current_prompt}}"\n\nPlease analyze and suggest improvements in clarity, structure, completeness.`,
+      stringTemplate: `I want to generate a prompt for the task: {{Task}}\n\nCurrent prompt:\n"{{Current Prompt}}"\n\nPlease analyze and suggest improvements in clarity, structure, completeness.`,
       systemInstruction:
         'Evaluate prompt quality and propose a better version.',
       tags: ['ai', 'techniques', 'meta'],
       configs: [
-        { label: 'task', type: 'textarea' },
-        { label: 'current_prompt', type: 'textarea' },
+        { label: 'Task', type: 'textarea' },
+        { label: 'Current Prompt', type: 'textarea' },
       ],
     },
     {
       title: 'Self‑Reflection',
       description: 'AI reviews and improves its own response.',
-      stringTemplate: `Request: {{request}}\n\nResponse:\n\n{{AI_response}}\n\nPlease:\n1. Review for accuracy\n2. Suggest improvements\n3. Revise if needed\n4. Rate your confidence (1–10)`,
+      stringTemplate: `Request: {{Request}}\n\nResponse:\n\n{{AI Response}}\n\nPlease:\n1. Review for accuracy\n2. Suggest improvements\n3. Revise if needed\n4. Rate your confidence (1–10)`,
       systemInstruction:
         'Reflect on your answer and provide revisions with a confidence score.',
       tags: ['ai', 'techniques', 'quality'],
       configs: [
-        { label: 'request', type: 'textarea' },
-        { label: 'AI_response', type: 'textarea' },
+        { label: 'Request', type: 'textarea' },
+        { label: 'AI Response', type: 'textarea' },
       ],
     },
     {
       title: 'Role Prompting',
       description: 'Assign a specific persona or role to the AI.',
-      stringTemplate: `You are a {{role}} with {{experience}} years in {{field}}, known for {{traits}}.\n\nPrompt: {{prompt}}\n\nPlease respond in character.`,
+      stringTemplate: `You are a {{Role}} with {{Experience}} years in {{Field}}, known for {{Traits}}.\n\nPrompt: {{Prompt}}\n\nPlease respond in character.`,
       systemInstruction:
         'Embody that role’s tone, jargon, and style in your answer.',
       tags: ['ai', 'techniques', 'context'],
       configs: [
-        { label: 'role', type: 'combobox' },
-        { label: 'experience', type: 'dropdown' },
-        { label: 'field', type: 'textarea' },
+        { label: 'Role', type: 'combobox' },
+        { label: 'Experience', type: 'dropdown' },
+        { label: 'Field', type: 'textarea' },
         {
-          label: 'traits',
+          label: 'Traits',
           type: 'array',
           values: [
             'Clear communicator',
@@ -135,25 +142,25 @@ async function main() {
             'Empathetic',
           ],
         },
-        { label: 'prompt', type: 'textarea' },
+        { label: 'Prompt', type: 'textarea' },
       ],
     },
     {
       title: 'Constraint Prompting',
       description:
         'Force output to meet specific structural or stylistic constraints.',
-      stringTemplate: `{{request}}\n\nConstraints:\n- Length: {{length_limit}}\n- Format: {{format}}\n- Style: {{style}}\n- Audience: {{audience}}\nAdditional: {{additional_requirements}}`,
+      stringTemplate: `{{Request}}\n\nConstraints:\n- Length: {{Length Limit}}\n- Format: {{Format}}\n- Style: {{Style}}\n- Audience: {{Audience}}\nAdditional: {{Additional Requirements}}`,
       systemInstruction:
         'Strictly follow the listed structural and stylistic constraints.',
       tags: ['ai', 'techniques', 'structure'],
       configs: [
-        { label: 'request', type: 'textarea' },
-        { label: 'length_limit', type: 'dropdown' },
-        { label: 'format', type: 'combobox' },
-        { label: 'style', type: 'textarea' },
-        { label: 'audience', type: 'textarea' },
+        { label: 'Request', type: 'textarea' },
+        { label: 'Length Limit', type: 'dropdown' },
+        { label: 'Format', type: 'combobox' },
+        { label: 'Style', type: 'textarea' },
+        { label: 'Audience', type: 'textarea' },
         {
-          label: 'additional_requirements',
+          label: 'Additional Requirements',
           type: 'array',
           values: [
             'No jargon',
@@ -168,87 +175,87 @@ async function main() {
       title: 'RAG (Retrieval‑Augmented Generation)',
       description:
         'Use retrieval context to generate grounded, factual responses.',
-      stringTemplate: `Context:\n{{context}}\n\nQuestion: {{query}}\n\nAnswer using only the context. Cite sources; state if data is insufficient.`,
+      stringTemplate: `Context:\n{{Context}}\n\nQuestion: {{Query}}\n\nAnswer using only the context. Cite sources; state if data is insufficient.`,
       systemInstruction:
         'Use only the provided context and cite explicitly; do not hallucinate facts.',
       tags: ['ai', 'techniques', 'retrieval', 'rag'],
       configs: [
-        { label: 'context', type: 'textarea' },
-        { label: 'query', type: 'textarea' },
+        { label: 'Context', type: 'textarea' },
+        { label: 'Query', type: 'textarea' },
       ],
     },
     {
       title: 'Meta Prompting',
       description:
         'Use abstract task-agnostic scaffolding to structure prompts efficiently.',
-      stringTemplate: `Task description: {{task}}\n\nPlease generate a prompt template that captures the structural flow without concrete content.`,
+      stringTemplate: `Task description: {{Task}}\n\nPlease generate a prompt template that captures the structural flow without concrete content.`,
       systemInstruction:
         'Create a high-level, content-agnostic scaffold for prompting tasks.',
       tags: ['ai', 'techniques', 'meta'],
-      configs: [{ label: 'task', type: 'textarea' }],
+      configs: [{ label: 'Task', type: 'textarea' }],
     },
     {
       title: 'Self‑Consistency',
       description:
         'Run multiple reasoning paths (CoT) and pick the most consistent answer.',
-      stringTemplate: `Question: {{question}}\n\nGenerate multiple reasoning chains independently, then select the final answer that appears most frequently.`,
+      stringTemplate: `Question: {{Question}}\n\nGenerate multiple reasoning chains independently, then select the final answer that appears most frequently.`,
       systemInstruction:
         'Produce at least 3 distinct Chain-of‑Thought paths and output the most consistent final answer.',
       tags: ['ai', 'techniques', 'reasoning', 'consistency'],
       configs: [
-        { label: 'question', type: 'textarea' },
+        { label: 'Question', type: 'textarea' },
         {
-          label: 'chains',
+          label: 'Chains',
           type: 'array',
           values: ['Chain 1', 'Chain 2', 'Chain 3'],
         },
       ],
     },
-    {
-      title: 'Tree of Thought (ToT)',
-      description:
-        'Explore multiple parallel reasoning paths with backtracking and self-evaluation.',
-      stringTemplate: `Problem: {{problem}}\n\nAt each step, propose multiple thought candidates, self-evaluate them, and explore further promising branches.`,
-      systemInstruction:
-        'Use branching exploration: generate candidates, evaluate (“sure/maybe/impossible”), backtrack as needed.',
-      tags: ['ai', 'techniques', 'reasoning', 'tree-of-thought'],
-      configs: [
-        { label: 'problem', type: 'textarea' },
-        {
-          label: 'candidates_per_step',
-          type: 'dropdown',
-        },
-        {
-          label: 'thought_steps',
-          type: 'array',
-          values: ['Thought 1', 'Thought 2', 'Thought 3'],
-        },
-      ],
-    },
-    {
-      title: 'Prompt Chaining',
-      description:
-        'Break complex tasks into sequential prompts—output of one used as input to next.',
-      stringTemplate: `Step 1: {{step1_prompt}}\n\nStep 2 (use output from step 1): {{step2_prompt}}\n\nContinue until final answer.`,
-      systemInstruction:
-        'Chain prompts logically so each stage builds on previous output.',
-      tags: ['ai', 'techniques', 'chaining'],
-      configs: [
-        {
-          label: 'step1_prompt',
-          type: 'textarea',
-        },
-        {
-          label: 'step2_prompt',
-          type: 'textarea',
-        },
-        {
-          label: 'additional_steps',
-          type: 'array',
-          values: ['Step 3', 'Step 4'],
-        },
-      ],
-    },
+    // {
+    //   title: 'Tree of Thought (ToT)',
+    //   description:
+    //     'Explore multiple parallel reasoning paths with backtracking and self-evaluation.',
+    //   stringTemplate: `Problem: {{problem}}\n\nAt each step, propose multiple thought candidates, self-evaluate them, and explore further promising branches.`,
+    //   systemInstruction:
+    //     'Use branching exploration: generate candidates, evaluate (“sure/maybe/impossible”), backtrack as needed.',
+    //   tags: ['ai', 'techniques', 'reasoning', 'tree-of-thought'],
+    //   configs: [
+    //     { label: 'problem', type: 'textarea' },
+    //     {
+    //       label: 'candidates_per_step',
+    //       type: 'dropdown',
+    //     },
+    //     {
+    //       label: 'thought_steps',
+    //       type: 'array',
+    //       values: ['Thought 1', 'Thought 2', 'Thought 3'],
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'Prompt Chaining',
+    //   description:
+    //     'Break complex tasks into sequential prompts—output of one used as input to next.',
+    //   stringTemplate: `Step 1: {{step1_prompt}}\n\nStep 2 (use output from step 1): {{step2_prompt}}\n\nContinue until final answer.`,
+    //   systemInstruction:
+    //     'Chain prompts logically so each stage builds on previous output.',
+    //   tags: ['ai', 'techniques', 'chaining'],
+    //   configs: [
+    //     {
+    //       label: 'step1_prompt',
+    //       type: 'textarea',
+    //     },
+    //     {
+    //       label: 'step2_prompt',
+    //       type: 'textarea',
+    //     },
+    //     {
+    //       label: 'additional_steps',
+    //       type: 'array',
+    //       values: ['Step 3', 'Step 4'],
+    //     },
+    //   ],
+    // },
     {
       title: 'Write For Me',
       description:
