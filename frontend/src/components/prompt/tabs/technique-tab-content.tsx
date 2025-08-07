@@ -7,9 +7,15 @@ import {
 } from "@/components/ui/sidebar";
 import { appURL } from "@/config/url.config";
 import { techniques } from "@/constants/techniques";
+import { getPrompts } from "@/services/prompt";
 import { Technique } from "@/types/techniques/technique";
+import { useQuery } from "@tanstack/react-query";
 import { LinkIcon, StepBackIcon } from "lucide-react";
 import Link from "next/link";
+
+export interface TechWithLink extends Technique {
+  link?: string;
+}
 
 interface TechniqueTabContentProps {
   selectedTechnique: Technique | null;
@@ -20,6 +26,28 @@ export function TechniqueTabContent({
   selectedTechnique,
   setSelectedTechnique,
 }: TechniqueTabContentProps) {
+  const filter = { tagId: "01973620-6293-7113-a594-c32275e3b100" };
+  const { data } = useQuery({
+    queryKey: ["prompts", filter],
+    queryFn: () => getPrompts({ pageParam: "", filter }),
+  });
+
+  const techsWithLink: TechWithLink[] = techniques.map((technique) => {
+    const corTech = data?.data.find((tech) => {
+      return tech.title === technique.name;
+    });
+    const template = corTech ? `${corTech.stringTemplate}` : technique.template;
+    console.log(corTech);
+    const link = corTech ? `${appURL.chat}/?promptId=${corTech.id}` : "";
+    return {
+      ...technique,
+      template,
+      link,
+    };
+  });
+
+  console.log(techsWithLink);
+
   return (
     <>
       <SidebarContent className="p-4 overflow-y-auto">
@@ -37,7 +65,7 @@ export function TechniqueTabContent({
             </SidebarGroupLabel>
             <SidebarGroupContent className="px-3">
               <div className="flex flex-col gap-2">
-                {techniques.map((tech) => (
+                {techsWithLink.map((tech) => (
                   <Button
                     key={tech.id}
                     variant="outline"

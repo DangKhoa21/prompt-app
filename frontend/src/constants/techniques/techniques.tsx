@@ -7,9 +7,45 @@ import {
   Lightbulb,
   Sparkles,
   Target,
+  Zap,
 } from "lucide-react";
 
 export const techniques: Technique[] = [
+  {
+    id: "zero-shot",
+    name: "Zero-Shot Prompting",
+    description: "Give a clear instruction without providing any examples",
+    icon: <Zap className="h-5 w-5" />,
+    category: "Basics",
+    difficulty: "Beginner",
+    useCase: "When you want a quick answer without needing specific formatting",
+    template: `{{task_instruction}}
+
+Please provide your response.`,
+    examples: [
+      {
+        before:
+          "Classify this email as spam or not spam: 'Win $1000 now! Click here!'",
+        after: `Classify this email as spam or not spam: "Win $1000 now! Click here!"
+
+Please provide your response.`,
+        explanation:
+          "Zero-shot prompting relies solely on clear instructions, with no prior examples. It’s fast and simple, but may lead to less predictable formatting.",
+      },
+    ],
+    steps: [
+      "Clearly state the task or question",
+      "Avoid including any examples",
+      "Use direct, specific language",
+      "Optionally request structured output",
+    ],
+    tips: [
+      "Works best for straightforward tasks",
+      "Keep the instruction concise and unambiguous",
+      "Can be a good first try before refining with few-shot or other techniques",
+      "If results are inconsistent, try switching to few-shot prompting",
+    ],
+  },
   {
     id: "few-shot",
     name: "Few-Shot Prompting",

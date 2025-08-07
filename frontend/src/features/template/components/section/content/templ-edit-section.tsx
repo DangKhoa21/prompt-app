@@ -18,7 +18,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { parseTemplateText } from "@/lib/utils/utils.generate-prompt";
 import { Tag, TemplateWithConfigs } from "@/services/prompt/interface";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { appURL } from "@/config/url.config";
 
 // TODO: Handle UI for difference errors
 export function TemplateEditSection({
@@ -36,6 +39,7 @@ export function TemplateEditSection({
   const { template, setTemplate } = useTemplate();
 
   const hasMounted = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!hasMounted.current) {
@@ -65,13 +69,14 @@ export function TemplateEditSection({
 
   const handleSave = () => {
     let errorConfigs: string[] = [];
+    const MIN_ITEM = 1;
 
     template.configs.map((config) => {
       if (
         config.type === ConfigType.DROPDOWN ||
         config.type === ConfigType.ARRAY
       ) {
-        if (config.values.length < 2) {
+        if (config.values.length < MIN_ITEM) {
           errorConfigs = [...errorConfigs, config.label];
         }
       }
@@ -79,7 +84,7 @@ export function TemplateEditSection({
 
     if (errorConfigs.length) {
       toast.error(
-        `Config type Dropdown and Array must have at least 2 items. The following config is not valid: ${errorConfigs
+        `Config type Dropdown and Array must have at least ${MIN_ITEM} items. The following config is not valid: ${errorConfigs
           .map((config) => config)
           .join(", ")}`,
       );
@@ -169,6 +174,15 @@ export function TemplateEditSection({
               </div>
             )}
             <div className="flex gap-6 justify-end">
+              <Button
+                variant={"outline"}
+                onClick={() => {
+                  router.push(`${appURL.chat}/?promptId=${template.id}`);
+                }}
+                className="h-8"
+              >
+                Use Prompt
+              </Button>
               <ConfirmDialog
                 description="This action can't be undone. Newest changes will be deleted!"
                 variant="secondary"

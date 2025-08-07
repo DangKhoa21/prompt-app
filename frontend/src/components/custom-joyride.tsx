@@ -41,7 +41,6 @@ export default function CustomJoyride({
       steps={steps}
       callback={(data) => {
         if (data.status === "finished" || data.status === "skipped") {
-          console.log("check");
           localStorage.setItem("hasSeenChatTutorial", "true");
           setRun(false);
         }

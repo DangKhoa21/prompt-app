@@ -29,12 +29,12 @@ export default function PromptTabHeader({
       label: "AI",
       className: "new-ai-prompt",
     },
-    // {
-    //   mode: GeneratorMode.TECHNIQUE,
-    //   icon: <BookOpenIcon />,
-    //   label: "Techniques",
-    //   className: "techniques-handbook",
-    // },
+    {
+      mode: GeneratorMode.TECHNIQUE,
+      icon: <BookOpenIcon />,
+      label: "Techniques",
+      className: "techniques-handbook",
+    },
   ];
 
   return (

@@ -60,7 +60,10 @@ export async function getTags(): Promise<Tag[]> {
   return response.data.data;
 }
 
-export async function getPrompt(id: string | null): Promise<Prompt> {
+export async function getPrompt(
+  id: string | null,
+  filter: PromptFilter = {},
+): Promise<Prompt> {
   if (!id) {
     return {
       id: "1",
@@ -76,7 +79,9 @@ export async function getPrompt(id: string | null): Promise<Prompt> {
       updatedAt: new Date(),
     };
   }
-  const response = await axiosInstance.get(`/prompts/${id}`);
+  const response = await axiosInstance.get(`/prompts/${id}`, {
+    params: { tags: filter.tagId ?? undefined },
+  });
   return response.data.data;
 }
 

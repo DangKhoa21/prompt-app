@@ -47,7 +47,7 @@ async function main() {
 
   const prompts = [
     {
-      title: 'Zero‑Shot Prompting',
+      title: 'Zero-Shot Prompting',
       description:
         'Directly instruct the model to perform a task without using examples (no context).',
       stringTemplate: `{{Instruction}}\n\n{{Task Description}}\n\nOutput:`,
@@ -60,7 +60,7 @@ async function main() {
       ],
     },
     {
-      title: 'Few‑Shot Prompting',
+      title: 'Few-Shot Prompting',
       description:
         'Provide a few examples so the model understands the format and style.',
       stringTemplate: `{{Task Instruction}}\n\nExamples:\n{{Examples}}\n\nNow you do:\nInput: {{User Input}}\nOutput:`,
@@ -93,7 +93,7 @@ async function main() {
         {
           label: 'Reasoning Steps',
           type: 'array',
-          values: ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
+          values: ['Step'],
         },
       ],
     },
@@ -110,7 +110,7 @@ async function main() {
       ],
     },
     {
-      title: 'Self‑Reflection',
+      title: 'Self-Reflection',
       description: 'AI reviews and improves its own response.',
       stringTemplate: `Request: {{Request}}\n\nResponse:\n\n{{AI Response}}\n\nPlease:\n1. Review for accuracy\n2. Suggest improvements\n3. Revise if needed\n4. Rate your confidence (1–10)`,
       systemInstruction:
@@ -172,7 +172,7 @@ async function main() {
       ],
     },
     {
-      title: 'RAG (Retrieval‑Augmented Generation)',
+      title: 'RAG (Retrieval-Augmented Generation)',
       description:
         'Use retrieval context to generate grounded, factual responses.',
       stringTemplate: `Context:\n{{Context}}\n\nQuestion: {{Query}}\n\nAnswer using only the context. Cite sources; state if data is insufficient.`,
@@ -195,7 +195,7 @@ async function main() {
       configs: [{ label: 'Task', type: 'textarea' }],
     },
     {
-      title: 'Self‑Consistency',
+      title: 'Self-Consistency',
       description:
         'Run multiple reasoning paths (CoT) and pick the most consistent answer.',
       stringTemplate: `Question: {{Question}}\n\nGenerate multiple reasoning chains independently, then select the final answer that appears most frequently.`,

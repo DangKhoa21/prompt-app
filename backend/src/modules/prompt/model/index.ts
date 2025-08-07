@@ -180,7 +180,11 @@ export const promptWithConfigGenSchema = z.object({
             .describe(
               'The UI component type to render for this configuration option, dropdown for choosing predefined values, combobox for choosing predefined values and can add new value, textarea for freeform text entry, and array for adding multiple values in a block.',
             ),
-          info: z.string().describe("This field is the additional information for required field and description", ),
+          info: z
+            .string()
+            .describe(
+              'This field is the additional information for required field and description',
+            ),
         })
         .extend({
           values: z

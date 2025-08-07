@@ -13,19 +13,31 @@ import PromptTabHeader from "./prompt-tab-header";
 import {
   MarketplaceTabContent,
   NewTabContent,
-  // TechniqueTabContent,
+  TechniqueTabContent,
+  TechWithLink,
 } from "./tabs";
-// import { Technique } from "@/types/techniques/technique";
+import {
+  dehydrate,
+  HydrationBoundary,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { getPrompts } from "@/services/prompt";
 
 export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+
+  const filter = { tagId: "01973620-6293-7113-a594-c32275e3b100" };
+  queryClient.prefetchQuery({
+    queryKey: ["prompts", filter],
+    queryFn: () => getPrompts({ pageParam: "", filter }),
+  });
 
   const promptId = searchParams.get("promptId") ?? "";
   const optionId = searchParams.get("optionId") ?? "";
 
-  // const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
-  //   null,
-  // );
+  const [selectedTechnique, setSelectedTechnique] =
+    useState<TechWithLink | null>(null);
   const [mode, setMode] = useState<GeneratorMode>(GeneratorMode.MARKETPLACE);
 
   useEffect(() => {
@@ -54,8 +66,7 @@ export function PromptGeneratorSidebar() {
       <PromptTabHeader mode={mode} onChangeMode={setMode} />
 
       <SidebarContent className="prompt-generator">
-        {mode === "new-ai" && <NewTabContent idea={idea} setIdea={setIdea} />}
-        {mode === "marketplace" && (
+        {mode === "marketplace" ? (
           <MarketplaceTabContent
             promptId={promptId}
             optionId={optionId}
@@ -72,13 +83,16 @@ export function PromptGeneratorSidebar() {
             setArrayValues={setArrayValues}
             isFilled={isFilled}
           />
-        )}
-        {/* {mode === "technique" && ( */}
-        {/*   <TechniqueTabContent */}
-        {/*     selectedTechnique={selectedTechnique} */}
-        {/*     setSelectedTechnique={setSelectedTechnique} */}
-        {/*   /> */}
-        {/* )} */}
+        ) : mode === "new-ai" ? (
+          <NewTabContent idea={idea} setIdea={setIdea} />
+        ) : mode === "technique" ? (
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <TechniqueTabContent
+              selectedTechnique={selectedTechnique}
+              setSelectedTechnique={setSelectedTechnique}
+            />
+          </HydrationBoundary>
+        ) : null}
       </SidebarContent>
 
       <PromptTabFooter

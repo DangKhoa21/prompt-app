@@ -26,8 +26,8 @@ import {
   ConfigInputState,
   PromptFillState,
 } from "./hooks/usePromptConfigState";
-import { Technique } from "@/types/techniques/technique";
 import { appURL } from "@/config/url.config";
+import { TechWithLink } from "./tabs";
 
 interface PromptTabFooterProps {
   mode: GeneratorMode;
@@ -38,7 +38,7 @@ interface PromptTabFooterProps {
   textareaValues: ConfigInputState;
   arrayValues: ArrayConfigInputState;
   isFilled: PromptFillState;
-  selectedTechnique: Technique | null;
+  selectedTechnique: TechWithLink | null;
 }
 
 export default function PromptTabFooter({
@@ -73,7 +73,7 @@ export default function PromptTabFooter({
 
       setPrompt({ id: data.id, value: prompt, isSending });
     },
-    [data, selectedValues, textareaValues, arrayValues, setPrompt]
+    [data, selectedValues, textareaValues, arrayValues, setPrompt],
   );
 
   const { submit, isLoading, stop } = useObject({
@@ -174,7 +174,7 @@ export default function PromptTabFooter({
           <>
             <BetterTooltip
               content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
-                ", "
+                ", ",
               )}`}
             >
               <div className="flex flex-col gap-1 px-2">
@@ -204,14 +204,13 @@ export default function PromptTabFooter({
               </Button>
             </div>
           </>
-        ) : mode === GeneratorMode.TECHNIQUE && selectedTechnique !== null ? (
+        ) : mode === GeneratorMode.TECHNIQUE &&
+          selectedTechnique !== null &&
+          selectedTechnique.link !== "" ? (
           <div className="md:p-2">
             <Button
               onClick={() => {
-                console.log(selectedTechnique);
-                router.replace(
-                  `${appURL.chat}/?promptId=${selectedTechnique.id}`,
-                );
+                router.replace(`${selectedTechnique.link}`);
               }}
               className="w-full"
             >
