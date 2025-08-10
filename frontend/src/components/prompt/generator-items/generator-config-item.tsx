@@ -19,6 +19,7 @@ import { BetterTooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { parseInfo } from "@/lib/utils/utils.details";
 import { PromptConfig, TemplateConfig } from "@/services/prompt/interface";
+import { motion } from "framer-motion";
 import { CircleHelp } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
@@ -89,7 +90,7 @@ export default function RenderConfigInput({
 
   const isUnfilled = isFilled.unfilledConfigs.includes(config.label);
   const label = (
-    <SidebarGroupLabel className="flex justify-between">
+    <>
       <div className="flex gap-2">
         <Label>{config.label}</Label>
         {isUnfilled && (
@@ -113,7 +114,7 @@ export default function RenderConfigInput({
           <CircleHelp />
         </Button>
       </BetterTooltip>
-    </SidebarGroupLabel>
+    </>
   );
 
   const content = (() => {
@@ -183,8 +184,12 @@ export default function RenderConfigInput({
 
   return (
     <SidebarGroup key={config.label}>
-      {label}
-      <SidebarGroupContent className="px-2">{content}</SidebarGroupContent>
+      <motion.div key={""} initial={{}} animate={{}} exit={{}} transition={{}}>
+        <SidebarGroupLabel className="flex justify-between">
+          {label}
+        </SidebarGroupLabel>
+        <SidebarGroupContent className="px-2">{content}</SidebarGroupContent>
+      </motion.div>
     </SidebarGroup>
   );
 }

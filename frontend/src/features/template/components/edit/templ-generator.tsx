@@ -28,11 +28,21 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { promptWithConfigGenSchema } from "@/lib/schema";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
-export function TemplateGenerator() {
+interface TemplateGeneratorProps {
+  improvementSuggestions: string;
+  isImprove: boolean;
+  setIsImprove: Dispatch<SetStateAction<boolean>>;
+}
+
+export function TemplateGenerator({
+  improvementSuggestions,
+  isImprove,
+  setIsImprove,
+}: TemplateGeneratorProps) {
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(false);
   const { token } = useAuth();
@@ -91,6 +101,13 @@ export function TemplateGenerator() {
       }
     },
   });
+
+  useEffect(() => {
+    if (isImprove) {
+      setIsImprove(false);
+      submit({ prompt: improvementSuggestions });
+    }
+  }, [improvementSuggestions, isImprove, setIsImprove, submit]);
 
   const isMobile = useIsMobile();
 

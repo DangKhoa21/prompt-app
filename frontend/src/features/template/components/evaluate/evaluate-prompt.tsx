@@ -29,7 +29,7 @@ import {
   validateFilledConfigs,
 } from "@/lib/utils/utils.generate-prompt";
 import { Check, Copy, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface EvaluationResult {
@@ -41,7 +41,19 @@ interface EvaluationResult {
   selected?: boolean;
 }
 
-export function EvaluatePrompt() {
+interface EvaluationPromptProp {
+  setActiveTab: Dispatch<SetStateAction<string>>;
+  improvementSuggestions: string;
+  setImprovementSuggestions: Dispatch<SetStateAction<string>>;
+  setIsImprove: Dispatch<SetStateAction<boolean>>;
+}
+
+export function EvaluatePrompt({
+  setActiveTab,
+  improvementSuggestions,
+  setImprovementSuggestions,
+  setIsImprove,
+}: EvaluationPromptProp) {
   const { template } = useTemplate();
 
   const [loadingStates, setLoadingStates] = useState({
@@ -50,7 +62,6 @@ export function EvaluatePrompt() {
   });
   const [previewPrompt, setPreviewPrompt] = useState("");
   const [openPreview, setOpenPreview] = useState(true);
-  const [improvementSuggestions, setImprovementSuggestions] = useState("");
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>(
     {},
   );
@@ -416,6 +427,17 @@ export function EvaluatePrompt() {
               <Markdown>{improvementSuggestions}</Markdown>
             </div>
           </CardContent>
+          <CardFooter>
+            <Button
+              variant="default"
+              onClick={() => {
+                setActiveTab("edit");
+                setIsImprove(true);
+              }}
+            >
+              Apply improvement
+            </Button>
+          </CardFooter>
         </Card>
       )}
 

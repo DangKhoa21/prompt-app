@@ -7,8 +7,19 @@ import { cn } from "@/lib/utils";
 import { TemplatesConfigTextarea } from "./templ-config-textarea";
 import { TemplatesConfigVariable } from "./templ-config-value";
 import { TemplateGenerator } from "./templ-generator";
+import { Dispatch, SetStateAction } from "react";
 
-export function EditPrompt() {
+interface EditPromptProps {
+  improveSuggestions: string;
+  isImprove: boolean;
+  setIsImprove: Dispatch<SetStateAction<boolean>>;
+}
+
+export function EditPrompt({
+  improveSuggestions,
+  isImprove,
+  setIsImprove,
+}: EditPromptProps) {
   const { template, setTemplate } = useTemplate();
   const { open } = useSidebar();
   const isMobile = useIsMobile();
@@ -60,7 +71,11 @@ export function EditPrompt() {
           <div className="flex justify-between items-center">
             <div className="text-xl font-semibold p-2">Configs</div>
 
-            <TemplateGenerator />
+            <TemplateGenerator
+              improvementSuggestions={improveSuggestions}
+              isImprove={isImprove}
+              setIsImprove={setIsImprove}
+            />
           </div>
 
           <div className="space-y-4 h-fit border rounded-md p-4">

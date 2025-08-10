@@ -71,11 +71,7 @@ async function main() {
         {
           label: 'Examples',
           type: 'array',
-          values: [
-            'Input: ...\nOutput: ...',
-            'Input: ...\nOutput: ...',
-            'Input: ...\nOutput: ...',
-          ],
+          values: ['Input:', 'Output:'],
         },
         { label: 'User Input', type: 'textarea' },
       ],

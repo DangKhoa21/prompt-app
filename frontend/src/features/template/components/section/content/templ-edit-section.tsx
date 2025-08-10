@@ -31,6 +31,8 @@ export function TemplateEditSection({
   initialPrompt: TemplateWithConfigs;
   allTags: Tag[];
 }) {
+  const [improvementSuggestions, setImprovementSuggestions] = useState("");
+  const [isImprove, setIsImprove] = useState<boolean>(false);
   const { mutateAsync: mutateUpdateTemplate } = useUpdatePromptTemplate();
   const { mutateAsync: mutateUpdateTag } = useUpdateTag();
 
@@ -151,10 +153,19 @@ export function TemplateEditSection({
           </TabsList>
 
           <TabsContent value="edit" className="p-1 space-y-6">
-            <EditPrompt />
+            <EditPrompt
+              improveSuggestions={improvementSuggestions}
+              isImprove={isImprove}
+              setIsImprove={setIsImprove}
+            />
           </TabsContent>
           <TabsContent value="evaluate" className="p-1 pb-12 space-y-6">
-            <EvaluatePrompt />
+            <EvaluatePrompt
+              setActiveTab={setActiveTab}
+              improvementSuggestions={improvementSuggestions}
+              setImprovementSuggestions={setImprovementSuggestions}
+              setIsImprove={setIsImprove}
+            />
           </TabsContent>
         </Tabs>
       </div>

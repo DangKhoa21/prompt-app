@@ -1,5 +1,6 @@
 "use client";
 
+import { appURL } from "@/config/url.config";
 import {
   createPromptTemplate,
   deletePromptTemplate,
@@ -31,11 +32,21 @@ export const useCreatePromptTemplate = (redirect: boolean = true) => {
 
   return useMutation({
     mutationFn: createPromptTemplate,
-    onSuccess: (newTemplateId: string) => {
+    onMutate: (data) => {
+      queryClient.setQueryData(["prompt", data.id], data);
       if (redirect) {
-        router.push(`/templates/${newTemplateId}`);
+        router.push(`/templates/${data.id}`);
       }
-      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+    },
+    onSuccess: (newTemplateId, data) => {
+      if (data.id !== newTemplateId) {
+        queryClient.setQueryData(["prompt", newTemplateId], data);
+        queryClient.removeQueries({ queryKey: ["prompt", data.id] });
+        if (redirect) {
+          router.replace(`${appURL.templates}/${newTemplateId}`);
+        }
+      }
+      queryClient.refetchQueries({ queryKey: ["prompts"] });
     },
     onError: (error: string) => {
       console.error("Error creating template:", error);

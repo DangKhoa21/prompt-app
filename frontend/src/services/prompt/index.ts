@@ -128,6 +128,7 @@ export async function createPromptTemplate(
     ...config,
     type: config.type.toLowerCase(),
   }));
+
   const response = await axiosWithAuth.post(`/prompts`, data);
   return response.data.data;
 }
@@ -139,6 +140,7 @@ export async function updatePromptTemplate(
     ...config,
     type: config.type.toLowerCase() as ConfigType,
   }));
+
   const response = await axiosWithAuth.put(`/prompts/${data.id}`, data);
   return response.data.data;
 }

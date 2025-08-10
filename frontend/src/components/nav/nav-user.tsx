@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { EXTENSION_URL } from "@/config";
+import { appURL } from "@/config/url.config";
 import { useAuth } from "@/context/auth-context";
 import { Settings } from "@/features/settings";
 import { useUserProfile } from "@/hooks/use-user-profile";
@@ -45,7 +46,7 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
   const handleLogout = () => {
     auth.setToken(null);
     queryClient.removeQueries({ queryKey: ["user", "profile"] });
-    router.push("/");
+    router.push(`${appURL.login}`);
   };
 
   return (

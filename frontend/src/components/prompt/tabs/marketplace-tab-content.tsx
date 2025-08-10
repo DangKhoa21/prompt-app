@@ -45,7 +45,7 @@ interface MarketplaceTabContentProps {
   isError: boolean;
   error: Error | null;
   refetch: (
-    options?: RefetchOptions
+    options?: RefetchOptions,
   ) => Promise<QueryObserverResult<PromptWithConfigs, Error>>;
   selectedValues: ConfigInputState;
   setSelectedValues: Dispatch<SetStateAction<ConfigInputState>>;
@@ -109,7 +109,7 @@ export function MarketplaceTabContent({
               newArray[config.label] = JSON.parse(config.value);
               break;
           }
-        }
+        },
       );
 
       setSelectedValues(newSelected);
@@ -234,7 +234,7 @@ export function MarketplaceTabContent({
           </SidebarGroupLabel>
         )}
 
-        <SidebarGroupContent className="flex items-center justify-between px-3 py-3">
+        <SidebarGroupContent className="flex items-center justify-between gap-2 px-3 py-3">
           <div className=" text-base leading-tight">
             <Link
               href={`/prompts/${data.title
@@ -245,7 +245,7 @@ export function MarketplaceTabContent({
             </Link>
           </div>
           {data.id !== "1" && (
-            <div className="line-clamp-1 text-nowrap">
+            <div className="text-nowrap">
               <Button variant="ghost" className="h-8 w-8" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
               </Button>
