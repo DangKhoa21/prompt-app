@@ -47,6 +47,212 @@ async function main() {
 
   const prompts = [
     {
+      title: 'Zero-Shot Prompting',
+      description:
+        'Directly instruct the model to perform a task without using examples (no context).',
+      stringTemplate: `{{Instruction}}\n\n{{Task Description}}\n\nOutput:`,
+      systemInstruction:
+        'Respond based purely on the instruction without examples or demonstrations.',
+      tags: ['ai', 'techniques', 'zero-shot'],
+      configs: [
+        { label: 'Instruction', type: 'textarea' },
+        { label: 'Task Description', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Few-Shot Prompting',
+      description:
+        'Provide a few examples so the model understands the format and style.',
+      stringTemplate: `{{Task Instruction}}\n\nExamples:\n{{Examples}}\n\nNow you do:\nInput: {{User Input}}\nOutput:`,
+      systemInstruction: 'Mimic the format and style shown in the examples.',
+      tags: ['ai', 'techniques', 'few-shot'],
+      configs: [
+        { label: 'Task Instruction', type: 'textarea' },
+        {
+          label: 'Examples',
+          type: 'array',
+          values: ['Input:', 'Output:'],
+        },
+        { label: 'User Input', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Chain of Thought',
+      description:
+        'Prompt the model to reason step‑by‑step before giving an answer.',
+      stringTemplate: `{{Problem}}\n\nLet's think through this step by step:\n\n{{Reasoning Steps}}\n\nFinal answer:`,
+      systemInstruction:
+        'List each reasoning step clearly before the final answer.',
+      tags: ['ai', 'techniques', 'reasoning'],
+      configs: [
+        { label: 'Problem', type: 'textarea' },
+        {
+          label: 'Reasoning Steps',
+          type: 'array',
+          values: ['Step'],
+        },
+      ],
+    },
+    {
+      title: 'Meta Prompting',
+      description: 'Use AI to critique and refine a prompt itself.',
+      stringTemplate: `I want to generate a prompt for the task: {{Task}}\n\nCurrent prompt:\n"{{Current Prompt}}"\n\nPlease analyze and suggest improvements in clarity, structure, completeness.`,
+      systemInstruction:
+        'Evaluate prompt quality and propose a better version.',
+      tags: ['ai', 'techniques', 'meta'],
+      configs: [
+        { label: 'Task', type: 'textarea' },
+        { label: 'Current Prompt', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Self-Reflection',
+      description: 'AI reviews and improves its own response.',
+      stringTemplate: `Request: {{Request}}\n\nResponse:\n\n{{AI Response}}\n\nPlease:\n1. Review for accuracy\n2. Suggest improvements\n3. Revise if needed\n4. Rate your confidence (1–10)`,
+      systemInstruction:
+        'Reflect on your answer and provide revisions with a confidence score.',
+      tags: ['ai', 'techniques', 'quality'],
+      configs: [
+        { label: 'Request', type: 'textarea' },
+        { label: 'AI Response', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Role Prompting',
+      description: 'Assign a specific persona or role to the AI.',
+      stringTemplate: `You are a {{Role}} with {{Experience}} years in {{Field}}, known for {{Traits}}.\n\nPrompt: {{Prompt}}\n\nPlease respond in character.`,
+      systemInstruction:
+        'Embody that role’s tone, jargon, and style in your answer.',
+      tags: ['ai', 'techniques', 'context'],
+      configs: [
+        { label: 'Role', type: 'combobox' },
+        { label: 'Experience', type: 'dropdown' },
+        { label: 'Field', type: 'textarea' },
+        {
+          label: 'Traits',
+          type: 'array',
+          values: [
+            'Clear communicator',
+            'Expert knowledge',
+            'Concise',
+            'Empathetic',
+          ],
+        },
+        { label: 'Prompt', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Constraint Prompting',
+      description:
+        'Force output to meet specific structural or stylistic constraints.',
+      stringTemplate: `{{Request}}\n\nConstraints:\n- Length: {{Length Limit}}\n- Format: {{Format}}\n- Style: {{Style}}\n- Audience: {{Audience}}\nAdditional: {{Additional Requirements}}`,
+      systemInstruction:
+        'Strictly follow the listed structural and stylistic constraints.',
+      tags: ['ai', 'techniques', 'structure'],
+      configs: [
+        { label: 'Request', type: 'textarea' },
+        { label: 'Length Limit', type: 'dropdown' },
+        { label: 'Format', type: 'combobox' },
+        { label: 'Style', type: 'textarea' },
+        { label: 'Audience', type: 'textarea' },
+        {
+          label: 'Additional Requirements',
+          type: 'array',
+          values: [
+            'No jargon',
+            'Include example',
+            'Bullet list',
+            'Neutral tone',
+          ],
+        },
+      ],
+    },
+    {
+      title: 'RAG (Retrieval-Augmented Generation)',
+      description:
+        'Use retrieval context to generate grounded, factual responses.',
+      stringTemplate: `Context:\n{{Context}}\n\nQuestion: {{Query}}\n\nAnswer using only the context. Cite sources; state if data is insufficient.`,
+      systemInstruction:
+        'Use only the provided context and cite explicitly; do not hallucinate facts.',
+      tags: ['ai', 'techniques', 'retrieval', 'rag'],
+      configs: [
+        { label: 'Context', type: 'textarea' },
+        { label: 'Query', type: 'textarea' },
+      ],
+    },
+    {
+      title: 'Meta Prompting',
+      description:
+        'Use abstract task-agnostic scaffolding to structure prompts efficiently.',
+      stringTemplate: `Task description: {{Task}}\n\nPlease generate a prompt template that captures the structural flow without concrete content.`,
+      systemInstruction:
+        'Create a high-level, content-agnostic scaffold for prompting tasks.',
+      tags: ['ai', 'techniques', 'meta'],
+      configs: [{ label: 'Task', type: 'textarea' }],
+    },
+    {
+      title: 'Self-Consistency',
+      description:
+        'Run multiple reasoning paths (CoT) and pick the most consistent answer.',
+      stringTemplate: `Question: {{Question}}\n\nGenerate multiple reasoning chains independently, then select the final answer that appears most frequently.`,
+      systemInstruction:
+        'Produce at least 3 distinct Chain-of‑Thought paths and output the most consistent final answer.',
+      tags: ['ai', 'techniques', 'reasoning', 'consistency'],
+      configs: [
+        { label: 'Question', type: 'textarea' },
+        {
+          label: 'Chains',
+          type: 'array',
+          values: ['Chain 1', 'Chain 2', 'Chain 3'],
+        },
+      ],
+    },
+    // {
+    //   title: 'Tree of Thought (ToT)',
+    //   description:
+    //     'Explore multiple parallel reasoning paths with backtracking and self-evaluation.',
+    //   stringTemplate: `Problem: {{problem}}\n\nAt each step, propose multiple thought candidates, self-evaluate them, and explore further promising branches.`,
+    //   systemInstruction:
+    //     'Use branching exploration: generate candidates, evaluate (“sure/maybe/impossible”), backtrack as needed.',
+    //   tags: ['ai', 'techniques', 'reasoning', 'tree-of-thought'],
+    //   configs: [
+    //     { label: 'problem', type: 'textarea' },
+    //     {
+    //       label: 'candidates_per_step',
+    //       type: 'dropdown',
+    //     },
+    //     {
+    //       label: 'thought_steps',
+    //       type: 'array',
+    //       values: ['Thought 1', 'Thought 2', 'Thought 3'],
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: 'Prompt Chaining',
+    //   description:
+    //     'Break complex tasks into sequential prompts—output of one used as input to next.',
+    //   stringTemplate: `Step 1: {{step1_prompt}}\n\nStep 2 (use output from step 1): {{step2_prompt}}\n\nContinue until final answer.`,
+    //   systemInstruction:
+    //     'Chain prompts logically so each stage builds on previous output.',
+    //   tags: ['ai', 'techniques', 'chaining'],
+    //   configs: [
+    //     {
+    //       label: 'step1_prompt',
+    //       type: 'textarea',
+    //     },
+    //     {
+    //       label: 'step2_prompt',
+    //       type: 'textarea',
+    //     },
+    //     {
+    //       label: 'additional_steps',
+    //       type: 'array',
+    //       values: ['Step 3', 'Step 4'],
+    //     },
+    //   ],
+    // },
+    {
       title: 'Write For Me',
       description:
         'Assist in writing various forms of content tailored to a specific audience and style.',
@@ -96,28 +302,6 @@ async function main() {
           type: 'dropdown',
           values: ['Educational', 'Conversational', 'Entertaining'],
         },
-      ],
-    },
-    {
-      title: 'Few-shot Prompting',
-      description:
-        'Demonstrate tasks with examples to guide AI outputs using few-shot learning.',
-      stringTemplate: 'Examples: {{Example}}\nNow perform this task: {{Task}}',
-      tags: ['ai', 'techniques'],
-      configs: [
-        { label: 'Example', type: 'textarea' },
-        { label: 'Task', type: 'textarea' },
-      ],
-    },
-    {
-      title: 'Chain of Thought Reasoning',
-      description: 'Prompt for step-by-step thinking and logical reasoning.',
-      stringTemplate:
-        "Problem: {{Problem}}\nLet's think step-by-step: {{Step}}",
-      tags: ['ai', 'reasoning'],
-      configs: [
-        { label: 'Problem', type: 'textarea' },
-        { label: 'Step', type: 'textarea' },
       ],
     },
     {

@@ -7,18 +7,46 @@ import {
 } from "@/components/ui/sidebar";
 import { appURL } from "@/config/url.config";
 import { techniques } from "@/constants/techniques";
-import { usePrompt } from "@/context/prompt-context";
+import { getPrompts } from "@/services/prompt";
 import { Technique } from "@/types/techniques/technique";
-import { ArrowLeft, LinkIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { LinkIcon, StepBackIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
 
-export function TechniqueTabContent() {
-  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(
-    null,
-  );
-  const { setPrompt } = usePrompt();
+export interface TechWithLink extends Technique {
+  link?: string;
+}
+
+interface TechniqueTabContentProps {
+  selectedTechnique: Technique | null;
+  setSelectedTechnique: (tech: Technique | null) => void;
+}
+
+export function TechniqueTabContent({
+  selectedTechnique,
+  setSelectedTechnique,
+}: TechniqueTabContentProps) {
+  const filter = { tagId: "01973620-6293-7113-a594-c32275e3b100" };
+  const { data } = useQuery({
+    queryKey: ["prompts", filter],
+    queryFn: () => getPrompts({ pageParam: "", filter }),
+  });
+
+  const techsWithLink: TechWithLink[] = techniques.map((technique) => {
+    const corTech = data?.data.find((tech) => {
+      return tech.title === technique.name;
+    });
+    const template = corTech ? `${corTech.stringTemplate}` : technique.template;
+    console.log(corTech);
+    const link = corTech ? `${appURL.chat}/?promptId=${corTech.id}` : "";
+    return {
+      ...technique,
+      template,
+      link,
+    };
+  });
+
+  console.log(techsWithLink);
 
   return (
     <>
@@ -29,13 +57,15 @@ export function TechniqueTabContent() {
               <div className="w-full flex items-center justify-between">
                 <Label htmlFor="prompt-techniques">Prompt Techniques</Label>
                 <Link href={appURL.techniques}>
-                  <LinkIcon className="w-3.5 h-3.5" />
+                  <Button variant="ghost" className="w-6 h-6">
+                    <LinkIcon />
+                  </Button>
                 </Link>
               </div>
             </SidebarGroupLabel>
             <SidebarGroupContent className="px-3">
               <div className="flex flex-col gap-2">
-                {techniques.map((tech) => (
+                {techsWithLink.map((tech) => (
                   <Button
                     key={tech.id}
                     variant="outline"
@@ -62,12 +92,12 @@ export function TechniqueTabContent() {
                   {selectedTechnique.name}
                   <Button
                     variant="ghost"
-                    size="icon"
+                    className="w-6 h-6"
                     onClick={() => {
                       setSelectedTechnique(null);
                     }}
                   >
-                    <ArrowLeft />
+                    <StepBackIcon />
                   </Button>
                 </div>
               </Label>
@@ -90,19 +120,6 @@ export function TechniqueTabContent() {
               <pre className="bg-muted p-2 rounded text-sm whitespace-pre-wrap">
                 {selectedTechnique.template}
               </pre>
-              <Button
-                onClick={() => {
-                  setPrompt({
-                    id: `technique-${selectedTechnique.id}`,
-                    value: selectedTechnique.template,
-                    isSending: false,
-                  });
-                  toast.success("Technique template inserted into prompt!");
-                }}
-                className="mt-2"
-              >
-                Use This Template
-              </Button>
             </SidebarGroupContent>
           </>
         )}

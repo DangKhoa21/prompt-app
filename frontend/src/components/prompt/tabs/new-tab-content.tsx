@@ -4,7 +4,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { useAutoResizeTextarea } from "@/components/use-auto-resize-textarea";
+import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { Label } from "@radix-ui/react-label";
 import { Dispatch, SetStateAction } from "react";
 
@@ -19,21 +19,22 @@ export function NewTabContent({ idea, setIdea }: NewTabContentProps) {
     <>
       <SidebarGroup>
         <SidebarGroupLabel>
-          <Label htmlFor="prompt-creator">Create new prompt with AI</Label>
+          <Label htmlFor="prompt-creator">Quick template creator with AI</Label>
         </SidebarGroupLabel>
-        <SidebarGroupContent className="px-3">
-          <p>With the help of AI, create your desire prompt for your goal!</p>
+        <SidebarGroupContent className="px-2">
+          <p>Type in the box below what kind of template you want to create!</p>
         </SidebarGroupContent>
       </SidebarGroup>
 
       <SidebarGroup>
         <SidebarGroupLabel>
-          <Label htmlFor="prompt-creator">Input your desire goal</Label>
+          <Label htmlFor="prompt-creator">Your Idea</Label>
         </SidebarGroupLabel>
         <SidebarGroupContent className="px-3">
           <Textarea
             ref={textareaRef}
             value={idea}
+            placeholder="Describe your idea for a new template... (atleast 20 characters)"
             onChange={(e) => {
               setIdea(e.target.value);
             }}

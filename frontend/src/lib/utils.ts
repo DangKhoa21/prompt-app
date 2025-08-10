@@ -1,3 +1,4 @@
+import { appURL } from "@/config/url.config";
 import type { Message as DBMessage } from "@/services/chat/interface";
 import type {
   CoreAssistantMessage,
@@ -30,7 +31,7 @@ export const formatRating = (num: number): string => {
 
 export function createPromptDetailURL(id: string, title: string): string {
   const formattedTitle = title.toLowerCase().replace(/\s+/g, "-");
-  const detailUrl = `/prompts/${formattedTitle}-pid${id}`;
+  const detailUrl = `${appURL.prompts}/${formattedTitle}-pid${id}`;
   return detailUrl;
 }
 

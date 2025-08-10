@@ -34,8 +34,8 @@ import {
   PromptFillState,
 } from "../hooks/usePromptConfigState";
 import { PromptSearch } from "../prompt-search";
-import { appURL } from "@/config/url.config";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface MarketplaceTabContentProps {
   promptId: string;
@@ -73,6 +73,7 @@ export function MarketplaceTabContent({
   isFilled,
 }: MarketplaceTabContentProps) {
   const { setSystemInstruction } = usePrompt();
+  const searchParams = useSearchParams();
 
   // -- Handlers --
   const pinPromptMutation = usePinPrompt();
@@ -157,6 +158,14 @@ export function MarketplaceTabContent({
     createShareOptionMutation,
   ]);
 
+  const handleResetPrompt = () => {
+    if (!searchParams) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("promptId");
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  };
+
   const hasSetInstructionRef = useRef(false);
 
   // -- Effects --
@@ -210,9 +219,33 @@ export function MarketplaceTabContent({
   return (
     <>
       <SidebarGroup>
-        <SidebarGroupLabel className="flex justify-end items-center gap-1">
+        {data.id !== "1" && (
+          <SidebarGroupLabel className="py-6">
+            <div className="flex w-full justify-between items-center gap-2">
+              <PromptSearch noWrap />
+              <Button
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handleResetPrompt()}
+              >
+                <RotateCcw />
+              </Button>
+            </div>
+          </SidebarGroupLabel>
+        )}
+
+        <SidebarGroupContent className="flex items-center justify-between gap-2 px-3 py-3">
+          <div className=" text-base leading-tight">
+            <Link
+              href={`/prompts/${data.title
+                .toLowerCase()
+                .replace(/\s+/g, "-")}-pid${data.id}`}
+            >
+              <span className="font-semibold">{data.title}</span>
+            </Link>
+          </div>
           {data.id !== "1" && (
-            <div className="flex gap-2">
+            <div className="text-nowrap">
               <Button variant="ghost" className="h-8 w-8" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
               </Button>
@@ -225,14 +258,6 @@ export function MarketplaceTabContent({
               </Button>
             </div>
           )}
-        </SidebarGroupLabel>
-
-        <SidebarGroupContent className="px-3">
-          <div className="text-base leading-tight">
-            <Link href={`${appURL.templates}/${data.id}`}>
-              <span className="font-semibold">{data.title}</span>
-            </Link>
-          </div>
         </SidebarGroupContent>
 
         <SidebarGroupContent className="px-3">
@@ -240,18 +265,16 @@ export function MarketplaceTabContent({
         </SidebarGroupContent>
       </SidebarGroup>
 
-      <SidebarGroup>
-        <SidebarGroupLabel>
-          <Label htmlFor="prompt-search">
-            {data.id === "1"
-              ? "Explore the marketplace"
-              : "Search for another prompt"}
-          </Label>
-        </SidebarGroupLabel>
-        <SidebarGroupContent className="px-2">
-          <PromptSearch />
-        </SidebarGroupContent>
-      </SidebarGroup>
+      {data.id === "1" && (
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Label htmlFor="prompt-search">Explore the marketplace</Label>
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="px-2">
+            <PromptSearch />
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
 
       {data.configs?.map((config, i) => (
         <RenderConfigInput

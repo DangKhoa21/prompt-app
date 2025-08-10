@@ -18,11 +18,12 @@ export function TemplatesIdHeader({ id }: { id: string }) {
   const handleDeleteTemplate = () => {
     const deletePromptTemplate = mutateDeleteTemplate(id);
 
+    router.push(appURL.templates);
+    router.refresh();
+
     toast.promise(deletePromptTemplate, {
       loading: "Deleting prompt template...",
       success: () => {
-        router.push(appURL.templates);
-        router.refresh();
         return "Prompt template deleted successfully";
       },
       error: (e) => {

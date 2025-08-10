@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
@@ -26,6 +26,8 @@ import {
   ConfigInputState,
   PromptFillState,
 } from "./hooks/usePromptConfigState";
+import { appURL } from "@/config/url.config";
+import { TechWithLink } from "./tabs";
 
 interface PromptTabFooterProps {
   mode: GeneratorMode;
@@ -36,6 +38,7 @@ interface PromptTabFooterProps {
   textareaValues: ConfigInputState;
   arrayValues: ArrayConfigInputState;
   isFilled: PromptFillState;
+  selectedTechnique: TechWithLink | null;
 }
 
 export default function PromptTabFooter({
@@ -46,14 +49,15 @@ export default function PromptTabFooter({
   textareaValues,
   arrayValues,
   isFilled,
+  selectedTechnique,
 }: PromptTabFooterProps) {
   const { setPrompt } = usePrompt();
-
   const { token } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const { mutateAsync } = useCreatePromptTemplate(false);
+
+  const idRef = useRef<string>(v7());
 
   // -- Handlers --
   const handlePrompt = useCallback(
@@ -72,7 +76,9 @@ export default function PromptTabFooter({
     [data, selectedValues, textareaValues, arrayValues, setPrompt],
   );
 
-  const idRef = useRef<string>(v7());
+  useEffect(() => {
+    handlePrompt(false);
+  }, [data, selectedValues, textareaValues, arrayValues, handlePrompt]);
 
   const { submit, isLoading, stop } = useObject({
     id: idRef.current,
@@ -105,7 +111,7 @@ export default function PromptTabFooter({
         };
 
         queryClient.setQueryData(["prompt", idRef.current], newPrompt);
-        router.push(`?promptId=${idRef.current}`);
+        router.push(`/${appURL.chat}/?promptId=${idRef.current}`);
 
         const template: PromptWithConfigsCreation = {
           id: idRef.current,
@@ -144,66 +150,79 @@ export default function PromptTabFooter({
 
   return (
     <>
-      {mode === GeneratorMode.NEW_AI && (
-        <SidebarFooter>
-          {isLoading ? (
-            <Button
-              className="bg-muted-foreground hover:bg-muted-foreground"
-              onClick={() => stop()}
+      <SidebarFooter>
+        {mode === GeneratorMode.NEW_AI ? (
+          <div className="md:p-2">
+            {isLoading ? (
+              <Button
+                className="w-full bg-muted-foreground hover:bg-muted-foreground"
+                onClick={() => stop()}
+              >
+                Stop
+              </Button>
+            ) : (
+              <Button
+                disabled={idea.trim().length < 20}
+                onClick={() => {
+                  submit({ prompt: idea });
+                  const id = v7();
+                  idRef.current = id;
+                }}
+                className="w-full"
+              >
+                Create
+              </Button>
+            )}
+          </div>
+        ) : mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" ? (
+          <>
+            <BetterTooltip
+              content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
+                ", ",
+              )}`}
             >
-              Stop
-            </Button>
-          ) : (
-            <Button
-              disabled={idea.trim().length < 20}
-              onClick={() => {
-                submit({ prompt: idea });
-                const id = v7();
-                idRef.current = id;
-              }}
-              className=""
-            >
-              Create new Prompt
-            </Button>
-          )}
-        </SidebarFooter>
-      )}
-
-      {mode === GeneratorMode.MARKETPLACE && data && data.id !== "1" && (
-        <SidebarFooter>
-          <BetterTooltip
-            content={`Unfilled required config(s): ${isFilled.unfilledConfigs.join(
-              ", ",
-            )}`}
-          >
-            <div className="flex flex-col gap-1 px-2">
-              <Progress
-                value={(isFilled.filledCount / isFilled.totalCount) * 100}
-                className="w-full h-2 mt-2 bg-muted"
-              />
-              <p className="text-xs text-muted-foreground mt-1 text-right">
-                {isFilled.filledCount} / {isFilled.totalCount} fields filled
-              </p>
+              <div className="flex flex-col gap-1 px-2">
+                <Progress
+                  value={(isFilled.filledCount / isFilled.totalCount) * 100}
+                  className="w-full h-2 mt-2 bg-muted"
+                />
+                <p className="text-xs text-muted-foreground mt-1 text-right">
+                  {isFilled.filledCount} / {isFilled.totalCount} fields filled
+                </p>
+              </div>
+            </BetterTooltip>
+            <div className="flex justify-around gap-4 pt-2 md:p-2">
+              <Button
+                className="w-1/2"
+                disabled={!isFilled.isValid}
+                onClick={() => handlePrompt(false)}
+              >
+                Generate
+              </Button>
+              <Button
+                className="w-1/2"
+                disabled={!isFilled.isValid}
+                onClick={() => handlePrompt(true)}
+              >
+                Send
+              </Button>
             </div>
-          </BetterTooltip>
-          <div className="flex justify-around gap-4 p-2">
+          </>
+        ) : mode === GeneratorMode.TECHNIQUE &&
+          selectedTechnique !== null &&
+          selectedTechnique.link !== "" ? (
+          <div className="md:p-2">
             <Button
-              className="w-1/2"
-              disabled={!isFilled.isValid}
-              onClick={() => handlePrompt(false)}
+              onClick={() => {
+                router.replace(`${selectedTechnique.link}`);
+              }}
+              className="w-full"
             >
-              Generate
-            </Button>
-            <Button
-              className="w-1/2"
-              disabled={!isFilled.isValid}
-              onClick={() => handlePrompt(true)}
-            >
-              Send
+              Use This Template
             </Button>
           </div>
-        </SidebarFooter>
-      )}
+        ) : null}
+      </SidebarFooter>
     </>
   );
 }

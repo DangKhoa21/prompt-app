@@ -14,6 +14,8 @@ export const PreviewMessage = ({
   message: Message;
   isLoading: boolean;
 }) => {
+  if (!message.content) return null;
+
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"

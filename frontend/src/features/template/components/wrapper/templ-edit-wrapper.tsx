@@ -4,12 +4,10 @@ import { Button } from "@/components/ui/button";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { appURL } from "@/config/url.config";
 import { TemplateEditSection } from "@/features/template";
-import {
-    getPromptTemplate,
-    getTags,
-    getTagsForTemplate,
-} from "@/services/prompt";
-import { getUserProfile } from "@/services/user";
+import { useTags } from "@/hooks/use-tags";
+import { useTemplateTags } from "@/hooks/use-template-tags";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { getPromptTemplate } from "@/services/prompt";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -28,22 +26,9 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     queryFn: () => getPromptTemplate(id),
   });
 
-  const { data: tagsData } = useQuery({
-    queryKey: ["tags", id],
-    queryFn: () => getTagsForTemplate(id),
-    placeholderData: [],
-  });
-
-  const { data: allTags } = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => getTags(),
-    placeholderData: [],
-  });
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-  });
+  const { data: tagsData } = useTemplateTags(id);
+  const { data: allTags } = useTags();
+  const { data: user } = useUserProfile();
 
   useEffect(() => {
     if (!user || !promptTemplateData) return;

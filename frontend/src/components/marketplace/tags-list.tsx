@@ -13,9 +13,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTags } from "@/hooks/use-tags";
 import { cn } from "@/lib/utils";
-import { getTags } from "@/services/prompt";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,19 +22,16 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function TagsList() {
   const searchParams = useSearchParams();
-  const tagId = searchParams.get("tagId");
-  const sort = searchParams.get("sort") || "newest";
   const router = useRouter();
-
   const {
     isPending: isTagsLoading,
     isError: isTagsError,
     data: tagsData,
     error: tagsError,
-  } = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => getTags(),
-  });
+  } = useTags();
+
+  const tagId = searchParams.get("tagId");
+  const sort = searchParams.get("sort") || "newest";
 
   const sortOptions = [
     { id: "newest", name: "Newest" },

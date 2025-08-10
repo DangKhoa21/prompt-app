@@ -297,7 +297,7 @@ export function MultimodalInput({
       <Textarea
         id="chat-input"
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder={prompt.value ?? "Send a message..."}
         value={input}
         onChange={handleInput}
         className={cx(

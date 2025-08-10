@@ -45,7 +45,7 @@ export default function PromptDetailLayout({
     <>
       <DetailsHeader pageName="Prompt Detail"></DetailsHeader>
       <div className="min-h-screen">
-        <div className="p-2 md:p-8 bg-muted">{children}</div>
+        <div className="p-2 md:p-8">{children}</div>
       </div>
     </>
   );

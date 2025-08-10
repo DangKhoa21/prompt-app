@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { ZodError } from 'zod';
+import { config } from './config';
 
 export class AppError extends Error {
   private statusCode: number = 500;
@@ -123,6 +124,8 @@ export const ErrMethodNotAllowed = AppError.from(
   405,
 );
 export const ErrTokenInvalid = AppError.from(
-  new Error('Token is invalid'),
+  new Error(
+    config.envName == 'production' ? 'Please login again' : 'Token is invalid', // temporary fix appropriate message in production
+  ),
   401,
 );

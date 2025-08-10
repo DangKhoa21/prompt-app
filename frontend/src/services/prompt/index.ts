@@ -60,7 +60,10 @@ export async function getTags(): Promise<Tag[]> {
   return response.data.data;
 }
 
-export async function getPrompt(id: string | null): Promise<Prompt> {
+export async function getPrompt(
+  id: string | null,
+  filter: PromptFilter = {},
+): Promise<Prompt> {
   if (!id) {
     return {
       id: "1",
@@ -76,7 +79,9 @@ export async function getPrompt(id: string | null): Promise<Prompt> {
       updatedAt: new Date(),
     };
   }
-  const response = await axiosInstance.get(`/prompts/${id}`);
+  const response = await axiosInstance.get(`/prompts/${id}`, {
+    params: { tags: filter.tagId ?? undefined },
+  });
   return response.data.data;
 }
 
@@ -123,6 +128,7 @@ export async function createPromptTemplate(
     ...config,
     type: config.type.toLowerCase(),
   }));
+
   const response = await axiosWithAuth.post(`/prompts`, data);
   return response.data.data;
 }
@@ -134,6 +140,7 @@ export async function updatePromptTemplate(
     ...config,
     type: config.type.toLowerCase() as ConfigType,
   }));
+
   const response = await axiosWithAuth.put(`/prompts/${data.id}`, data);
   return response.data.data;
 }

@@ -18,16 +18,16 @@ export default function PromptTabHeader({
 }: PromptTabHeaderProps) {
   const tabItems = [
     {
-      mode: GeneratorMode.NEW_AI,
-      icon: <BotIcon />,
-      label: "New",
-      className: "new-ai-prompt",
-    },
-    {
       mode: GeneratorMode.MARKETPLACE,
       icon: <Compass />,
       label: "Marketplace",
       className: "marketplace",
+    },
+    {
+      mode: GeneratorMode.NEW_AI,
+      icon: <BotIcon />,
+      label: "AI",
+      className: "new-ai-prompt",
     },
     {
       mode: GeneratorMode.TECHNIQUE,

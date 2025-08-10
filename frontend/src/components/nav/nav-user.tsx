@@ -1,6 +1,7 @@
 "use client";
 
 import { DarkModeSwitch } from "@/components/nav/darkmode-switch";
+import { PreviewPromptSwitch } from "@/components/nav/preview-prompt-switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,10 +19,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { EXTENSION_URL } from "@/config";
+import { appURL } from "@/config/url.config";
 import { useAuth } from "@/context/auth-context";
 import { Settings } from "@/features/settings";
-import { getUserProfile } from "@/services/user";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserProfile } from "@/hooks/use-user-profile";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BadgeCheck,
   Bell,
@@ -30,6 +32,7 @@ import {
   Moon,
   Sparkles,
   Blocks,
+  ScanEye,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -38,17 +41,12 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
   const auth = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const { data: user } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: getUserProfile,
-    enabled: isAuthenticated,
-  });
+  const { data: user } = useUserProfile(isAuthenticated);
 
   const handleLogout = () => {
     auth.setToken(null);
     queryClient.removeQueries({ queryKey: ["user", "profile"] });
-    router.push("/");
+    router.push(`${appURL.login}`);
   };
 
   return (
@@ -125,6 +123,15 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
                 <Moon />
                 Dark Mode
                 <DarkModeSwitch />
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="cursor-default"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <ScanEye />
+                Preview Prompt
+                <PreviewPromptSwitch />
               </DropdownMenuItem>
 
               {isAuthenticated && (

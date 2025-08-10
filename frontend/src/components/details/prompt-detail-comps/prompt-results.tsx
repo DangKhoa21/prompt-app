@@ -10,13 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { appURL } from "@/config/url.config";
 import { ConfigType } from "@/features/template";
 import { cn } from "@/lib/utils";
 import { deserializeResultConfigData } from "@/lib/utils/utils.details";
 import { Prompt } from "@/services/prompt/interface";
-import { Copy } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 
 interface PromptResultsProps {
   promptData: Prompt;
@@ -24,6 +24,8 @@ interface PromptResultsProps {
 
 export default function PromptResults({ promptData }: PromptResultsProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const scrollAreaMaxHeight = expanded
     ? "h-[692px] md:h-[812px]"
@@ -60,14 +62,8 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
     }
   }, [expanded]);
 
-  const handleCopyPrompt = () => {
-    navigator?.clipboard?.writeText(promptData.stringTemplate);
-    toast.success("Prompt copied to clipboard!");
-  };
-
-  const handleCopySystemInstruction = () => {
-    navigator?.clipboard?.writeText(promptData.systemInstruction as string);
-    toast.success("System instruction copied to clipboard!");
+  const handleUsePrompt = () => {
+    router.push(`${appURL.chat}/?promptId=${promptData.id}`);
   };
 
   const deserializedData = useMemo(() => {
@@ -141,12 +137,11 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </div>
           <Button
             variant="outline"
-            aria-label="Copy Prompt"
-            onClick={handleCopyPrompt}
+            aria-label="Use Prompt"
+            onClick={handleUsePrompt}
             className="w-full"
           >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy Prompt
+            Use Prompt
           </Button>
         </TabsContent>
 
@@ -157,12 +152,11 @@ export default function PromptResults({ promptData }: PromptResultsProps) {
           </div>
           <Button
             variant="outline"
-            onClick={handleCopySystemInstruction}
-            disabled={!promptData.systemInstruction}
+            aria-label="Use Prompt"
+            onClick={handleUsePrompt}
             className="w-full"
           >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy System Instruction
+            Use Prompt
           </Button>
         </TabsContent>
 

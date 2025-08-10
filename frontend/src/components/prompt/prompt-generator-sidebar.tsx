@@ -7,24 +7,38 @@ import { SidebarContent } from "@/components/ui/sidebar";
 
 import { GeneratorMode } from "./enum-generator-mode";
 import { usePromptConfigState } from "./hooks/usePromptConfigState";
-import { usePromptData } from "./hooks/usePromptData";
+import { usePromptConfigsData } from "../../hooks/use-prompt-configs-data";
 import PromptTabFooter from "./prompt-tab-footer";
 import PromptTabHeader from "./prompt-tab-header";
 import {
   MarketplaceTabContent,
   NewTabContent,
   TechniqueTabContent,
+  TechWithLink,
 } from "./tabs";
+import {
+  dehydrate,
+  HydrationBoundary,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { getPrompts } from "@/services/prompt";
 
 export function PromptGeneratorSidebar() {
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+
+  const filter = { tagId: "01973620-6293-7113-a594-c32275e3b100" };
+  queryClient.prefetchQuery({
+    queryKey: ["prompts", filter],
+    queryFn: () => getPrompts({ pageParam: "", filter }),
+  });
+
   const promptId = searchParams.get("promptId") ?? "";
   const optionId = searchParams.get("optionId") ?? "";
 
-  const defaultMode =
-    promptId || optionId ? GeneratorMode.MARKETPLACE : GeneratorMode.NEW_AI;
-
-  const [mode, setMode] = useState<GeneratorMode>(defaultMode);
+  const [selectedTechnique, setSelectedTechnique] =
+    useState<TechWithLink | null>(null);
+  const [mode, setMode] = useState<GeneratorMode>(GeneratorMode.MARKETPLACE);
 
   useEffect(() => {
     if (promptId || optionId) {
@@ -32,8 +46,8 @@ export function PromptGeneratorSidebar() {
     }
   }, [optionId, promptId]);
 
-  const { data, isLoading, isError, error, refetch } = usePromptData(promptId);
-
+  const { data, isLoading, isError, error, refetch } =
+    usePromptConfigsData(promptId);
   const {
     selectedValues,
     setSelectedValues,
@@ -48,12 +62,11 @@ export function PromptGeneratorSidebar() {
 
   // -- Render --
   return (
-    <div className="prompt-generator">
+    <>
       <PromptTabHeader mode={mode} onChangeMode={setMode} />
 
-      <SidebarContent>
-        {mode === "new-ai" && <NewTabContent idea={idea} setIdea={setIdea} />}
-        {mode === "marketplace" && (
+      <SidebarContent className="prompt-generator">
+        {mode === "marketplace" ? (
           <MarketplaceTabContent
             promptId={promptId}
             optionId={optionId}
@@ -70,8 +83,16 @@ export function PromptGeneratorSidebar() {
             setArrayValues={setArrayValues}
             isFilled={isFilled}
           />
-        )}
-        {mode === "technique" && <TechniqueTabContent />}
+        ) : mode === "new-ai" ? (
+          <NewTabContent idea={idea} setIdea={setIdea} />
+        ) : mode === "technique" ? (
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <TechniqueTabContent
+              selectedTechnique={selectedTechnique}
+              setSelectedTechnique={setSelectedTechnique}
+            />
+          </HydrationBoundary>
+        ) : null}
       </SidebarContent>
 
       <PromptTabFooter
@@ -83,7 +104,8 @@ export function PromptGeneratorSidebar() {
         textareaValues={textareaValues}
         arrayValues={arrayValues}
         isFilled={isFilled}
+        selectedTechnique={selectedTechnique}
       />
-    </div>
+    </>
   );
 }

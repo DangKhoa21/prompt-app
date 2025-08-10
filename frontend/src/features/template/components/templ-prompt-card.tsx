@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { appURL } from "@/config/url.config";
 import { useStarPrompt, useUnstarPrompt } from "@/features/template";
 import { cn, createPromptDetailURL, formatRating } from "@/lib/utils";
 import { getPrompt, getPromptTemplate } from "@/services/prompt";
@@ -119,9 +120,9 @@ export function PromptTemplateCard({
                 e.stopPropagation();
                 e.preventDefault();
                 if (filter?.creatorId == creator.id) {
-                  router.push(`/templates/${id}`);
+                  router.push(`${appURL.templates}/${id}`);
                 } else {
-                  router.push(`/?promptId=${id}`);
+                  router.push(`${appURL.chat}/?promptId=${id}`);
                 }
               }}
             >
