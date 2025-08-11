@@ -77,7 +77,7 @@ export function LoginForm({
       const token = await login({ email, password });
 
       if (token) {
-        setToken(token);
+        await setToken(token);
         router.replace("/chat");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,7 +104,7 @@ export function LoginForm({
       `${SERVER_URL}/${VERSION_PREFIX}/auth/google?client=web`,
       "googleLoginPopup",
       500,
-      600
+      600,
     );
 
     if (!popup) {

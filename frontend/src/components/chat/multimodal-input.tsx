@@ -28,14 +28,14 @@ import { useMutation } from "@tanstack/react-query";
 
 const suggestedActions = [
   {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
+    title: "What is prompt engineering?",
+    label: "and why does it matter?",
+    action: "Explain what prompt engineering is and why it matters",
   },
   {
-    title: "What is the status",
-    label: "of flight BA142 flying tmrw?",
-    action: "What is the status of flight BA142 flying tmrw?",
+    title: "How to improve prompts",
+    label: "for better AI responses?",
+    action: "Give tips on improving prompts for better AI responses",
   },
 ];
 

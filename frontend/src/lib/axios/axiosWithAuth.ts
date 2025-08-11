@@ -5,10 +5,15 @@ import axiosInstance from "./axiosIntance";
 const axiosWithAuth = axiosInstance;
 
 axiosWithAuth.interceptors.request.use(
-  (config) => {
-    const token = sessionStorage.getItem("token");
-    if (token && config.headers) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+  async (config) => {
+    try {
+      const res = await fetch("/api/auth/token", { credentials: "include" });
+      const { token } = await res.json();
+      if (token && config.headers) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+    } catch (err) {
+      console.error("Failed to fetch token", err);
     }
     return config;
   },
@@ -17,10 +22,14 @@ axiosWithAuth.interceptors.request.use(
 
 axiosWithAuth.interceptors.response.use(
   (res) => res,
-  (error) => {
+  async (error) => {
     if (error.response && error.response.status === 401) {
       if (typeof window !== "undefined") {
-        sessionStorage.removeItem("token");
+        await fetch("/api/auth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: null }),
+        });
       }
     }
     return Promise.reject(

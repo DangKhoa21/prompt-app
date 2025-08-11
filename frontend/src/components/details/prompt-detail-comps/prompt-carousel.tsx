@@ -89,7 +89,7 @@ export default function PromptCarousel({
             {carouselData.map((prompt) => (
               <CarouselItem
                 key={prompt.id}
-                className="md:basis-1/2 lg:basis-1/3 px-2 py-4 md:px-4"
+                className="basis-auto px-2 py-4 md:px-4"
               >
                 <MarketplacePromptCard
                   {...prompt}
