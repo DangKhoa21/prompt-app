@@ -75,7 +75,7 @@ export function PromptTemplateCard({
       onMouseLeave={handleMouseLeave}
     >
       <Link href={detailURL}>
-        <Card className="border-2 rounded-3xl w-80 h-52 transition-all hover:scale-105">
+        <Card className="border-2 rounded-3xl max-w-80 h-52 flex flex-col transition-all hover:scale-105">
           <CardHeader className="space-y-1 px-4 pt-2 pb-1">
             <CardTitle className="flex items-start justify-between mt-2 text-xl">
               <div className="pl-1 line-clamp-2">{title}</div>
@@ -101,34 +101,36 @@ export function PromptTemplateCard({
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-5 py-2">
-            <div className="text-sm text-foreground line-clamp-2">
-              {description}
-            </div>
-          </CardContent>
-          <Separator
-            orientation="horizontal"
-            className="w-auto mx-4 my-1 bg-neutral-800"
-          />
-          <CardFooter className="justify-between pt-2 pb-4 items-center">
-            <CreatorAvatar username={creator.username ?? "Unknown"} />
+          <div className="mt-auto">
+            <CardContent className="px-5 py-2">
+              <div className="text-sm text-foreground line-clamp-2">
+                {description}
+              </div>
+            </CardContent>
+            <Separator
+              orientation="horizontal"
+              className="w-auto mx-4 my-1 bg-neutral-800"
+            />
+            <CardFooter className="justify-between pt-2 pb-4 items-center">
+              <CreatorAvatar username={creator.username ?? "Unknown"} />
 
-            <Button
-              variant="link"
-              className="text-xs text-foreground border-2 rounded-2xl"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (filter?.creatorId == creator.id) {
-                  router.push(`${appURL.templates}/${id}`);
-                } else {
-                  router.push(`${appURL.chat}/?promptId=${id}`);
-                }
-              }}
-            >
-              {filter?.creatorId === creator.id ? "Edit" : "Try it now"}
-            </Button>
-          </CardFooter>
+              <Button
+                variant="link"
+                className="text-xs text-foreground border-2 rounded-2xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (filter?.creatorId == creator.id) {
+                    router.push(`${appURL.templates}/${id}`);
+                  } else {
+                    router.push(`${appURL.chat}/?promptId=${id}`);
+                  }
+                }}
+              >
+                {filter?.creatorId === creator.id ? "Edit" : "Try it now"}
+              </Button>
+            </CardFooter>
+          </div>
         </Card>
       </Link>
     </div>

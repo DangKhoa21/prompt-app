@@ -50,7 +50,11 @@ async function main() {
       title: 'Zero-Shot Prompting',
       description:
         'Directly instruct the model to perform a task without using examples (no context).',
-      stringTemplate: `{{Instruction}}\n\n{{Task Description}}\n\nOutput:`,
+      stringTemplate: `{{Instruction}}\n
+
+{{Task Description}}\n
+
+Output:  A detailed and comprehensive response that directly addresses the provided instruction and task description.  The response should be well-structured, clear, concise, and error-free.  If the task involves generating creative content, the output should be original and imaginative. If the task involves problem-solving, the output should demonstrate a logical and methodical approach.  If specific formatting is required (e.g., bullet points, numbered lists, tables), the output should adhere to these requirements.  If examples or sample outputs are requested, they should be included.  The response should be tailored to the specific needs and expectations outlined in the instruction and task description.`,
       systemInstruction:
         'Respond based purely on the instruction without examples or demonstrations.',
       tags: ['ai', 'techniques', 'zero-shot'],
@@ -126,17 +130,12 @@ async function main() {
       tags: ['ai', 'techniques', 'context'],
       configs: [
         { label: 'Role', type: 'combobox' },
-        { label: 'Experience', type: 'dropdown' },
+        { label: 'Experience', type: 'textarea' },
         { label: 'Field', type: 'textarea' },
         {
           label: 'Traits',
           type: 'array',
-          values: [
-            'Clear communicator',
-            'Expert knowledge',
-            'Concise',
-            'Empathetic',
-          ],
+          values: ['trait'],
         },
         { label: 'Prompt', type: 'textarea' },
       ],
@@ -145,14 +144,22 @@ async function main() {
       title: 'Constraint Prompting',
       description:
         'Force output to meet specific structural or stylistic constraints.',
-      stringTemplate: `{{Request}}\n\nConstraints:\n- Length: {{Length Limit}}\n- Format: {{Format}}\n- Style: {{Style}}\n- Audience: {{Audience}}\nAdditional: {{Additional Requirements}}`,
+      stringTemplate: `Please fulfill the following request: {{Request}}.  The output must adhere to the following constraints:\n
+
+* **Length:** {{Length Limit}}\n
+* **Format:** {{Format}}\n
+* **Style:** {{Style}}\n
+* **Target Audience:** {{Audience}}\n
+* **Additional Requirements:** {{Additional Requirements}}\n\n
+
+Please provide a response that directly addresses all specified constraints.  If any constraint is impossible to satisfy, please explain why and suggest alternative solutions.`,
       systemInstruction:
         'Strictly follow the listed structural and stylistic constraints.',
       tags: ['ai', 'techniques', 'structure'],
       configs: [
         { label: 'Request', type: 'textarea' },
-        { label: 'Length Limit', type: 'dropdown' },
-        { label: 'Format', type: 'combobox' },
+        { label: 'Length Limit', type: 'textarea' },
+        { label: 'Format', type: 'textarea' },
         { label: 'Style', type: 'textarea' },
         { label: 'Audience', type: 'textarea' },
         {

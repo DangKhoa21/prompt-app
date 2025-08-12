@@ -41,21 +41,7 @@ const contactMethods = [
     icon: Mail,
     title: "Contact member",
     description: "Get help from our support team",
-    contact: "htnhao21@apcs.fitus.edu.vn",
-    availability: "24/7 response within 4 hours",
-  },
-  {
-    icon: Mail,
-    title: "Contact member",
-    description: "Get help from our support team",
-    contact: "nldkhoa21@apcs.fitus.edu.vn",
-    availability: "24/7 response within 4 hours",
-  },
-  {
-    icon: Mail,
-    title: "Contact leader",
-    description: "Get help from our support team",
-    contact: "nhkhanh@fit.hcmus.edu.vn",
+    contact: "studio.promptcrafter@gmail.com",
     availability: "24/7 response within 4 hours",
   },
 ];
@@ -153,6 +139,7 @@ export default function ContactPage() {
             How Can We Help?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
+            <div></div>
             {contactMethods.map(
               (
                 { icon: Icon, title, description, contact, availability },

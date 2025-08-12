@@ -5,6 +5,5 @@ export const useTemplateTags = (id: string) => {
   return useQuery({
     queryKey: ["tags", id],
     queryFn: () => getTagsForTemplate(id),
-    placeholderData: [],
   });
 };
