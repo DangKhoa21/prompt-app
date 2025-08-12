@@ -6,7 +6,7 @@ const axiosWithAuth = axiosInstance;
 
 axiosWithAuth.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token && config.headers) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -20,7 +20,7 @@ axiosWithAuth.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       if (typeof window !== "undefined") {
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
       }
     }
     return Promise.reject(

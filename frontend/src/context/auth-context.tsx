@@ -20,16 +20,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setTokenState] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     setTokenState(token);
   }, []);
 
   const setToken = (newToken: string | null) => {
     setTokenState(newToken);
     if (newToken) {
-      sessionStorage.setItem("token", newToken);
+      localStorage.setItem("token", newToken);
     } else {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
     }
   };
 
