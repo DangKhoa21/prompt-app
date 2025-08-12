@@ -111,7 +111,7 @@ export default function PromptTabFooter({
         };
 
         queryClient.setQueryData(["prompt", idRef.current], newPrompt);
-        router.push(`/${appURL.chat}/?promptId=${idRef.current}`);
+        router.push(`${appURL.chat}/?promptId=${idRef.current}`);
 
         const template: PromptWithConfigsCreation = {
           id: idRef.current,
