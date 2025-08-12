@@ -33,7 +33,8 @@ export function ChatHeader({
 
   const tagId = "";
   const search = "";
-  const sort: "newest" | "oldest" | "most-starred" | undefined = "newest";
+  const sort: "newest" | "oldest" | "most-starred" | "trending" | undefined =
+    "newest";
   const filter = { tagId, search, sort };
 
   const prefetchPrompts = () => {

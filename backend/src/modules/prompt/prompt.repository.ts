@@ -134,6 +134,14 @@ export class PromptRepository {
     orderBy = { id: sort === 'oldest' ? 'asc' : 'desc' };
     if (sort === 'most-starred') {
       orderBy = { stars: { _count: 'desc' } };
+    } else if (sort === 'trending') {
+      orderBy = { viewCount: 'desc' };
+      where = {
+        ...where,
+        updatedAt: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // last 7 days
+        },
+      };
     }
 
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({

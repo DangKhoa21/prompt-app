@@ -71,7 +71,7 @@ export type PromptCondDTO = {
   title?: string;
   promptIds?: string[];
   creatorId?: string;
-  sort?: 'newest' | 'oldest' | 'most-starred';
+  sort?: 'newest' | 'oldest' | 'most-starred' | 'trending';
 };
 
 export const promptConfigSchema = z.object({

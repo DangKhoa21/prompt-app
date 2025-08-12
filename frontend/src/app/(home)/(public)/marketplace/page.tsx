@@ -17,7 +17,7 @@ export default async function MarketplacePage(props: {
   searchParams?: {
     tagId?: string;
     search?: string;
-    sort?: "newest" | "oldest" | "most-starred";
+    sort?: "newest" | "oldest" | "most-starred" | "trending";
   };
 }) {
   const searchParams = props.searchParams;

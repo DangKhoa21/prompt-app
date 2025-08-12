@@ -13,7 +13,7 @@ export default async function TemplatesPage(props: {
     tagId?: string;
     search?: string;
     tab?: string;
-    sort?: "newest" | "oldest" | "most-starred";
+    sort?: "newest" | "oldest" | "most-starred" | "trending";
   }>;
 }) {
   const searchParams = await props.searchParams;

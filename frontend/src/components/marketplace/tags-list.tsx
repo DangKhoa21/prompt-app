@@ -37,6 +37,7 @@ export default function TagsList() {
     { id: "newest", name: "Newest" },
     { id: "oldest", name: "Oldest" },
     { id: "most-starred", name: "Most Starred" },
+    { id: "trending", name: "Trending" },
   ];
 
   const updateParams = useCallback(
@@ -49,21 +50,21 @@ export default function TagsList() {
       }
       router.push(`?${params.toString()}`);
     },
-    [router, searchParams],
+    [router, searchParams]
   );
 
   const updateTagId = useCallback(
     (id: string) => {
       updateParams("tagId", id === tagId ? "" : id);
     },
-    [tagId, updateParams],
+    [tagId, updateParams]
   );
 
   const updateSort = useCallback(
     (sort: string) => {
       updateParams("sort", sort);
     },
-    [updateParams],
+    [updateParams]
   );
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -145,7 +146,7 @@ export default function TagsList() {
                       "rounded-2xl px-4 whitespace-nowrap h-9 outline-none",
                       {
                         "text-muted-foreground": tag.id !== tagId,
-                      },
+                      }
                     )}
                     onClick={() => updateTagId(tag.id)}
                   >

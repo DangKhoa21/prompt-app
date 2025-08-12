@@ -22,7 +22,7 @@ interface ProfilePageProps {
   searchParams?: {
     tagId?: string;
     search?: string;
-    sort?: "newest" | "oldest" | "most-starred";
+    sort?: "newest" | "oldest" | "most-starred" | "trending";
   };
 }
 

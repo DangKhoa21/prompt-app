@@ -34,7 +34,7 @@ export const promptFilterDTOSchema = z.object({
   search: z.string().optional(),
   tagId: z.string().uuid().optional(),
   creatorId: z.string().uuid().optional(),
-  sort: z.enum(['most-starred', 'newest', 'oldest']).optional(),
+  sort: z.enum(['trending', 'most-starred', 'newest', 'oldest']).optional(),
 });
 
 export type PromptFilterDTO = z.infer<typeof promptFilterDTOSchema>;
