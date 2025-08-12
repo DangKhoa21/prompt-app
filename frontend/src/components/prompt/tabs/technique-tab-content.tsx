@@ -37,7 +37,6 @@ export function TechniqueTabContent({
       return tech.title === technique.name;
     });
     const template = corTech ? `${corTech.stringTemplate}` : technique.template;
-    console.log(corTech);
     const link = corTech ? `${appURL.chat}/?promptId=${corTech.id}` : "";
     return {
       ...technique,
@@ -45,8 +44,6 @@ export function TechniqueTabContent({
       link,
     };
   });
-
-  console.log(techsWithLink);
 
   return (
     <>

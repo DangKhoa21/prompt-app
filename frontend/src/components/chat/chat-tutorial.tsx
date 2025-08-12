@@ -16,7 +16,7 @@ export const ChatTutorial = ({ run, setRun }: ChatTutorialProps) => {
     },
     {
       target: ".multimodal-input",
-      content: "Send messages here.",
+      content: "Send your messages to our AI here.",
     },
     {
       target: ".chat-header",
@@ -29,16 +29,20 @@ export const ChatTutorial = ({ run, setRun }: ChatTutorialProps) => {
         "This is our prompt generator to help you get your desire prompt",
     },
     {
-      target: ".new-ai-prompt",
-      content: "Create new prompt for your purpose with the help of AI",
-    },
-    {
       target: ".marketplace",
       content: "Search for existing prompts which is shared by the community",
     },
     {
+      target: ".new-ai-prompt",
+      content: "Create new prompt for your purpose with the help of AI",
+    },
+    {
       target: ".techniques-handbook",
       content: "Or you can use our handbook to use quick prompt techniques",
+    },
+    {
+      target: ".tutorial-chat",
+      content: "You can click here to see the tutorial again",
     },
   ];
 

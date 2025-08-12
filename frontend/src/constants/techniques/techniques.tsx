@@ -19,9 +19,11 @@ export const techniques: Technique[] = [
     category: "Basics",
     difficulty: "Beginner",
     useCase: "When you want a quick answer without needing specific formatting",
-    template: `{{task_instruction}}
+    template: `{{Instruction}}
 
-Please provide your response.`,
+{{Task Description}}
+
+Output:  A detailed and comprehensive response that directly addresses the provided instruction and task description.  The response should be well-structured, clear, concise, and error-free.  If the task involves generating creative content, the output should be original and imaginative. If the task involves problem-solving, the output should demonstrate a logical and methodical approach.  If specific formatting is required (e.g., bullet points, numbered lists, tables), the output should adhere to these requirements.  If examples or sample outputs are requested, they should be included.  The response should be tailored to the specific needs and expectations outlined in the instruction and task description.`,
     examples: [
       {
         before:

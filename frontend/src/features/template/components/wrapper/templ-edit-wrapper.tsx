@@ -1,5 +1,6 @@
 "use client";
 
+import { TemplateSkeleton } from "@/components/skeleton/template-skeleton";
 import { Button } from "@/components/ui/button";
 import { BetterTooltip } from "@/components/ui/tooltip";
 import { appURL } from "@/config/url.config";
@@ -26,7 +27,7 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     queryFn: () => getPromptTemplate(id),
   });
 
-  const { data: tagsData } = useTemplateTags(id);
+  const { data: tagsData, isLoading: isTagsLoading } = useTemplateTags(id);
   const { data: allTags } = useTags();
   const { data: user } = useUserProfile();
 
@@ -39,7 +40,7 @@ export function TemplateEditWrapper({ id }: { id: string }) {
   }, [user, promptTemplateData, router]);
 
   if (isTemplateLoading) {
-    return <div>Loading ...</div>;
+    return <TemplateSkeleton />;
   }
 
   if (isTemplateError) {
@@ -62,7 +63,11 @@ export function TemplateEditWrapper({ id }: { id: string }) {
     );
   }
 
-  promptTemplateData.tags = tagsData ?? [];
+  if (isTagsLoading) {
+    return <TemplateSkeleton />;
+  } else {
+    promptTemplateData.tags = tagsData ?? [];
+  }
 
   return (
     <TemplateEditSection

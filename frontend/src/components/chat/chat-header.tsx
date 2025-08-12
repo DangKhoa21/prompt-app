@@ -110,7 +110,7 @@ export function ChatHeader({
         <BetterTooltip content={"Show tutorial again"}>
           <Button
             variant="ghost"
-            className="h-8 w-8"
+            className="tutorial-chat h-8 w-8"
             onClick={() => setRunTutorial(true)}
             aria-label="Show tutorial again"
           >
