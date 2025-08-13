@@ -173,20 +173,20 @@ export function EvaluatePrompt({
   }, [arrayValues, template, selectedValues, textareaValues]);
 
   // Scroll to the improve suggestion if have
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
-        suggestImprovePromptRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 300);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  });
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     if (suggestImprovePromptRef && suggestImprovePromptRef.current) {
+  //       suggestImprovePromptRef.current.scrollIntoView({
+  //         behavior: "smooth",
+  //         block: "start",
+  //       });
+  //     }
+  //   }, 300);
+  //
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // });
 
   const handleGenerateResult = async () => {
     setLoadingStates((prev) => ({ ...prev, evaluating: true }));
