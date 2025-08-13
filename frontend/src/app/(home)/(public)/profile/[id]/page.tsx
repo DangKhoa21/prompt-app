@@ -78,7 +78,10 @@ export default function ProfilePage({
           <div className="relative bg-background rounded-lg shadow-sm -mt-20 p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-end gap-6">
               <Avatar className="h-32 w-32 border-4 border-white shadow-md">
-                <AvatarImage src={"/placeholder.svg"} alt={userData.username} />
+                <AvatarImage
+                  src={userData.avatarUrl ?? undefined}
+                  alt={userData.username}
+                />
                 <AvatarFallback>{userData.username.slice(0, 2)}</AvatarFallback>
               </Avatar>
 

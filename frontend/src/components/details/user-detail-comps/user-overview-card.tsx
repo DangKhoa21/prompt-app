@@ -29,7 +29,10 @@ export default function UserOverviewCard({ userData }: UserOverviewCardProps) {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                <AvatarImage src={"/placeholder.svg"} alt={userData.username} />
+                <AvatarImage
+                  src={userData.avatarUrl ?? undefined}
+                  alt={userData.username}
+                />
                 <AvatarFallback>{userData.username.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div>

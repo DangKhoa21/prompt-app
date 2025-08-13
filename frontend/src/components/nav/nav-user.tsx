@@ -62,7 +62,7 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
                 {user && (
                   <AvatarImage
                     alt={user.username}
-                    src={user?.avatarUrl || undefined}
+                    src={user?.avatarUrl ?? undefined}
                   />
                 )}
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
@@ -88,7 +88,7 @@ export function NavUser({ isAuthenticated }: { isAuthenticated: boolean }) {
                   {user && (
                     <AvatarImage
                       alt={user.username}
-                      src={user?.avatarUrl || undefined}
+                      src={user?.avatarUrl ?? undefined}
                     />
                   )}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>

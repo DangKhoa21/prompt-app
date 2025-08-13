@@ -163,7 +163,10 @@ export function MarketplacePromptCard({
               />
             </Link>
             <CardFooter className="justify-between pt-2 pb-3 items-center">
-              <CreatorAvatar username={creator?.username ?? "Unknown"} />
+              <CreatorAvatar
+                username={creator?.username ?? "Unknown"}
+                src={creator?.avatarUrl ?? undefined}
+              />
             </CardFooter>
           </div>
         </Card>
@@ -221,7 +224,10 @@ export function MarketplacePromptCard({
               className="w-auto mx-4 my-1 bg-neutral-800"
             />
             <CardFooter className="justify-between pt-2 pb-4 items-center">
-              <CreatorAvatar username={creator?.username ?? "Unknown"} />
+              <CreatorAvatar
+                username={creator?.username ?? "Unknown"}
+                src={creator?.avatarUrl ?? undefined}
+              />
 
               <Button
                 variant="link"

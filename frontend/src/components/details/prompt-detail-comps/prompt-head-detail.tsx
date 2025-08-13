@@ -88,7 +88,10 @@ export default function PromptHeadDetail({
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar>
-                <AvatarImage src={"/placeholder.svg"} alt={"User"} />
+                <AvatarImage
+                  src={userData.avatarUrl ?? undefined}
+                  alt={userData.username}
+                />
                 <AvatarFallback>{userData.username.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div>

@@ -42,6 +42,7 @@ export interface PromptCard extends Prompt {
   creator: {
     id: string;
     username: string;
+    avatarUrl?: string | null;
   };
   hasStarred: boolean;
   starCount: number;
