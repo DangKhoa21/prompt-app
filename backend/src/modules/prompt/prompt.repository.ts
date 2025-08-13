@@ -145,7 +145,7 @@ export class PromptRepository {
     }
 
     const data: PromptCardRepo[] = await this.prisma.prompt.findMany({
-      take: limit,
+      take: creatorId && !promptIds && !search && !sort ? undefined : limit, // temp fix to retrieve all prompts for a specific user
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: cursor } : undefined,
       orderBy,

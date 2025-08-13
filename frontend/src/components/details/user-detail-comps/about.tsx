@@ -42,6 +42,7 @@ export default function UserAbout({ userData }: UserAboutProps) {
   } = useQuery({
     queryKey: ["prompts", "creator", userData.id],
     queryFn: () => getPromptsOfCreator(userData.id),
+    enabled: !!userData.id,
   });
 
   const totalStars =
