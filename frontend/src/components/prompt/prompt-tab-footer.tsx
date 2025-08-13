@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { v7 } from "uuid";
 
@@ -75,10 +75,6 @@ export default function PromptTabFooter({
     },
     [data, selectedValues, textareaValues, arrayValues, setPrompt],
   );
-
-  useEffect(() => {
-    handlePrompt(false);
-  }, [data, selectedValues, textareaValues, arrayValues, handlePrompt]);
 
   const { submit, isLoading, stop } = useObject({
     id: idRef.current,
